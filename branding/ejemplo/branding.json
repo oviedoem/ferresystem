@@ -1,0 +1,9 @@
+{
+  "_comentario": "Template de branding por tenant. Copiar a branding/{tenant_id}/branding.json",
+  "nombre_corto": "Ejemplo",
+  "nombre_comercial": "Ferretería Ejemplo",
+  "color_primario": "#c0392b",
+  "color_secundario": "#2c3e50",
+  "logo": "branding/ejemplo/logo_placeholder.png",
+  "favicon": "branding/ejemplo/favicon.ico"
+}

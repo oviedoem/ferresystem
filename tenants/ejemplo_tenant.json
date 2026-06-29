@@ -1,0 +1,31 @@
+{
+  "_comentario": "Template documentado. Copiar a tenants/{tenant_id}.json real, nunca commitear datos reales (ver .gitignore).",
+  "tenant_id": "nombre-unico-cliente",
+  "nombre_comercial": "Ferretería Ejemplo",
+  "erp": {
+    "tipo": "justweb|transtecnia|rexplus|excel",
+    "host": "IP o URL del ERP",
+    "puerto": 80,
+    "usuario": "usuario_erp",
+    "password_enc": "cifrado con DPAPI — nunca texto plano"
+  },
+  "bodegas": {
+    "comerciales": ["BOD1", "BOD2"],
+    "logisticas": ["BOD3", "BOD4"],
+    "bodega_principal": "BOD1"
+  },
+  "firebase": {
+    "project_id": "nombre-proyecto-firebase",
+    "hosting_url": "https://nombre.web.app"
+  },
+  "branding": {
+    "nombre_corto": "Ejemplo",
+    "color_primario": "#c0392b",
+    "color_secundario": "#2c3e50",
+    "logo": "branding/ejemplo/logo.png"
+  },
+  "pipeline": {
+    "hora_sync_sql": "22:00",
+    "ttl_token_horas": 8
+  }
+}

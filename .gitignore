@@ -1,0 +1,23 @@
+# Credenciales y secretos — nunca a git
+*.ini
+*credenciales*
+*service-account*.json
+tenants/*.json
+!tenants/ejemplo_tenant.json
+
+# Datos generados por el pipeline
+data/
+*.log
+logs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node
+node_modules/
+
+# Sistema
+.DS_Store
+Thumbs.db
