@@ -209,45 +209,336 @@
     .hero-note { margin-top: 2rem; font-size: 0.8rem; color: var(--muted); }
 
     /* ============================================================
-       PREVIEW SCREENSHOT
+       CARRUSEL — VISTA REAL
     ============================================================ */
-    .preview-bg { background: var(--gris-1); }
-    .preview-wrap {
-      max-width: 960px;
-      margin: 0 auto;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--borde);
-      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    .carousel-section {
+      background: var(--gris-1);
+      padding: 4rem 1.25rem 5rem;
     }
-    .preview-bar {
+    .carousel-section .section-label { text-align: center; }
+    .carousel-section .section-title { text-align: center; margin-bottom: 0.5rem; }
+    .carousel-section .section-sub {
+      text-align: center;
+      margin: 0 auto 2.5rem;
+    }
+
+    .carousel-stage {
+      max-width: 1040px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Contenedor del slide: mock izquierda + texto derecha */
+    .carousel-track {
+      position: relative;
+      min-height: 420px;
+    }
+    .carousel-slide {
+      display: none;
+      align-items: center;
+      gap: 3rem;
+    }
+    .carousel-slide.active { display: flex; }
+
+    /* MOCK PANEL — ventana de browser falsa */
+    .mock-window {
+      flex: 0 0 520px;
       background: var(--gris-2);
-      padding: 0.6rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--borde);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      overflow: hidden;
+      min-width: 0;
+    }
+    .mock-bar {
+      background: var(--gris-3);
+      padding: 0.55rem 1rem;
       display: flex;
       align-items: center;
       gap: 0.5rem;
       border-bottom: 1px solid var(--borde);
     }
-    .preview-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .preview-url {
+    .mock-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .mock-url {
       flex: 1;
-      background: var(--negro);
+      background: rgba(0,0,0,0.3);
       border-radius: 4px;
-      padding: 0.25rem 0.75rem;
-      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.7rem;
       color: var(--muted);
-      margin: 0 0.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .preview-wrap img {
+    .mock-body {
+      padding: 0;
+    }
+
+    /* ---- Panel Admin Mock ---- */
+    .mock-admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--borde);
+      background: var(--negro);
+    }
+    .mock-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+    .mock-logo-icon {
+      background: var(--rojo);
+      color: #fff;
+      width: 22px; height: 22px;
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 900;
+    }
+    .mock-subtitle { font-size: 0.7rem; color: var(--muted); }
+
+    .mock-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-bottom: 1px solid var(--borde);
+    }
+    .mock-kpi {
+      padding: 0.65rem 0.75rem;
+      border-right: 1px solid var(--borde);
+    }
+    .mock-kpi:last-child { border-right: none; }
+    .mock-kpi-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.15rem; }
+    .mock-kpi-val { font-size: 1rem; font-weight: 800; color: var(--texto); }
+    .mock-kpi-sub { font-size: 0.6rem; color: #6ee7a0; }
+
+    .mock-table-wrap { padding: 0.5rem 0; }
+    .mock-table-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0 0.75rem 0.3rem; }
+    table.mock-table {
       width: 100%;
-      height: auto;
-      display: block;
+      border-collapse: collapse;
+      font-size: 0.72rem;
     }
-    .preview-caption {
-      text-align: center;
+    table.mock-table th {
+      text-align: left;
+      padding: 0.25rem 0.75rem;
       color: var(--muted);
-      font-size: 0.85rem;
-      margin-top: 1.25rem;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--borde);
+    }
+    table.mock-table td {
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    table.mock-table tr:last-child td { border-bottom: none; }
+    .mock-medal { font-size: 0.85rem; }
+    .mock-num { color: var(--muted); }
+    .mock-green { color: #6ee7a0; font-weight: 700; }
+    .mock-footer-bar {
+      border-top: 1px solid var(--borde);
+      padding: 0.4rem 0.75rem;
+      font-size: 0.62rem;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    /* ---- Panel Vendedor Mock ---- */
+    .mock-vendedor-search {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--borde);
+      background: var(--negro);
+    }
+    .mock-search-box {
+      flex: 1;
+      background: var(--gris-3);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      border: 1px solid var(--borde);
+    }
+    .mock-search-btn {
+      background: var(--rojo);
+      color: #fff;
+      border-radius: 5px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+    }
+    .mock-producto-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.72rem;
+    }
+    .mock-producto-row:last-child { border-bottom: none; }
+    .mock-prod-cod { font-size: 0.6rem; color: var(--muted); }
+    .mock-prod-name { font-weight: 600; font-size: 0.72rem; line-height: 1.3; }
+    .mock-prod-stock { text-align: right; }
+    .mock-prod-stock-ok { color: #6ee7a0; font-weight: 700; font-size: 0.7rem; }
+    .mock-prod-stock-low { color: #f8d66e; font-weight: 700; font-size: 0.7rem; }
+    .mock-prod-price { font-weight: 800; color: var(--texto); text-align: right; white-space: nowrap; }
+    .mock-prod-wa {
+      background: #25d366;
+      color: #fff;
+      border-radius: 4px;
+      padding: 0.2rem 0.45rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* ---- Panel Cliente Mock ---- */
+    .mock-catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      padding: 0.6rem;
+    }
+    .mock-catalog-item {
+      background: var(--negro);
+      border: 1px solid var(--borde);
+      border-radius: 7px;
+      padding: 0.6rem;
+      text-align: center;
+    }
+    .mock-catalog-icon { font-size: 1.4rem; margin-bottom: 0.25rem; }
+    .mock-catalog-name { font-size: 0.6rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.2rem; color: var(--texto); }
+    .mock-catalog-price { font-size: 0.68rem; font-weight: 800; color: var(--rojo); margin-bottom: 0.3rem; }
+    .mock-catalog-btn {
+      display: block;
+      background: #25d366;
+      color: #fff;
+      border-radius: 4px;
+      padding: 0.15rem 0;
+      font-size: 0.58rem;
+      font-weight: 700;
+      text-align: center;
+      width: 100%;
+    }
+    .mock-catalog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 0.75rem;
+      background: var(--negro);
+      border-bottom: 1px solid var(--borde);
+      font-size: 0.72rem;
+    }
+    .mock-catalog-title { font-weight: 800; }
+    .mock-catalog-sub { font-size: 0.62rem; color: var(--muted); }
+    .mock-catalog-search {
+      margin: 0.5rem 0.6rem;
+      background: var(--gris-3);
+      border-radius: 5px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+      border: 1px solid var(--borde);
+      width: calc(100% - 1.2rem);
+    }
+
+    /* TEXTO DEL SLIDE (columna derecha) */
+    .slide-text {
+      flex: 1;
+      min-width: 0;
+    }
+    .slide-tag {
+      display: inline-block;
+      background: var(--rojo-s);
+      color: #e88;
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+    .slide-text h3 {
+      font-size: clamp(1.25rem, 2.5vw, 1.8rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+    .slide-text p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+      max-width: 340px;
+    }
+    .slide-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .slide-bullets li {
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .slide-bullets li::before { content: '→'; color: var(--rojo); font-weight: 700; }
+
+    /* CONTROLES */
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .carousel-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--borde);
+      background: var(--gris-2);
+      color: var(--texto);
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+    .carousel-btn:hover {
+      border-color: var(--rojo);
+      background: var(--rojo-s);
+      transform: scale(1.08);
+    }
+    .carousel-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .carousel-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--borde);
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      padding: 0;
+    }
+    .carousel-dot.active {
+      background: var(--rojo);
+      transform: scale(1.3);
+    }
+
+    /* Mobile: apilado */
+    @media (max-width: 820px) {
+      .carousel-slide { flex-direction: column; gap: 1.5rem; }
+      .mock-window { flex: none; width: 100%; }
     }
 
     /* ============================================================
@@ -590,6 +881,7 @@
     </a>
     <div class="nav-links">
       <a href="#paneles">Paneles</a>
+      <a href="#carousel-vista">Vista real</a>
       <a href="#precios">Precios</a>
       <a href="#faq">FAQ</a>
       <a href="#contacto">Contacto</a>
@@ -625,24 +917,293 @@
   <p class="hero-note reveal d4">Probado en producción real desde 2025 · Rancagua, Chile</p>
 </section>
 
-<!-- PREVIEW PANEL ADMIN -->
-<section class="preview-bg" style="padding: 3rem 1.25rem 4rem;">
-  <div class="container">
-    <p class="section-label" style="text-align:center">Vista previa</p>
-    <h2 class="section-title" style="text-align:center;margin-bottom:0.5rem">Así se ve el Panel Admin</h2>
-    <p style="text-align:center;color:var(--muted);margin-bottom:2rem;font-size:0.95rem">Stock, ventas, rankings y pedidos — todo en una sola pantalla.</p>
-    <div class="preview-wrap reveal d1">
-      <div class="preview-bar">
-        <span class="preview-dot" style="background:#ff5f57"></span>
-        <span class="preview-dot" style="background:#febc2e"></span>
-        <span class="preview-dot" style="background:#28c840"></span>
-        <span class="preview-url">tuferreteria.ferresystem.cl — Panel Administrador</span>
+<!-- ============================================================
+     CARRUSEL — VISTA REAL DE LOS 3 PANELES
+============================================================ -->
+<section id="carousel-vista" class="carousel-section">
+  <div class="container" style="max-width:1040px">
+    <p class="section-label">Vista real</p>
+    <h2 class="section-title">Así se ven los paneles</h2>
+    <p class="section-sub">Datos en tiempo real, directamente desde tu ERP. Sin apps, desde cualquier navegador.</p>
+
+    <div class="carousel-stage">
+      <div class="carousel-track">
+
+        <!-- SLIDE 1: Panel Admin -->
+        <div class="carousel-slide active" id="slide-0">
+          <div class="mock-window">
+            <div class="mock-bar">
+              <span class="mock-dot" style="background:#ff5f57"></span>
+              <span class="mock-dot" style="background:#febc2e"></span>
+              <span class="mock-dot" style="background:#28c840"></span>
+              <span class="mock-url">ferreteria-ejemplo.web.app/admin/vendedores</span>
+            </div>
+            <div class="mock-body">
+              <div class="mock-admin-header">
+                <div class="mock-logo-row">
+                  <div class="mock-logo-icon">F</div>
+                  <span>Mi Ferretería</span>
+                </div>
+                <span class="mock-subtitle">Ranking Vendedores — Junio 2026</span>
+              </div>
+              <div class="mock-kpis">
+                <div class="mock-kpi">
+                  <div class="mock-kpi-label">Ventas mes</div>
+                  <div class="mock-kpi-val">$62.1M</div>
+                  <div class="mock-kpi-sub">↑ 8% vs mayo</div>
+                </div>
+                <div class="mock-kpi">
+                  <div class="mock-kpi-label">Transacciones</div>
+                  <div class="mock-kpi-val">555</div>
+                  <div class="mock-kpi-sub">↑ 12%</div>
+                </div>
+                <div class="mock-kpi">
+                  <div class="mock-kpi-label">Ticket prom.</div>
+                  <div class="mock-kpi-val">$111.9K</div>
+                  <div class="mock-kpi-sub">↑ 3%</div>
+                </div>
+              </div>
+              <div class="mock-table-wrap">
+                <div class="mock-table-title">Ranking de vendedores</div>
+                <table class="mock-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Vendedor</th>
+                      <th>Ventas</th>
+                      <th>Transacc.</th>
+                      <th>Ticket prom.</th>
+                      <th>Cotiz.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="mock-medal">🥇</span></td>
+                      <td>Vendedor A</td>
+                      <td class="mock-green">$18.450.000</td>
+                      <td>142</td>
+                      <td>$129.930</td>
+                      <td class="mock-num">38</td>
+                    </tr>
+                    <tr>
+                      <td><span class="mock-medal">🥈</span></td>
+                      <td>Vendedor B</td>
+                      <td class="mock-green">$15.200.000</td>
+                      <td>128</td>
+                      <td>$118.750</td>
+                      <td class="mock-num">27</td>
+                    </tr>
+                    <tr>
+                      <td><span class="mock-medal">🥉</span></td>
+                      <td>Vendedor C</td>
+                      <td class="mock-green">$12.800.000</td>
+                      <td>115</td>
+                      <td>$111.304</td>
+                      <td class="mock-num">31</td>
+                    </tr>
+                    <tr>
+                      <td class="mock-num">4</td>
+                      <td>Vendedor D</td>
+                      <td>$9.350.000</td>
+                      <td>98</td>
+                      <td>$95.408</td>
+                      <td class="mock-num">19</td>
+                    </tr>
+                    <tr>
+                      <td class="mock-num">5</td>
+                      <td>Vendedor E</td>
+                      <td>$7.100.000</td>
+                      <td>72</td>
+                      <td>$98.611</td>
+                      <td class="mock-num">14</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="mock-footer-bar">Datos del mes en curso · Actualizado hace 23 min</div>
+            </div>
+          </div>
+          <div class="slide-text">
+            <span class="slide-tag">Panel Admin</span>
+            <h3>¿Quién vende más y mejor?</h3>
+            <p>Ranking de vendedores con ventas totales, transacciones, ticket promedio y cotizaciones creadas.</p>
+            <ul class="slide-bullets">
+              <li>Datos del mes en curso en tiempo real</li>
+              <li>Comparativa con mes anterior</li>
+              <li>Desglose por vendedor y período</li>
+              <li>KPIs de equipo de un vistazo</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- SLIDE 2: Panel Vendedor -->
+        <div class="carousel-slide" id="slide-1">
+          <div class="mock-window">
+            <div class="mock-bar">
+              <span class="mock-dot" style="background:#ff5f57"></span>
+              <span class="mock-dot" style="background:#febc2e"></span>
+              <span class="mock-dot" style="background:#28c840"></span>
+              <span class="mock-url">ferreteria-ejemplo.web.app/vendedor</span>
+            </div>
+            <div class="mock-body">
+              <div class="mock-admin-header">
+                <div class="mock-logo-row">
+                  <div class="mock-logo-icon">F</div>
+                  <span>Mi Ferretería</span>
+                </div>
+                <span class="mock-subtitle">Panel Vendedor · Juan P.</span>
+              </div>
+              <div class="mock-vendedor-search">
+                <div class="mock-search-box">🔍  Buscar por código o descripción…</div>
+                <div class="mock-search-btn">Buscar</div>
+              </div>
+              <!-- productos -->
+              <div class="mock-producto-row">
+                <div>
+                  <div class="mock-prod-cod">COD-0041</div>
+                  <div class="mock-prod-name">Lija al agua #120 — hoja A4</div>
+                </div>
+                <div class="mock-prod-stock"><span class="mock-prod-stock-ok">✔ 340 u.</span></div>
+                <div class="mock-prod-price">$890</div>
+                <div class="mock-prod-wa">WA →</div>
+              </div>
+              <div class="mock-producto-row">
+                <div>
+                  <div class="mock-prod-cod">COD-0218</div>
+                  <div class="mock-prod-name">Taladro percutor 13mm 750W</div>
+                </div>
+                <div class="mock-prod-stock"><span class="mock-prod-stock-ok">✔ 12 u.</span></div>
+                <div class="mock-prod-price">$89.990</div>
+                <div class="mock-prod-wa">WA →</div>
+              </div>
+              <div class="mock-producto-row">
+                <div>
+                  <div class="mock-prod-cod">COD-0553</div>
+                  <div class="mock-prod-name">Bisagra acero inox 3" x 2,5"</div>
+                </div>
+                <div class="mock-prod-stock"><span class="mock-prod-stock-low">⚠ 8 u.</span></div>
+                <div class="mock-prod-price">$1.450</div>
+                <div class="mock-prod-wa">WA →</div>
+              </div>
+              <div class="mock-producto-row">
+                <div>
+                  <div class="mock-prod-cod">COD-0097</div>
+                  <div class="mock-prod-name">Cemento Portland 25 kg</div>
+                </div>
+                <div class="mock-prod-stock"><span class="mock-prod-stock-ok">✔ 185 u.</span></div>
+                <div class="mock-prod-price">$7.200</div>
+                <div class="mock-prod-wa">WA →</div>
+              </div>
+              <div class="mock-producto-row">
+                <div>
+                  <div class="mock-prod-cod">COD-0312</div>
+                  <div class="mock-prod-name">Cinta métrica 5m c/freno</div>
+                </div>
+                <div class="mock-prod-stock"><span class="mock-prod-stock-ok">✔ 57 u.</span></div>
+                <div class="mock-prod-price">$3.490</div>
+                <div class="mock-prod-wa">WA →</div>
+              </div>
+              <div class="mock-footer-bar">Stock actualizado hace 18 min · 4.812 productos</div>
+            </div>
+          </div>
+          <div class="slide-text">
+            <span class="slide-tag">Panel Vendedor</span>
+            <h3>Catálogo y stock en el bolsillo</h3>
+            <p>Busca cualquier producto por código o nombre, ve el stock en tiempo real y envía la cotización por WhatsApp en 1 clic.</p>
+            <ul class="slide-bullets">
+              <li>Búsqueda instantánea en 4.800+ productos</li>
+              <li>Stock por bodega en tiempo real</li>
+              <li>Precios siempre actualizados desde el ERP</li>
+              <li>Cotización a WhatsApp sin copiar nada</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- SLIDE 3: Panel Cliente -->
+        <div class="carousel-slide" id="slide-2">
+          <div class="mock-window">
+            <div class="mock-bar">
+              <span class="mock-dot" style="background:#ff5f57"></span>
+              <span class="mock-dot" style="background:#febc2e"></span>
+              <span class="mock-dot" style="background:#28c840"></span>
+              <span class="mock-url">ferreteria-ejemplo.web.app/catalogo</span>
+            </div>
+            <div class="mock-body">
+              <div class="mock-catalog-header">
+                <div>
+                  <div class="mock-catalog-title">🛍️ Mi Ferretería</div>
+                  <div class="mock-catalog-sub">Catálogo — Herramientas eléctricas</div>
+                </div>
+                <div style="font-size:0.62rem;color:var(--muted)">Actualizado hoy</div>
+              </div>
+              <input class="mock-catalog-search" type="text" placeholder="🔍  Buscar producto…" readonly>
+              <div class="mock-catalog-grid">
+                <div class="mock-catalog-item">
+                  <div class="mock-catalog-icon">🔧</div>
+                  <div class="mock-catalog-name">Taladro percutor 13mm</div>
+                  <div class="mock-catalog-price">$89.990</div>
+                  <div class="mock-catalog-btn">Cotizar WA</div>
+                </div>
+                <div class="mock-catalog-item">
+                  <div class="mock-catalog-icon">🪚</div>
+                  <div class="mock-catalog-name">Sierra circular 7¼" 1400W</div>
+                  <div class="mock-catalog-price">$119.990</div>
+                  <div class="mock-catalog-btn">Cotizar WA</div>
+                </div>
+                <div class="mock-catalog-item">
+                  <div class="mock-catalog-icon">🔩</div>
+                  <div class="mock-catalog-name">Atornillador inalámb. 18V</div>
+                  <div class="mock-catalog-price">$74.900</div>
+                  <div class="mock-catalog-btn">Cotizar WA</div>
+                </div>
+                <div class="mock-catalog-item">
+                  <div class="mock-catalog-icon">💡</div>
+                  <div class="mock-catalog-name">Amoladora 4½" 850W</div>
+                  <div class="mock-catalog-price">$49.990</div>
+                  <div class="mock-catalog-btn">Cotizar WA</div>
+                </div>
+                <div class="mock-catalog-item">
+                  <div class="mock-catalog-icon">🪛</div>
+                  <div class="mock-catalog-name">Lijadora orbital 125mm</div>
+                  <div class="mock-catalog-price">$39.990</div>
+                  <div class="mock-catalog-btn">Cotizar WA</div>
+                </div>
+                <div class="mock-catalog-item">
+                  <div class="mock-catalog-icon">🏗️</div>
+                  <div class="mock-catalog-name">Rotomartillo SDS+ 800W</div>
+                  <div class="mock-catalog-price">$134.990</div>
+                  <div class="mock-catalog-btn">Cotizar WA</div>
+                </div>
+              </div>
+              <div class="mock-footer-bar">286 productos en esta categoría</div>
+            </div>
+          </div>
+          <div class="slide-text">
+            <span class="slide-tag">Panel Cliente</span>
+            <h3>Tu catálogo digital, sin app</h3>
+            <p>Tus clientes navegan el catálogo desde cualquier celular, ven precios y piden cotización directo a tu WhatsApp.</p>
+            <ul class="slide-bullets">
+              <li>Acceso desde cualquier navegador, sin app</li>
+              <li>Precios visibles u ocultos por cliente</li>
+              <li>Cotización a WhatsApp en 1 clic</li>
+              <li>Cupones de descuento personalizados</li>
+            </ul>
+          </div>
+        </div>
+
+      </div><!-- /carousel-track -->
+
+      <!-- Controles -->
+      <div class="carousel-controls">
+        <button class="carousel-btn" id="btn-prev" aria-label="Anterior">←</button>
+        <div class="carousel-dots">
+          <button class="carousel-dot active" data-idx="0" aria-label="Panel Admin"></button>
+          <button class="carousel-dot" data-idx="1" aria-label="Panel Vendedor"></button>
+          <button class="carousel-dot" data-idx="2" aria-label="Panel Cliente"></button>
+        </div>
+        <button class="carousel-btn" id="btn-next" aria-label="Siguiente">→</button>
       </div>
-      <img src="https://cdn.jsdelivr.net/gh/oviedoem/ferresystem@main/landing/assets/screenshot_panel_admin.png"
-           alt="Captura del Panel Administrador de FerreSystem — dashboard con KPIs, gráfico de ventas, top productos y ranking de vendedores"
-           width="960" height="600" loading="lazy">
-    </div>
-    <p class="preview-caption">Panel Administrador — Dashboard de ventas, stock y rendimiento de equipo</p>
+    </div><!-- /carousel-stage -->
   </div>
 </section>
 
@@ -929,9 +1490,10 @@
   </a>
 </div>
 
-<!-- FAQ ACCORDION JS -->
+<!-- FAQ ACCORDION + CARRUSEL JS -->
 <script>
 (function(){
+  /* --- FAQ --- */
   document.querySelectorAll('.faq-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       var item = btn.closest('.faq-item');
@@ -949,6 +1511,40 @@
       }
     });
   });
+
+  /* --- CARRUSEL --- */
+  var total = 3;
+  var current = 0;
+
+  function goTo(idx) {
+    document.getElementById('slide-' + current).classList.remove('active');
+    document.querySelectorAll('.carousel-dot')[current].classList.remove('active');
+    current = (idx + total) % total;
+    document.getElementById('slide-' + current).classList.add('active');
+    document.querySelectorAll('.carousel-dot')[current].classList.add('active');
+  }
+
+  document.getElementById('btn-prev').addEventListener('click', function(){ goTo(current - 1); });
+  document.getElementById('btn-next').addEventListener('click', function(){ goTo(current + 1); });
+  document.querySelectorAll('.carousel-dot').forEach(function(dot){
+    dot.addEventListener('click', function(){ goTo(parseInt(dot.getAttribute('data-idx'))); });
+  });
+
+  /* Auto-avance cada 5s */
+  var autoTimer = setInterval(function(){ goTo(current + 1); }, 5000);
+  document.querySelector('.carousel-stage').addEventListener('mouseenter', function(){ clearInterval(autoTimer); });
+  document.querySelector('.carousel-stage').addEventListener('mouseleave', function(){
+    autoTimer = setInterval(function(){ goTo(current + 1); }, 5000);
+  });
+
+  /* Swipe touch */
+  var touchStartX = 0;
+  var stage = document.querySelector('.carousel-track');
+  stage.addEventListener('touchstart', function(e){ touchStartX = e.touches[0].clientX; }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
+  }, {passive:true});
 })();
 </script>
 
