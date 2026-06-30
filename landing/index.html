@@ -16,6 +16,12 @@
       --navy:#0d1120;--navy2:#111827;--navy3:#1a2035;--navy4:#1e2744;
       --muted:#8892b0;--texto:#ccd6f6;--borde:rgba(255,255,255,0.07);
       --verde:#64ffda;--r:12px;
+      --accent-sales:#e74c3c;    /* JustWeb  */
+      --accent-people:#818cf8;   /* Buk      */
+      --accent-finance:#f59e0b;  /* Transtecnia */
+      --accent-pay:#34d399;      /* Rex+     */
+      --accent-data:#38bdf8;     /* Excel    */
+      --accent-custom:#a78bfa;   /* Tu ERP   */
     }
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
     @keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
@@ -36,8 +42,6 @@
     .nav-links{display:flex;gap:1.5rem;align-items:center}
     .nav-links a{font-size:0.85rem;color:var(--muted);font-weight:500;transition:color 0.2s;padding:0.3rem 0}
     .nav-links a:hover{color:#fff}
-
-    /* Dropdown servicios */
     .nav-dropdown{position:relative}
     .nav-dropdown-btn{display:flex;align-items:center;gap:5px;font-size:0.85rem;color:var(--muted);font-weight:500;cursor:pointer;padding:0.3rem 0;transition:color 0.2s;background:none;border:none}
     .nav-dropdown-btn:hover{color:#fff}
@@ -48,22 +52,17 @@
     .nav-dropdown-menu a{display:flex;align-items:center;gap:10px;padding:0.6rem 0.85rem;border-radius:8px;font-size:0.82rem;color:var(--texto);transition:background 0.15s}
     .nav-dropdown-menu a:hover{background:rgba(231,76,60,0.1);color:#fff}
     .nav-dropdown-menu a span.ddicon{width:28px;height:28px;border-radius:6px;background:var(--rojo-s);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0}
-
     .nav-right{display:flex;align-items:center;gap:0.75rem}
     .nav-ingreso{font-size:0.8rem;color:var(--muted);font-weight:500;transition:color 0.2s}
     .nav-ingreso:hover{color:#fff}
     .nav-cta{background:var(--rojo);color:#fff;border:1.5px solid var(--rojo);padding:0.45rem 1.1rem;border-radius:8px;font-size:0.82rem;font-weight:700;transition:all 0.2s;white-space:nowrap}
     .nav-cta:hover{background:var(--rojo-h);transform:translateY(-1px);box-shadow:0 4px 20px rgba(231,76,60,0.4)}
-
-    /* Hamburger */
     .nav-hamburger{display:none;flex-direction:column;gap:5px;width:36px;height:36px;align-items:center;justify-content:center;cursor:pointer;border-radius:8px;transition:background 0.2s}
     .nav-hamburger:hover{background:rgba(255,255,255,0.06)}
     .nav-hamburger span{display:block;width:20px;height:2px;background:var(--texto);border-radius:2px;transition:all 0.3s}
     .nav-hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
     .nav-hamburger.active span:nth-child(2){opacity:0}
     .nav-hamburger.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-
-    /* Mobile menu */
     .nav-mobile{display:none;position:fixed;top:64px;left:0;right:0;z-index:490;background:rgba(9,12,20,0.97);border-bottom:1px solid var(--borde);padding:1.25rem 1.5rem 1.5rem;backdrop-filter:blur(18px);animation:fadeInDown 0.2s ease}
     .nav-mobile.open{display:block}
     .nav-mobile-links{display:flex;flex-direction:column;gap:0}
@@ -72,7 +71,6 @@
     .nav-mobile-sub{padding:0.3rem 0 0.3rem 1rem;display:flex;flex-direction:column;gap:0}
     .nav-mobile-sub a{font-size:0.88rem;color:var(--muted);border-bottom:1px solid rgba(255,255,255,0.04);padding:0.65rem 0}
     .nav-mobile-cta{display:flex;align-items:center;justify-content:center;gap:0.5rem;background:var(--rojo);color:#fff;font-weight:700;font-size:0.95rem;padding:0.85rem;border-radius:10px;width:100%;margin-top:1rem}
-
     @media(max-width:900px){.nav-links{display:none}.nav-right .nav-ingreso{display:none}.nav-right .nav-cta{display:none}.nav-hamburger{display:flex}}
 
     /* ===== HERO ===== */
@@ -100,7 +98,7 @@
     .sec-title{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:900;line-height:1.12;letter-spacing:-0.01em;margin-bottom:1rem;text-transform:uppercase}
     .sec-sub{color:var(--muted);font-size:1.05rem;max-width:560px;margin-bottom:3.5rem}
 
-    /* ===== SERVICIOS (Biwiser-style) ===== */
+    /* ===== SERVICIOS ===== */
     .servicios-section{background:var(--navy)}
     .servicios-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem}
     .serv-card{background:var(--navy3);border:1px solid var(--borde);border-radius:var(--r);padding:2.25rem 2rem;position:relative;overflow:hidden;transition:all 0.3s;cursor:default}
@@ -133,17 +131,176 @@
     .feat-card h3{font-size:1.05rem;font-weight:800;margin-bottom:0.5rem}
     .feat-card p{font-size:0.88rem;color:var(--muted);line-height:1.65}
 
-    /* ===== COMPAT ===== */
+    /* ===================================================
+       COMPATIBILIDAD — REDISEÑO BENTO GRID v3
+       Iconos SVG inline monocromáticos estilo Lucide
+       stroke-width: 1.5px | sin emojis | acento por categoría
+    =================================================== */
     .compat-section{background:var(--navy2)}
-    .compat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
-    .compat-card{background:var(--navy3);border:1px solid var(--borde);border-radius:var(--r);padding:1.5rem;text-align:center;transition:all 0.25s}
-    .compat-card:hover{border-color:rgba(231,76,60,0.4);transform:translateY(-3px)}
-    .compat-icon{font-size:2.2rem;margin-bottom:0.75rem}
-    .compat-name{font-size:0.95rem;font-weight:800;margin-bottom:0.3rem}
-    .compat-type{font-size:0.75rem;color:var(--muted);margin-bottom:0.6rem}
-    .chip{display:inline-block;padding:0.2rem 0.75rem;border-radius:100px;font-size:0.72rem;font-weight:700}
-    .chip-live{background:rgba(100,255,218,0.1);color:var(--verde);border:1px solid rgba(100,255,218,0.2)}
-    .chip-soon{background:rgba(248,214,110,0.1);color:#f8d66e;border:1px solid rgba(248,214,110,0.2)}
+
+    /* Bento grid: 3 columnas desktop, asimétrico */
+    .compat-bento{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      grid-template-rows:auto auto;
+      gap:1.25rem;
+    }
+    /* Última card (Tu ERP) ocupa las 2 últimas columnas — destacada */
+    .compat-bento .compat-card-v2:nth-child(5){grid-column:1/2;}
+    .compat-bento .compat-card-v2:nth-child(6){grid-column:2/4;}
+
+    @media(max-width:900px){
+      .compat-bento{grid-template-columns:repeat(2,1fr);}
+      .compat-bento .compat-card-v2:nth-child(5){grid-column:auto;}
+      .compat-bento .compat-card-v2:nth-child(6){grid-column:1/-1;}
+    }
+    @media(max-width:560px){
+      .compat-bento{grid-template-columns:1fr;}
+      .compat-bento .compat-card-v2:nth-child(6){grid-column:auto;}
+    }
+
+    /* Card base */
+    .compat-card-v2{
+      background:var(--navy3);
+      border:1px solid var(--borde);
+      border-radius:16px;
+      padding:1.75rem 1.75rem 1.5rem;
+      position:relative;
+      overflow:hidden;
+      transition:transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      display:flex;
+      flex-direction:column;
+      gap:1rem;
+    }
+    /* Glow radial en hover via pseudo-elemento */
+    .compat-card-v2::after{
+      content:'';
+      position:absolute;
+      top:-40px;left:-40px;
+      width:160px;height:160px;
+      border-radius:50%;
+      opacity:0;
+      transition:opacity 0.4s ease;
+      pointer-events:none;
+    }
+    .compat-card-v2:hover{transform:translateY(-5px);box-shadow:0 20px 56px rgba(0,0,0,0.45);}
+    .compat-card-v2:hover::after{opacity:1;}
+
+    /* Acento de color — borde top + glow + icon tint por sistema */
+    .compat-card-v2[data-accent="sales"]{
+      border-top:2px solid var(--accent-sales);
+    }
+    .compat-card-v2[data-accent="sales"]:hover{border-color:var(--accent-sales);}
+    .compat-card-v2[data-accent="sales"]::after{background:radial-gradient(circle, rgba(231,76,60,0.18) 0%, transparent 70%);}
+    .compat-card-v2[data-accent="sales"] .cc-icon-wrap{background:rgba(231,76,60,0.1);border-color:rgba(231,76,60,0.25);}
+    .compat-card-v2[data-accent="sales"] .cc-icon-wrap svg{stroke:var(--accent-sales);}
+
+    .compat-card-v2[data-accent="people"]{
+      border-top:2px solid var(--accent-people);
+    }
+    .compat-card-v2[data-accent="people"]:hover{border-color:var(--accent-people);}
+    .compat-card-v2[data-accent="people"]::after{background:radial-gradient(circle, rgba(129,140,248,0.18) 0%, transparent 70%);}
+    .compat-card-v2[data-accent="people"] .cc-icon-wrap{background:rgba(129,140,248,0.1);border-color:rgba(129,140,248,0.25);}
+    .compat-card-v2[data-accent="people"] .cc-icon-wrap svg{stroke:var(--accent-people);}
+
+    .compat-card-v2[data-accent="finance"]{
+      border-top:2px solid var(--accent-finance);
+    }
+    .compat-card-v2[data-accent="finance"]:hover{border-color:var(--accent-finance);}
+    .compat-card-v2[data-accent="finance"]::after{background:radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%);}
+    .compat-card-v2[data-accent="finance"] .cc-icon-wrap{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.25);}
+    .compat-card-v2[data-accent="finance"] .cc-icon-wrap svg{stroke:var(--accent-finance);}
+
+    .compat-card-v2[data-accent="pay"]{
+      border-top:2px solid var(--accent-pay);
+    }
+    .compat-card-v2[data-accent="pay"]:hover{border-color:var(--accent-pay);}
+    .compat-card-v2[data-accent="pay"]::after{background:radial-gradient(circle, rgba(52,211,153,0.18) 0%, transparent 70%);}
+    .compat-card-v2[data-accent="pay"] .cc-icon-wrap{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.25);}
+    .compat-card-v2[data-accent="pay"] .cc-icon-wrap svg{stroke:var(--accent-pay);}
+
+    .compat-card-v2[data-accent="data"]{
+      border-top:2px solid var(--accent-data);
+    }
+    .compat-card-v2[data-accent="data"]:hover{border-color:var(--accent-data);}
+    .compat-card-v2[data-accent="data"]::after{background:radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%);}
+    .compat-card-v2[data-accent="data"] .cc-icon-wrap{background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.25);}
+    .compat-card-v2[data-accent="data"] .cc-icon-wrap svg{stroke:var(--accent-data);}
+
+    .compat-card-v2[data-accent="custom"]{
+      border-top:2px solid var(--accent-custom);
+      background:linear-gradient(135deg, var(--navy3) 0%, rgba(30,39,68,0.8) 100%);
+    }
+    .compat-card-v2[data-accent="custom"]:hover{border-color:var(--accent-custom);}
+    .compat-card-v2[data-accent="custom"]::after{background:radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 70%);}
+    .compat-card-v2[data-accent="custom"] .cc-icon-wrap{background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.25);}
+    .compat-card-v2[data-accent="custom"] .cc-icon-wrap svg{stroke:var(--accent-custom);}
+
+    /* Icon wrap — estilo Lucide monocromático */
+    .cc-icon-wrap{
+      width:52px;height:52px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.08);
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+      transition:transform 0.3s ease;
+    }
+    .compat-card-v2:hover .cc-icon-wrap{transform:scale(1.08) rotate(-3deg);}
+    .cc-icon-wrap svg{
+      width:26px;height:26px;
+      fill:none;
+      stroke-width:1.5;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    /* Card header row */
+    .cc-header{display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;}
+    .cc-meta{flex:1;}
+    .cc-name{
+      font-size:1.05rem;font-weight:800;
+      letter-spacing:-0.01em;
+      margin-bottom:0.2rem;
+      color:var(--texto);
+    }
+    .cc-type{font-size:0.78rem;color:var(--muted);line-height:1.4;}
+
+    /* Chips */
+    .chip{display:inline-flex;align-items:center;gap:5px;padding:0.22rem 0.7rem;border-radius:100px;font-size:0.7rem;font-weight:700;letter-spacing:0.04em;}
+    .chip::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+    .chip-live{background:rgba(100,255,218,0.08);color:var(--verde);border:1px solid rgba(100,255,218,0.18);}
+    .chip-live::before{background:var(--verde);animation:pulse 2s infinite;}
+    .chip-soon{background:rgba(248,214,110,0.08);color:#f8d66e;border:1px solid rgba(248,214,110,0.18);}
+    .chip-soon::before{background:#f8d66e;}
+
+    /* Card body — tags de capacidades */
+    .cc-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.25rem;}
+    .cc-tag{
+      font-size:0.7rem;color:var(--muted);
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:6px;
+      padding:0.18rem 0.55rem;
+    }
+
+    /* Card expandida (Tu ERP) — layout horizontal */
+    .compat-card-v2.cc-wide{
+      flex-direction:row;
+      align-items:center;
+      gap:2rem;
+      padding:2rem 2.5rem;
+    }
+    .cc-wide .cc-icon-wrap{width:64px;height:64px;flex-shrink:0;}
+    .cc-wide .cc-icon-wrap svg{width:32px;height:32px;}
+    .cc-wide-body{flex:1;display:flex;flex-direction:column;gap:0.5rem;}
+    .cc-wide-body .cc-name{font-size:1.2rem;}
+    .cc-wide-body .cc-type{font-size:0.85rem;max-width:380px;}
+    @media(max-width:560px){
+      .compat-card-v2.cc-wide{flex-direction:column;align-items:flex-start;}
+    }
+    /* ===================================================
+       FIN COMPAT BENTO
+    =================================================== */
 
     /* ===== PANELES ===== */
     .paneles-section{background:var(--navy)}
@@ -158,7 +315,7 @@
     .panel-list li{font-size:0.85rem;display:flex;align-items:center;gap:0.5rem;color:var(--texto)}
     .panel-list li::before{content:"\2192";color:var(--rojo);font-weight:700;flex-shrink:0}
 
-    /* ===== NOTICIAS / BLOG strip ===== */
+    /* ===== NOTICIAS ===== */
     .noticias-section{background:var(--navy2)}
     .noticias-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem}
     .noticia-card{background:var(--navy3);border:1px solid var(--borde);border-radius:var(--r);padding:1.75rem;transition:all 0.25s;display:flex;flex-direction:column;gap:0.5rem}
@@ -306,30 +463,10 @@
     <h2 class="sec-title anim d1">Todo el poder de tu data</h2>
     <p class="sec-sub anim d2">Desde reportes en línea hasta modelos predictivos con IA, todo conectado a tu ERP.</p>
     <div class="servicios-grid">
-      <div class="serv-card anim d1">
-        <span class="serv-big-icon">📊</span>
-        <h3>BI Analytics</h3>
-        <p>Ve tus informes en línea y en un solo lugar. Ventas del día, stock crítico y KPIs de rendimiento actualizados cada hora.</p>
-        <span class="serv-link">Ver más →</span>
-      </div>
-      <div class="serv-card anim d2">
-        <span class="serv-big-icon">🔮</span>
-        <h3>Advance Analytics</h3>
-        <p>Usa modelos de analítica avanzada para descubrir demandas futuras, detectar fugas y maximizar la eficiencia administrativa.</p>
-        <span class="serv-link">Ver más →</span>
-      </div>
-      <div class="serv-card anim d3">
-        <span class="serv-big-icon">🗄️</span>
-        <h3>Data Warehouse</h3>
-        <p>Conecta, centraliza y digitaliza los datos de tu empresa. Contrato JSON estándar compatible con cualquier ERP o fuente.</p>
-        <span class="serv-link">Ver más →</span>
-      </div>
-      <div class="serv-card anim d4">
-        <span class="serv-big-icon">🤖</span>
-        <h3>Agentes IA</h3>
-        <p>Digitaliza procesos con aplicaciones web a medida. Agentes que responden, analizan y actúan sobre tus datos en tiempo real.</p>
-        <span class="serv-link">Ver más →</span>
-      </div>
+      <div class="serv-card anim d1"><span class="serv-big-icon">📊</span><h3>BI Analytics</h3><p>Ve tus informes en línea y en un solo lugar. Ventas del día, stock crítico y KPIs de rendimiento actualizados cada hora.</p><span class="serv-link">Ver más →</span></div>
+      <div class="serv-card anim d2"><span class="serv-big-icon">🔮</span><h3>Advance Analytics</h3><p>Usa modelos de analítica avanzada para descubrir demandas futuras, detectar fugas y maximizar la eficiencia administrativa.</p><span class="serv-link">Ver más →</span></div>
+      <div class="serv-card anim d3"><span class="serv-big-icon">🗄️</span><h3>Data Warehouse</h3><p>Conecta, centraliza y digitaliza los datos de tu empresa. Contrato JSON estándar compatible con cualquier ERP o fuente.</p><span class="serv-link">Ver más →</span></div>
+      <div class="serv-card anim d4"><span class="serv-big-icon">🤖</span><h3>Agentes IA</h3><p>Digitaliza procesos con aplicaciones web a medida. Agentes que responden, analizan y actúan sobre tus datos en tiempo real.</p><span class="serv-link">Ver más →</span></div>
     </div>
   </div>
 </section>
@@ -366,20 +503,159 @@
   </div>
 </section>
 
-<!-- COMPATIBILIDAD -->
+<!-- ===================================================
+     COMPATIBILIDAD — BENTO GRID v3
+     Iconos SVG inline estilo Lucide
+     stroke-width:1.5 | monocromático | acento por sistema
+==================================================== -->
 <section id="compatibilidad" class="compat-section">
   <div class="container">
     <p class="sec-overline anim">Compatibilidad</p>
     <h2 class="sec-title anim d1">Adaptadores disponibles</h2>
-    <p class="sec-sub anim d2">Conecta con los ERPs más usados en Chile.</p>
-    <div class="compat-grid">
-      <div class="compat-card anim d1"><div class="compat-icon">🏪</div><div class="compat-name">JustWeb</div><div class="compat-type">ERP comercial · ventas · stock</div><span class="chip chip-live">Disponible</span></div>
-      <div class="compat-card anim d2"><div class="compat-icon">👥</div><div class="compat-name">Buk</div><div class="compat-type">RRHH · remuneraciones · asistencia</div><span class="chip chip-live">Disponible</span></div>
-      <div class="compat-card anim d3"><div class="compat-icon">📋</div><div class="compat-name">Transtecnia</div><div class="compat-type">Contabilidad · facturación</div><span class="chip chip-live">Disponible</span></div>
-      <div class="compat-card anim d4"><div class="compat-icon">💰</div><div class="compat-name">Rex+</div><div class="compat-type">Remuneraciones alternativo</div><span class="chip chip-live">Disponible</span></div>
-      <div class="compat-card anim d5"><div class="compat-icon">📊</div><div class="compat-name">Excel / CSV</div><div class="compat-type">Fallback universal</div><span class="chip chip-live">Disponible</span></div>
-      <div class="compat-card anim d1"><div class="compat-icon">🔧</div><div class="compat-name">Tu ERP</div><div class="compat-type">Adaptador personalizado</div><span class="chip chip-soon">A pedido</span></div>
-    </div>
+    <p class="sec-sub anim d2">Conecta con los ERPs más usados en Chile. Mismo motor, distinto sistema.</p>
+
+    <div class="compat-bento">
+
+      <!-- 1. JustWeb — icono: trending-up (actividad de ventas, KPI comercial) -->
+      <div class="compat-card-v2 anim d1" data-accent="sales">
+        <div class="cc-header">
+          <div class="cc-icon-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+              <polyline points="16 7 22 7 22 13"/>
+            </svg>
+          </div>
+          <span class="chip chip-live">Activo</span>
+        </div>
+        <div class="cc-meta">
+          <div class="cc-name">JustWeb</div>
+          <div class="cc-type">ERP comercial chileno</div>
+        </div>
+        <div class="cc-tags">
+          <span class="cc-tag">Ventas</span>
+          <span class="cc-tag">Stock</span>
+          <span class="cc-tag">Pedidos</span>
+        </div>
+      </div>
+
+      <!-- 2. Buk — icono: users-round (equipo, orgánica de personas, no silueta pesada) -->
+      <div class="compat-card-v2 anim d2" data-accent="people">
+        <div class="cc-header">
+          <div class="cc-icon-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 21a8 8 0 0 0-16 0"/>
+              <circle cx="10" cy="8" r="5"/>
+              <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/>
+            </svg>
+          </div>
+          <span class="chip chip-live">Activo</span>
+        </div>
+        <div class="cc-meta">
+          <div class="cc-name">Buk</div>
+          <div class="cc-type">Plataforma de RR.HH.</div>
+        </div>
+        <div class="cc-tags">
+          <span class="cc-tag">Remuneraciones</span>
+          <span class="cc-tag">Asistencia</span>
+          <span class="cc-tag">Contratos</span>
+        </div>
+      </div>
+
+      <!-- 3. Transtecnia — icono: receipt (comprobante digital, no papel doblado) -->
+      <div class="compat-card-v2 anim d3" data-accent="finance">
+        <div class="cc-header">
+          <div class="cc-icon-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/>
+              <path d="M16 8H8"/>
+              <path d="M16 12H8"/>
+              <path d="M12 16H8"/>
+            </svg>
+          </div>
+          <span class="chip chip-live">Activo</span>
+        </div>
+        <div class="cc-meta">
+          <div class="cc-name">Transtecnia</div>
+          <div class="cc-type">Contabilidad y facturación</div>
+        </div>
+        <div class="cc-tags">
+          <span class="cc-tag">DTE</span>
+          <span class="cc-tag">Libro de ventas</span>
+          <span class="cc-tag">SII</span>
+        </div>
+      </div>
+
+      <!-- 4. Rex+ — icono: banknote (billete digital, no bolsa de dinero) -->
+      <div class="compat-card-v2 anim d4" data-accent="pay">
+        <div class="cc-header">
+          <div class="cc-icon-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect width="20" height="12" x="2" y="6" rx="2"/>
+              <circle cx="12" cy="12" r="2"/>
+              <path d="M6 12h.01M18 12h.01"/>
+            </svg>
+          </div>
+          <span class="chip chip-live">Activo</span>
+        </div>
+        <div class="cc-meta">
+          <div class="cc-name">Rex+</div>
+          <div class="cc-type">Remuneraciones alternativo</div>
+        </div>
+        <div class="cc-tags">
+          <span class="cc-tag">Liquidaciones</span>
+          <span class="cc-tag">AFP / Salud</span>
+          <span class="cc-tag">Finiquitos</span>
+        </div>
+      </div>
+
+      <!-- 5. Excel / CSV — icono: table-2 (grilla de datos abstracta, no logo de marca) -->
+      <div class="compat-card-v2 anim d5" data-accent="data">
+        <div class="cc-header">
+          <div class="cc-icon-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>
+            </svg>
+          </div>
+          <span class="chip chip-live">Activo</span>
+        </div>
+        <div class="cc-meta">
+          <div class="cc-name">Excel / CSV</div>
+          <div class="cc-type">Fallback universal</div>
+        </div>
+        <div class="cc-tags">
+          <span class="cc-tag">.xlsx</span>
+          <span class="cc-tag">.csv</span>
+          <span class="cc-tag">Multi-hoja</span>
+        </div>
+      </div>
+
+      <!-- 6. Tu ERP — icono: plug-zap (conexión energética/API, no llave inglesa) | card wide -->
+      <div class="compat-card-v2 cc-wide anim d1" data-accent="custom">
+        <div class="cc-icon-wrap">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 22v-5"/>
+            <path d="M9 8V2"/>
+            <path d="M15 8V2"/>
+            <path d="M18 8H6a1 1 0 0 0-1 1v4a7 7 0 0 0 14 0V9a1 1 0 0 0-1-1Z"/>
+          </svg>
+        </div>
+        <div class="cc-wide-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+            <div class="cc-name" style="font-size:1.15rem;">Tu ERP o sistema propio</div>
+            <span class="chip chip-soon">A pedido</span>
+          </div>
+          <div class="cc-type">Adaptador personalizado — cualquier sistema con API, SQL o exportación de archivos puede integrarse al motor FerreSystem en pocos días.</div>
+          <div class="cc-tags" style="margin-top:0.5rem;">
+            <span class="cc-tag">REST API</span>
+            <span class="cc-tag">SQL directo</span>
+            <span class="cc-tag">Webhook</span>
+            <span class="cc-tag">Patrón ABC</span>
+            <span class="cc-tag">Multi-tenant</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /compat-bento -->
   </div>
 </section>
 
@@ -395,10 +671,8 @@
         <h3>Panel Administrador</h3>
         <p>Visión completa del negocio: ventas del día, stock crítico, rendimiento por vendedor y resumen de RRHH.</p>
         <ul class="panel-list">
-          <li>KPIs en tiempo real</li>
-          <li>Ranking de vendedores</li>
-          <li>Alertas de stock mínimo</li>
-          <li>Resumen financiero del día</li>
+          <li>KPIs en tiempo real</li><li>Ranking de vendedores</li>
+          <li>Alertas de stock mínimo</li><li>Resumen financiero del día</li>
         </ul>
       </div>
       <div class="panel-card anim d2">
@@ -406,10 +680,8 @@
         <h3>Panel Vendedor</h3>
         <p>Consulta de stock, precios y catálogo en tiempo real desde el celular. Sin acceso a datos sensibles.</p>
         <ul class="panel-list">
-          <li>Búsqueda de productos</li>
-          <li>Stock por bodega</li>
-          <li>Precios actualizados</li>
-          <li>Compartir por WhatsApp</li>
+          <li>Búsqueda de productos</li><li>Stock por bodega</li>
+          <li>Precios actualizados</li><li>Compartir por WhatsApp</li>
         </ul>
       </div>
       <div class="panel-card anim d3">
@@ -417,10 +689,8 @@
         <h3>Panel Cliente</h3>
         <p>Catálogo white-label con branding del negocio. El cliente final ve productos y cotiza por WhatsApp.</p>
         <ul class="panel-list">
-          <li>Catálogo con fotos</li>
-          <li>Precios sin IVA / con IVA</li>
-          <li>Botón cotizar por WhatsApp</li>
-          <li>100% personalizable</li>
+          <li>Catálogo con fotos</li><li>Precios sin IVA / con IVA</li>
+          <li>Botón cotizar por WhatsApp</li><li>100% personalizable</li>
         </ul>
       </div>
     </div>
@@ -477,26 +747,11 @@
     <p class="sec-overline anim" style="text-align:center">FAQ</p>
     <h2 class="sec-title anim d1" style="text-align:center;max-width:600px;margin:0 auto 3rem">Preguntas frecuentes</h2>
     <div class="faq-wrap">
-      <div class="faq-item anim d1">
-        <button class="faq-btn" onclick="toggleFaq(this)"><span>¿Necesito reemplazar mi ERP actual?</span><span class="faq-arrow">v</span></button>
-        <div class="faq-body"><p>No. FerreSystem actúa como capa intermedia. Se conecta a tu ERP existente, extrae los datos y los publica. Tu operación diaria no cambia.</p></div>
-      </div>
-      <div class="faq-item anim d2">
-        <button class="faq-btn" onclick="toggleFaq(this)"><span>¿Cuánto cuesta la infraestructura?</span><span class="faq-arrow">v</span></button>
-        <div class="faq-body"><p>$0 en Firebase Hosting para proyectos pequeños y medianos. El plan gratuito de Firebase soporta perfectamente el volumen de la mayoría de los negocios.</p></div>
-      </div>
-      <div class="faq-item anim d3">
-        <button class="faq-btn" onclick="toggleFaq(this)"><span>¿Los datos de mis clientes están seguros?</span><span class="faq-arrow">v</span></button>
-        <div class="faq-body"><p>Sí. Cada cliente tiene su propio proyecto Firebase y archivo tenant.json con credenciales cifradas con DPAPI. Nunca hay datos de un cliente en el código de otro.</p></div>
-      </div>
-      <div class="faq-item anim d4">
-        <button class="faq-btn" onclick="toggleFaq(this)"><span>¿Funciona en celular sin instalar nada?</span><span class="faq-arrow">v</span></button>
-        <div class="faq-body"><p>Sí. Los paneles son páginas web responsivas. Admin, vendedor y cliente acceden desde el navegador. No hay app que descargar ni actualizar.</p></div>
-      </div>
-      <div class="faq-item anim d5">
-        <button class="faq-btn" onclick="toggleFaq(this)"><span>¿Puedo agregar mi propio ERP?</span><span class="faq-arrow">v</span></button>
-        <div class="faq-body"><p>Sí. El patrón adaptador permite agregar cualquier ERP creando un nuevo archivo en adapters/ que herede de ERPAdapter. Ver docs/como_agregar_erp.md.</p></div>
-      </div>
+      <div class="faq-item anim d1"><button class="faq-btn" onclick="toggleFaq(this)"><span>¿Necesito reemplazar mi ERP actual?</span><span class="faq-arrow">v</span></button><div class="faq-body"><p>No. FerreSystem actúa como capa intermedia. Se conecta a tu ERP existente, extrae los datos y los publica. Tu operación diaria no cambia.</p></div></div>
+      <div class="faq-item anim d2"><button class="faq-btn" onclick="toggleFaq(this)"><span>¿Cuánto cuesta la infraestructura?</span><span class="faq-arrow">v</span></button><div class="faq-body"><p>$0 en Firebase Hosting para proyectos pequeños y medianos. El plan gratuito de Firebase soporta perfectamente el volumen de la mayoría de los negocios.</p></div></div>
+      <div class="faq-item anim d3"><button class="faq-btn" onclick="toggleFaq(this)"><span>¿Los datos de mis clientes están seguros?</span><span class="faq-arrow">v</span></button><div class="faq-body"><p>Sí. Cada cliente tiene su propio proyecto Firebase y archivo tenant.json con credenciales cifradas con DPAPI. Nunca hay datos de un cliente en el código de otro.</p></div></div>
+      <div class="faq-item anim d4"><button class="faq-btn" onclick="toggleFaq(this)"><span>¿Funciona en celular sin instalar nada?</span><span class="faq-arrow">v</span></button><div class="faq-body"><p>Sí. Los paneles son páginas web responsivas. Admin, vendedor y cliente acceden desde el navegador. No hay app que descargar ni actualizar.</p></div></div>
+      <div class="faq-item anim d5"><button class="faq-btn" onclick="toggleFaq(this)"><span>¿Puedo agregar mi propio ERP?</span><span class="faq-arrow">v</span></button><div class="faq-body"><p>Sí. El patrón adaptador permite agregar cualquier ERP creando un nuevo archivo en adapters/ que herede de ERPAdapter. Ver docs/como_agregar_erp.md.</p></div></div>
     </div>
   </div>
 </section>
@@ -506,10 +761,7 @@
   <div class="footer-inner">
     <div class="footer-top">
       <div>
-        <div class="footer-brand">
-          <div class="footer-brand-icon">F</div>
-          <span class="footer-brand-name">Ferre<em>System</em></span>
-        </div>
+        <div class="footer-brand"><div class="footer-brand-icon">F</div><span class="footer-brand-name">Ferre<em>System</em></span></div>
         <p class="footer-desc">Motor ERP-agnóstico y multi-tenant para comercio y servicios en Chile. Conecta cualquier ERP con paneles web modernos sin reemplazar tu sistema.</p>
         <div class="footer-social">
           <a href="#" title="LinkedIn">in</a>
@@ -517,50 +769,18 @@
           <a href="https://wa.me/56900000000" title="WhatsApp" target="_blank" rel="noopener">wa</a>
         </div>
       </div>
-      <div class="footer-col">
-        <h5>Servicios</h5>
-        <ul>
-          <li><a href="#servicios">BI Analytics</a></li>
-          <li><a href="#servicios">Advance Analytics</a></li>
-          <li><a href="#servicios">Data Warehouse</a></li>
-          <li><a href="#servicios">Agentes IA</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h5>Plataforma</h5>
-        <ul>
-          <li><a href="#como-funciona">Cómo funciona</a></li>
-          <li><a href="#compatibilidad">Compatibilidad</a></li>
-          <li><a href="#paneles">Paneles</a></li>
-          <li><a href="#faq">FAQ</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h5>Contacto</h5>
-        <ul>
-          <li><a href="https://wa.me/56900000000?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem" target="_blank" rel="noopener">Pide una Demo</a></li>
-          <li><a href="#contacto">Ingreso Clientes</a></li>
-          <li><a href="#noticias">Noticias</a></li>
-        </ul>
-      </div>
+      <div class="footer-col"><h5>Servicios</h5><ul><li><a href="#servicios">BI Analytics</a></li><li><a href="#servicios">Advance Analytics</a></li><li><a href="#servicios">Data Warehouse</a></li><li><a href="#servicios">Agentes IA</a></li></ul></div>
+      <div class="footer-col"><h5>Plataforma</h5><ul><li><a href="#como-funciona">Cómo funciona</a></li><li><a href="#compatibilidad">Compatibilidad</a></li><li><a href="#paneles">Paneles</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+      <div class="footer-col"><h5>Contacto</h5><ul><li><a href="https://wa.me/56900000000?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem" target="_blank" rel="noopener">Pide una Demo</a></li><li><a href="#contacto">Ingreso Clientes</a></li><li><a href="#noticias">Noticias</a></li></ul></div>
     </div>
     <div class="footer-bottom">
       <p class="footer-copy">© 2026 FerreSystem · Plataforma SaaS para comercio en Chile · Licencia: A.G.</p>
       <div class="ag-logo-wrap">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="44" height="44" aria-label="Desarrollado por A.G.">
-          <defs>
-            <linearGradient id="ag-r" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style="stop-color:#e74c3c"/><stop offset="100%" style="stop-color:#96281b"/>
-            </linearGradient>
-            <linearGradient id="ag-d" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style="stop-color:#1a2035"/><stop offset="100%" style="stop-color:#0d1018"/>
-            </linearGradient>
-          </defs>
+          <defs><linearGradient id="ag-r" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#e74c3c"/><stop offset="100%" style="stop-color:#96281b"/></linearGradient><linearGradient id="ag-d" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#1a2035"/><stop offset="100%" style="stop-color:#0d1018"/></linearGradient></defs>
           <rect width="80" height="80" rx="10" fill="#090b10"/>
-          <rect x="0" y="0" width="40" height="80" rx="10" fill="url(#ag-r)"/>
-          <rect x="30" y="0" width="10" height="80" fill="url(#ag-r)"/>
-          <rect x="40" y="0" width="40" height="80" rx="10" fill="url(#ag-d)"/>
-          <rect x="40" y="0" width="10" height="80" fill="url(#ag-d)"/>
+          <rect x="0" y="0" width="40" height="80" rx="10" fill="url(#ag-r)"/><rect x="30" y="0" width="10" height="80" fill="url(#ag-r)"/>
+          <rect x="40" y="0" width="40" height="80" rx="10" fill="url(#ag-d)"/><rect x="40" y="0" width="10" height="80" fill="url(#ag-d)"/>
           <rect x="38" y="8" width="4" height="64" rx="2" fill="rgba(0,0,0,0.6)"/>
           <text x="20" y="54" font-family="Arial Black,sans-serif" font-size="42" font-weight="900" fill="white" text-anchor="middle">A</text>
           <text x="60" y="54" font-family="Arial Black,sans-serif" font-size="42" font-weight="900" fill="#e74c3c" text-anchor="middle">G</text>
@@ -604,14 +824,12 @@
   window.addEventListener('mouseleave',function(){mouse.x=-9999;mouse.y=-9999;});
   resize();create();loop();
 })();
-
 /* ===== INTERSECTION OBSERVER (base 3a0f6a4) ===== */
 (function(){
   var els=document.querySelectorAll('.anim');
   var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.12});
   els.forEach(function(el){obs.observe(el);});
 })();
-
 /* ===== FAQ ===== */
 function toggleFaq(btn){
   var item=btn.closest('.faq-item');
@@ -620,7 +838,6 @@ function toggleFaq(btn){
   document.querySelectorAll('.faq-item.open').forEach(function(i){i.classList.remove('open');i.querySelector('.faq-body').style.maxHeight='0';});
   if(!open){item.classList.add('open');body.style.maxHeight=body.scrollHeight+'px';}
 }
-
 /* ===== NAV DROPDOWN ===== */
 function toggleDropdown(id){
   var el=document.getElementById(id);
@@ -631,7 +848,6 @@ function toggleDropdown(id){
 document.addEventListener('click',function(e){
   if(!e.target.closest('.nav-dropdown')) document.querySelectorAll('.nav-dropdown.open').forEach(function(d){d.classList.remove('open');});
 });
-
 /* ===== HAMBURGER ===== */
 function toggleMenu(){
   var menu=document.getElementById('mobile-menu');
