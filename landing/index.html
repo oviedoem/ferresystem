@@ -3,604 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FerreSystem — Plataforma multi-tenant ERP-agnóstica para comercio y servicios</title>
-  <meta name="description" content="FerreSystem conecta cualquier ERP con paneles web modernos. Multi-tenant, white-label, ERP-agnóstico. Compatible con JustWeb, Transtecnia, Rex+, Buk, Excel. Ferreterías, almacenes, distribuidoras y más.">
-  <meta name="keywords" content="software ERP Chile, panel gestión comercial, multi-tenant SaaS Chile, ferretería digital, almacén distribuidora sistema gestión">
+  <title>FerreSystem — Plataforma ERP-agnóstica multi-tenant para comercio y servicios en Chile</title>
+  <meta name="description" content="FerreSystem conecta cualquier ERP con dashboards modernos. Multi-tenant, white-label, ERP-agnóstico. JustWeb, Transtecnia, Rex+, Buk, Excel. Listo en días.">
   <style>
-    /* ============================================================
-       RESET & BASE
-    ============================================================ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; font-size: 16px; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f1117;
-      color: #f0f0f0;
+      background: #0b0d14;
+      color: #e8eaf0;
       line-height: 1.6;
+      overflow-x: hidden;
     }
-    img { display: block; max-width: 100%; }
     a { color: inherit; text-decoration: none; }
     button { cursor: pointer; font: inherit; border: none; background: none; }
 
-    /* ============================================================
-       CSS VARIABLES
-    ============================================================ */
     :root {
-      --negro:    #0f1117;
-      --rojo:     #c0392b;
-      --rojo-h:   #a93226;
-      --rojo-s:   rgba(192,57,43,0.12);
-      --blanco:   #ffffff;
-      --gris-1:   #1a1e2a;
-      --gris-2:   #232838;
-      --gris-3:   #2e3447;
-      --texto:    #e8eaf0;
-      --muted:    #8892a4;
-      --borde:    rgba(255,255,255,0.08);
-      --r:        10px;
-      --sombra:   0 4px 24px rgba(0,0,0,0.4);
+      --negro:   #0b0d14;
+      --navy:    #0f1420;
+      --rojo:    #c0392b;
+      --rojo-h:  #a93226;
+      --rojo-s:  rgba(192,57,43,0.13);
+      --rojo-g:  linear-gradient(135deg,#e74c3c,#922b21);
+      --blanco:  #ffffff;
+      --gris-1:  #141824;
+      --gris-2:  #1c2132;
+      --gris-3:  #252c40;
+      --texto:   #e8eaf0;
+      --muted:   #7a849a;
+      --borde:   rgba(255,255,255,0.07);
+      --r:       12px;
+      --sombra:  0 8px 32px rgba(0,0,0,0.5);
     }
 
+    /* ── CANVAS NODOS ─────────────────────────────────── */
+    #canvas-bg {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+      opacity: 0.45;
+    }
+
+    /* ── ANIMACIONES ──────────────────────────────────── */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
+      from { opacity: 0; transform: translateY(32px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .reveal { opacity: 0; animation: fadeUp 0.6s ease forwards; }
-    .reveal.d1 { animation-delay: 0.05s; }
-    .reveal.d2 { animation-delay: 0.15s; }
-    .reveal.d3 { animation-delay: 0.25s; }
-    .reveal.d4 { animation-delay: 0.35s; }
-    @media (prefers-reduced-motion: reduce) { .reveal { animation: none; opacity: 1; } }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes pulse-dot {
+      0%,100% { transform: scale(1); opacity:1; }
+      50%      { transform: scale(1.6); opacity:.6; }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal.d1 { transition-delay: 0.05s; }
+    .reveal.d2 { transition-delay: 0.15s; }
+    .reveal.d3 { transition-delay: 0.25s; }
+    .reveal.d4 { transition-delay: 0.38s; }
+    .reveal.d5 { transition-delay: 0.50s; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity:1; transform:none; transition:none; }
+      #canvas-bg { display:none; }
+    }
 
-    /* ============================================================
-       LAYOUT
-    ============================================================ */
-    .container { max-width: 1080px; margin: 0 auto; padding: 0 1.25rem; }
-    section { padding: 5rem 1.25rem; }
-    .section-label {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--rojo);
-      font-weight: 700;
-      margin-bottom: 0.6rem;
+    /* ── LAYOUT BASE ──────────────────────────────────── */
+    .z1 { position: relative; z-index: 1; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+    section { padding: 6rem 1.5rem; position: relative; z-index: 1; }
+
+    .section-eyebrow {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.18em;
+      color: var(--rojo); margin-bottom: 0.75rem;
     }
     .section-title {
-      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 1rem;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 900; line-height: 1.1;
+      margin-bottom: 1rem; letter-spacing: -0.02em;
     }
     .section-sub {
-      color: var(--muted);
-      font-size: 1.05rem;
-      max-width: 560px;
-      margin-bottom: 3rem;
+      color: var(--muted); font-size: 1.05rem;
+      max-width: 560px; margin-bottom: 3rem;
     }
 
-    /* ============================================================
-       NAVBAR
-    ============================================================ */
+    /* ── NAVBAR ───────────────────────────────────────── */
     nav {
-      position: sticky; top: 0; z-index: 200;
-      background: rgba(15,17,23,0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 500;
+      background: rgba(11,13,20,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--borde);
     }
     .nav-inner {
-      max-width: 1080px; margin: 0 auto;
-      padding: 0.9rem 1.25rem;
-      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      max-width: 1100px; margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 1.5rem;
     }
     .nav-logo {
-      display: flex; align-items: center; gap: 0.5rem;
-      font-size: 1.2rem; font-weight: 800; color: var(--blanco);
-    }
-    .nav-links { display: flex; gap: 1.5rem; }
-    .nav-links a { font-size: 0.875rem; color: var(--muted); transition: color 0.2s; }
-    .nav-links a:hover { color: var(--blanco); }
-    .nav-cta {
-      background: var(--rojo); color: var(--blanco);
-      padding: 0.5rem 1.1rem; border-radius: 7px;
-      font-size: 0.875rem; font-weight: 600;
-      transition: background 0.2s, transform 0.15s; white-space: nowrap;
-    }
-    .nav-cta:hover { background: var(--rojo-h); transform: translateY(-1px); }
-    @media (max-width: 640px) { .nav-links { display: none; } }
-
-    /* ============================================================
-       BOTONES
-    ============================================================ */
-    .btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.75rem 1.5rem; border-radius: 8px;
-      font-weight: 700; font-size: 1rem;
-      transition: all 0.2s; cursor: pointer;
-    }
-    .btn-rojo { background: var(--rojo); color: #fff; border: 2px solid var(--rojo); }
-    .btn-rojo:hover { background: var(--rojo-h); border-color: var(--rojo-h); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(192,57,43,0.35); }
-    .btn-outline { background: transparent; color: var(--blanco); border: 2px solid var(--borde); }
-    .btn-outline:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); }
-    .btn-wa {
-      background: #25d366; color: #fff;
-      font-size: 1.1rem; padding: 0.9rem 2rem;
-      border-radius: 10px; border: none;
-      box-shadow: 0 6px 20px rgba(37,211,102,0.3);
-    }
-    .btn-wa:hover { background: #1fbd5a; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,211,102,0.4); }
-
-    /* ============================================================
-       1. HERO
-    ============================================================ */
-    .hero {
-      padding: 5.5rem 1.25rem 4.5rem;
-      text-align: center;
-      background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(192,57,43,0.18) 0%, transparent 70%);
-    }
-    .hero-badges {
-      display: flex; flex-wrap: wrap; gap: 0.6rem;
-      justify-content: center; margin-bottom: 2rem;
-    }
-    .badge {
-      background: rgba(192,57,43,0.12);
-      border: 1px solid rgba(192,57,43,0.28);
-      color: #e88; border-radius: 100px;
-      padding: 0.3rem 0.9rem; font-size: 0.8rem; font-weight: 600;
-    }
-    .hero h1 {
-      font-size: clamp(2.2rem, 6vw, 4.2rem);
-      font-weight: 900; line-height: 1.08;
-      margin-bottom: 1.2rem; max-width: 860px;
-      margin-left: auto; margin-right: auto;
-    }
-    .hero h1 em { color: var(--rojo); font-style: normal; }
-    .hero-tagline {
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      color: var(--muted); max-width: 600px;
-      margin: 0 auto 2.5rem;
-    }
-    .hero-ctas { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
-    .hero-note { margin-top: 2rem; font-size: 0.8rem; color: var(--muted); }
-
-    /* ============================================================
-       2. ARQUITECTURA — FLUJO MULTI-TENANT
-    ============================================================ */
-    .arch-bg { background: var(--gris-1); }
-    .arch-flow {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 0;
-      border: 1px solid var(--borde);
-      border-radius: var(--r);
-      overflow: hidden;
-      max-width: 960px;
-      margin: 0 auto;
-    }
-    .arch-layer {
-      padding: 1.75rem 1.5rem;
-      border-right: 1px solid var(--borde);
-      position: relative;
-    }
-    .arch-layer:last-child { border-right: none; }
-    .arch-layer-num {
-      font-size: 0.65rem; text-transform: uppercase;
-      letter-spacing: 0.1em; color: var(--rojo); font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-    .arch-layer-title { font-size: 1rem; font-weight: 800; margin-bottom: 0.5rem; }
-    .arch-layer-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
-    .arch-arrow {
-      display: none;
-      text-align: center; font-size: 1.5rem; color: var(--rojo); padding: 0.5rem;
-    }
-    .arch-layer-tag {
-      display: inline-block;
-      background: var(--rojo-s); color: #e88;
-      border-radius: 4px; padding: 0.15rem 0.5rem;
-      font-size: 0.7rem; font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
-    @media (max-width: 768px) {
-      .arch-flow { grid-template-columns: 1fr; }
-      .arch-layer { border-right: none; border-bottom: 1px solid var(--borde); }
-      .arch-layer:last-child { border-bottom: none; }
-    }
-
-    /* ============================================================
-       CARRUSEL — VISTA REAL
-    ============================================================ */
-    .carousel-section {
-      background: var(--negro);
-      padding: 4rem 1.25rem 5rem;
-    }
-    .carousel-section .section-label { text-align: center; }
-    .carousel-section .section-title { text-align: center; margin-bottom: 0.5rem; }
-    .carousel-section .section-sub { text-align: center; margin: 0 auto 2.5rem; }
-    .carousel-stage { max-width: 1040px; margin: 0 auto; position: relative; }
-    .carousel-track { position: relative; min-height: 420px; }
-    .carousel-slide { display: none; align-items: center; gap: 3rem; }
-    .carousel-slide.active { display: flex; }
-    .mock-window {
-      flex: 0 0 520px;
-      background: var(--gris-2); border-radius: 12px;
-      border: 1px solid var(--borde);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      overflow: hidden; min-width: 0;
-    }
-    .mock-bar {
-      background: var(--gris-3); padding: 0.55rem 1rem;
-      display: flex; align-items: center; gap: 0.5rem;
-      border-bottom: 1px solid var(--borde);
-    }
-    .mock-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-    .mock-url {
-      flex: 1; background: rgba(0,0,0,0.3); border-radius: 4px;
-      padding: 0.2rem 0.6rem; font-size: 0.7rem; color: var(--muted);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .mock-admin-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0.75rem 1rem; border-bottom: 1px solid var(--borde); background: var(--negro);
-    }
-    .mock-logo-row { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 800; }
-    .mock-logo-icon {
-      background: var(--rojo); color: #fff;
-      width: 22px; height: 22px; border-radius: 5px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.7rem; font-weight: 900;
-    }
-    .mock-subtitle { font-size: 0.7rem; color: var(--muted); }
-    .mock-kpis {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
-      border-bottom: 1px solid var(--borde);
-    }
-    .mock-kpi { padding: 0.65rem 0.75rem; border-right: 1px solid var(--borde); }
-    .mock-kpi:last-child { border-right: none; }
-    .mock-kpi-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.15rem; }
-    .mock-kpi-val { font-size: 1rem; font-weight: 800; color: var(--texto); }
-    .mock-kpi-sub { font-size: 0.6rem; color: #6ee7a0; }
-    .mock-table-wrap { padding: 0.5rem 0; }
-    .mock-table-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0 0.75rem 0.3rem; }
-    table.mock-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
-    table.mock-table th {
-      text-align: left; padding: 0.25rem 0.75rem;
-      color: var(--muted); font-size: 0.62rem; text-transform: uppercase;
-      letter-spacing: 0.06em; border-bottom: 1px solid var(--borde);
-    }
-    table.mock-table td { padding: 0.4rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
-    table.mock-table tr:last-child td { border-bottom: none; }
-    .mock-medal { font-size: 0.85rem; }
-    .mock-num { color: var(--muted); }
-    .mock-green { color: #6ee7a0; font-weight: 700; }
-    .mock-footer-bar { border-top: 1px solid var(--borde); padding: 0.4rem 0.75rem; font-size: 0.62rem; color: var(--muted); text-align: right; }
-    .mock-vendedor-search {
-      display: flex; align-items: center; gap: 0.5rem;
-      padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--borde); background: var(--negro);
-    }
-    .mock-search-box {
-      flex: 1; background: var(--gris-3); border-radius: 6px;
-      padding: 0.3rem 0.6rem; font-size: 0.72rem; color: var(--muted); border: 1px solid var(--borde);
-    }
-    .mock-search-btn { background: var(--rojo); color: #fff; border-radius: 5px; padding: 0.3rem 0.6rem; font-size: 0.65rem; font-weight: 700; }
-    .mock-producto-row {
-      display: grid; grid-template-columns: 1fr auto auto auto;
-      gap: 0.5rem; align-items: center;
-      padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.72rem;
-    }
-    .mock-producto-row:last-child { border-bottom: none; }
-    .mock-prod-cod { font-size: 0.6rem; color: var(--muted); }
-    .mock-prod-name { font-weight: 600; font-size: 0.72rem; line-height: 1.3; }
-    .mock-prod-stock-ok { color: #6ee7a0; font-weight: 700; font-size: 0.7rem; }
-    .mock-prod-stock-low { color: #f8d66e; font-weight: 700; font-size: 0.7rem; }
-    .mock-prod-price { font-weight: 800; color: var(--texto); text-align: right; white-space: nowrap; }
-    .mock-prod-wa { background: #25d366; color: #fff; border-radius: 4px; padding: 0.2rem 0.45rem; font-size: 0.6rem; font-weight: 700; white-space: nowrap; }
-    .mock-catalog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; padding: 0.6rem; }
-    .mock-catalog-item { background: var(--negro); border: 1px solid var(--borde); border-radius: 7px; padding: 0.6rem; text-align: center; }
-    .mock-catalog-icon { font-size: 1.4rem; margin-bottom: 0.25rem; }
-    .mock-catalog-name { font-size: 0.6rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.2rem; color: var(--texto); }
-    .mock-catalog-price { font-size: 0.68rem; font-weight: 800; color: var(--rojo); margin-bottom: 0.3rem; }
-    .mock-catalog-btn { display: block; background: #25d366; color: #fff; border-radius: 4px; padding: 0.15rem 0; font-size: 0.58rem; font-weight: 700; text-align: center; width: 100%; }
-    .mock-catalog-header { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem; background: var(--negro); border-bottom: 1px solid var(--borde); font-size: 0.72rem; }
-    .mock-catalog-title { font-weight: 800; }
-    .mock-catalog-sub { font-size: 0.62rem; color: var(--muted); }
-    .mock-catalog-search { margin: 0.5rem 0.6rem; background: var(--gris-3); border-radius: 5px; padding: 0.3rem 0.6rem; font-size: 0.7rem; color: var(--muted); border: 1px solid var(--borde); width: calc(100% - 1.2rem); }
-    .slide-text { flex: 1; min-width: 0; }
-    .slide-tag { display: inline-block; background: var(--rojo-s); color: #e88; border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
-    .slide-text h3 { font-size: clamp(1.25rem, 2.5vw, 1.8rem); font-weight: 800; line-height: 1.2; margin-bottom: 0.75rem; }
-    .slide-text p { font-size: 0.95rem; color: var(--muted); margin-bottom: 1.25rem; max-width: 340px; }
-    .slide-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
-    .slide-bullets li { font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem; }
-    .slide-bullets li::before { content: '→'; color: var(--rojo); font-weight: 700; }
-    .carousel-controls { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-top: 2rem; }
-    .carousel-btn { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--borde); background: var(--gris-2); color: var(--texto); font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.15s; }
-    .carousel-btn:hover { border-color: var(--rojo); background: var(--rojo-s); transform: scale(1.08); }
-    .carousel-dots { display: flex; gap: 0.5rem; }
-    .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--borde); border: none; cursor: pointer; transition: background 0.2s, transform 0.2s; padding: 0; }
-    .carousel-dot.active { background: var(--rojo); transform: scale(1.3); }
-    @media (max-width: 820px) {
-      .carousel-slide { flex-direction: column; gap: 1.5rem; }
-      .mock-window { flex: none; width: 100%; }
-    }
-
-    /* ============================================================
-       3. VERTICALES — EXPANSIÓN POR RUBRO
-    ============================================================ */
-    .verticales-bg { background: var(--gris-1); }
-    .verticales-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .vertical-card {
-      background: var(--negro); border: 1px solid var(--borde);
-      border-radius: var(--r); padding: 1.5rem;
-      transition: transform 0.2s, border-color 0.2s;
-      position: relative; overflow: hidden;
-    }
-    .vertical-card:hover { transform: translateY(-3px); border-color: rgba(192,57,43,0.4); }
-    .vertical-card::after {
-      content: '';
-      position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-    }
-    .vertical-card.v5 { border-color: rgba(192,57,43,0.5); background: rgba(192,57,43,0.05); }
-    .vertical-card.v5::after { background: var(--rojo); }
-    .vertical-card.v4::after { background: #27ae60; }
-    .vertical-card.v3::after { background: #2980b9; }
-    .vertical-card.v2::after { background: #f39c12; }
-    .vertical-card.v1::after { background: var(--muted); }
-    .vertical-icon { font-size: 2rem; margin-bottom: 0.6rem; }
-    .vertical-name { font-size: 1rem; font-weight: 800; margin-bottom: 0.3rem; }
-    .vertical-factib {
-      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.08em; margin-bottom: 0.5rem;
-    }
-    .f5 { color: var(--rojo); }
-    .f4 { color: #6ee7a0; }
-    .f3 { color: #6eb5ff; }
-    .f2 { color: #f8d66e; }
-    .f1 { color: var(--muted); }
-    .vertical-req { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
-    .stars { font-size: 0.85rem; margin-bottom: 0.4rem; }
-
-    /* ============================================================
-       4. CÓMO FUNCIONA
-    ============================================================ */
-    .pasos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
-    }
-    .paso { background: var(--gris-1); border: 1px solid var(--borde); border-radius: var(--r); padding: 1.75rem; }
-    .paso-num { font-size: 3rem; font-weight: 900; color: rgba(192,57,43,0.18); line-height: 1; margin-bottom: 0.75rem; }
-    .paso h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .paso p { font-size: 0.9rem; color: var(--muted); }
-
-    /* ============================================================
-       5. COMPATIBILIDAD / ADAPTADORES
-    ============================================================ */
-    .compat-bg { background: var(--gris-1); }
-    .compat-table-wrap { overflow-x: auto; }
-    .compat-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-    .compat-table th { text-align: left; padding: 0.75rem 1rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border-bottom: 1px solid var(--borde); }
-    .compat-table td { padding: 1rem; border-bottom: 1px solid var(--borde); vertical-align: middle; }
-    .compat-table tr:last-child td { border-bottom: none; }
-    .compat-table tr:hover td { background: rgba(255,255,255,0.02); }
-    .compat-erp { font-weight: 700; }
-    .chip { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 100px; font-size: 0.78rem; font-weight: 600; }
-    .chip-ok { background: rgba(39,174,96,0.15); color: #6ee7a0; }
-    .chip-pronto { background: rgba(241,196,15,0.12); color: #f8d66e; }
-
-    /* ============================================================
-       6. PANELES
-    ============================================================ */
-    .paneles-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 1.5rem;
-    }
-    .panel-card {
-      background: var(--gris-1); border: 1px solid var(--borde);
-      border-radius: var(--r); padding: 1.75rem;
-      position: relative; overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .panel-card:hover { transform: translateY(-3px); box-shadow: var(--sombra); }
-    .panel-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--rojo); }
-    .panel-tipo { display: inline-block; background: var(--rojo-s); color: #e88; border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
-    .panel-card h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.6rem; }
-    .panel-card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; }
-    .panel-features { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
-    .panel-features li { font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
-    .panel-features li::before { content: '\2192'; color: var(--rojo); font-weight: 700; }
-
-    /* ============================================================
-       7. PRECIOS
-    ============================================================ */
-    .precios-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem; max-width: 960px; margin: 0 auto;
-    }
-    .precio-card {
-      background: var(--gris-1); border: 1px solid var(--borde);
-      border-radius: var(--r); padding: 2rem;
-      display: flex; flex-direction: column;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .precio-card:hover { transform: translateY(-3px); box-shadow: var(--sombra); }
-    .precio-card.destacado { border-color: var(--rojo); background: rgba(192,57,43,0.06); position: relative; }
-    .precio-popular { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--rojo); color: #fff; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.25rem 0.8rem; border-radius: 100px; white-space: nowrap; }
-    .precio-plan { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--rojo); margin-bottom: 0.5rem; }
-    .precio-valor { font-size: 2.2rem; font-weight: 900; line-height: 1; margin-bottom: 0.25rem; }
-    .precio-valor span { font-size: 1rem; font-weight: 400; color: var(--muted); }
-    .precio-tipo { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.25rem; }
-    .precio-lista { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.75rem; }
-    .precio-lista li { font-size: 0.875rem; display: flex; align-items: flex-start; gap: 0.5rem; }
-    .precio-lista li::before { content: '\2713'; color: #6ee7a0; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
-    .precio-nota { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 2rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--borde); }
-
-    /* ============================================================
-       8. GARANTÍA
-    ============================================================ */
-    .garantia-bg { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(192,57,43,0.1) 0%, transparent 70%); }
-    .garantia-box { max-width: 680px; margin: 0 auto; text-align: center; }
-    .garantia-icon { font-size: 3.5rem; margin-bottom: 1rem; }
-    .garantia-box h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 800; margin-bottom: 1rem; }
-    .garantia-box p { color: var(--muted); font-size: 1rem; margin-bottom: 0.75rem; }
-    .garantia-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.04); border: 1px solid var(--borde); border-radius: 8px; padding: 0.6rem 1.2rem; font-size: 0.875rem; color: var(--muted); margin-top: 0.75rem; }
-
-    /* ============================================================
-       9. FAQ
-    ============================================================ */
-    .faq-bg { background: var(--gris-1); }
-    .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.75rem; }
-    .faq-item { background: var(--negro); border: 1px solid var(--borde); border-radius: var(--r); overflow: hidden; }
-    .faq-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.1rem 1.25rem; font-size: 0.95rem; font-weight: 600; color: var(--texto); text-align: left; background: none; border: none; cursor: pointer; transition: background 0.2s; }
-    .faq-btn:hover { background: rgba(255,255,255,0.03); }
-    .faq-arrow { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--borde); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; transition: transform 0.3s, border-color 0.2s; }
-    .faq-item.open .faq-arrow { transform: rotate(180deg); border-color: var(--rojo); color: var(--rojo); }
-    .faq-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
-    .faq-body p { padding: 0 1.25rem 1.1rem; font-size: 0.9rem; color: var(--muted); }
-
-    /* ============================================================
-       10. CONTACTO FINAL
-    ============================================================ */
-    .contacto-final { text-align: center; background: var(--negro); border-top: 1px solid var(--borde); }
-    .contacto-final h2 { font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800; margin-bottom: 0.75rem; }
-    .contacto-final p { color: var(--muted); margin-bottom: 2rem; }
-    .contacto-ctas { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-    .contacto-email { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
-    .contacto-email a { color: #6eb5ff; text-decoration: underline; }
-
-    /* ============================================================
-       FOOTER
-    ============================================================ */
-    footer { padding: 1.75rem 1.25rem; border-top: 1px solid var(--borde); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; max-width: 1080px; margin: 0 auto; }
-    .footer-logo { font-weight: 800; font-size: 1rem; }
-    .footer-logo em { color: var(--rojo); font-style: normal; }
-    footer small { font-size: 0.78rem; color: var(--muted); }
-
-    /* ============================================================
-       STICKY CTA MOBILE
-    ============================================================ */
-    .sticky-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 300; background: rgba(15,17,23,0.97); border-top: 1px solid var(--borde); padding: 0.75rem 1.25rem; }
-    .sticky-cta a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #25d366; color: #fff; font-weight: 700; font-size: 0.95rem; padding: 0.75rem; border-radius: 9px; width: 100%; }
-    @media (max-width: 768px) { .sticky-cta { display: block; } body { padding-bottom: 72px; } }
-  </style>
-</head>
-<body>
-
-<!-- NAVBAR -->
-<nav>
-  <div class="nav-inner">
-    <a href="#" class="nav-logo">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 36" width="160" height="32" aria-label="FerreSystem" role="img">
-        <rect x="0" y="4" width="28" height="28" rx="6" fill="#c0392b"/>
-        <text x="7" y="23" font-family="Segoe UI,Arial,sans-serif" font-size="16" font-weight="900" fill="#fff">F</text>
-        <text x="36" y="26" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="800" fill="#ffffff">Ferre<tspan fill="#c0392b">System</tspan></text>
-      </svg>
-    </a>
-    <div class="nav-links">
-      <a href="#como-funciona">Cómo funciona</a>
-      <a href="#verticales">Rubros</a>
-      <a href="#paneles">Paneles</a>
-      <a href="#precios">Precios</a>
-      <a href="#contacto">Contacto</a>
-    </div>
-    <a href="https://wa.me/TUNUMERO?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem" target="_blank" rel="noopener" class="nav-cta">Pedir demo →</a>
-  </div>
-</nav>
-
-<!-- ============================================================
-     1. HERO
-============================================================ -->
-<section class="hero">
-  <div class="hero-badges">
-    <span class="badge">✅ Multi-tenant · un código, N negocios</span>
-    <span class="badge">✅ ERP-agnóstico · se conecta a tu sistema actual</span>
-    <span class="badge">✅ Infraestructura $0 en Firebase</span>
-    <span class="badge">✅ White-label por cliente</span>
-  </div>
-  <h1 class="reveal d1">
-    Dashboards modernos<br>
-    para cualquier negocio.<br>
-    <em>Sin reemplazar tu ERP.</em>
-  </h1>
-  <p class="hero-tagline reveal d2">
-    FerreSystem conecta cualquier sistema de gestión (JustWeb, Transtecnia, Excel, Buk…) con paneles web
-    personalizados para admin, vendedor y cliente. Multi-tenant, white-label, listo en días.
-  </p>
-  <div class="hero-ctas reveal d3">
-    <a href="https://wa.me/TUNUMERO?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem"
-       target="_blank" rel="noopener" class="btn btn-wa">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      Quiero una demo
-    </a>
-    <a href="#como-funciona" class="btn btn-outline">Ver cómo funciona ↓</a>
-  </div>
-  <p class="hero-note reveal d4">Motor ERP-agnóstico · Multi-tenant · Chile 🇨🇱</p>
-</section>
-
-<!-- ============================================================
-     2. ARQUITECTURA MULTI-TENANT
-============================================================ -->
-<section id="arquitectura" class="arch-bg">
-  <div class="container">
-    <p class="section-label">Arquitectura</p>
-    <h2 class="section-title">Un motor, múltiples negocios</h2>
-    <p class="section-sub">Cada cliente tiene su propio tenant.json con credenciales, branding y bodegas. Cero datos cruzados entre negocios.</p>
-    <div class="arch-flow reveal d1">
-      <div class="arch-layer">
-        <div class="arch-layer-num">Capa 1</div>
-        <div class="arch-layer-tag">Fuente</div>
-        <div class="arch-layer-title">ERP / Sistema actual</div>
-        <div class="arch-layer-desc">JustWeb · Transtecnia · Rex+ · Buk · Excel/CSV. El ERP no se toca ni se reemplaza.</div>
-      </div>
-      <div class="arch-layer">
-        <div class="arch-layer-num">Capa 2</div>
-        <div class="arch-layer-tag">Core</div>
-        <div class="arch-layer-title">ERPAdapter + Pipeline</div>
-        <div class="arch-layer-desc">Adaptador por sistema hereda de ERPAdapter ABC. Normaliza datos al contrato JSON estándar.</div>
-      </div>
-      <div class="arch-layer">
-        <div class="arch-layer-num">Capa 3</div>
-        <div class="arch-layer-tag">Distribución</div>
-        <div class="arch-layer-title">Firebase Hosting / CDN</div>
-        <div class="arch-layer-desc">JSONs publicados en hosting gratuito. Cada tenant en su propio proyecto Firebase. Infraestructura $0.</div>
-      </div>
-      <div class="arch-layer">
-        <div class="arch-layer-num">Capa 4</div>
-        <div class="arch-layer-tag">Frontend</div>
-        <div class="arch-layer-title">Paneles White-Label</div>
-        <div class="arch-layer-desc">panel-admin.html · panel-vendedor.html · panel-cliente.html. Branding y colores por cliente.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     CARRUSEL — VISTA REAL DE LOS 3 PANELES
-============================================================ -->
-<section id="carousel-vista" class="carousel-section">
-  <div class="container" style="max-width:1040px">
-    <p class="section-label">Vista real</p>
-    <h2 class="section-title">Así se ven los paneles</h2>
-    <p class="section-sub">Datos en tiempo real, directamente desde tu ERP. Sin apps, desde cualquier navegador.</p>
-    <div class="carousel-stage">
-      <div class="carousel-track">
-
-        <!-- SLIDE 1: Panel Admin -->
-        <div class="carousel-slide active" id="slide-0">
-          <div class="mock-window">
-            <div class="mock-bar">
-              <span class="mock-dot" style="background:#ff5f57"></span>
-              <span class="mock-dot" style="background:#febc2e"></span>
-              <span class="mock-dot" style="background:#28c840"></span>
-              <span class="mock-url">mi-negocio.web.app/admin/vendedores</span>
-            </div>
-            <div class="mock-body">
-              <div class="mock-admin-header">
-                <div class="mock-logo-row">
-                  <div class="mock-logo-icon">N</div>
-                  <span>Mi Negocio
+      display: flex; a
