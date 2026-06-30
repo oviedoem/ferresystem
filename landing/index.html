@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FerreSystem — Software de gestión para ferreterías en Chile</title>
-  <meta name="description" content="Sistema de gestión comercial para ferreterías en Chile. Panel admin, vendedor y cliente. Compatible con JustWeb, Transtecnia, Rex+, Excel. Infraestructura $0 en Firebase. Software ferretería Chile, sistema gestión ferretería, ERP ferretería.">
-  <meta name="keywords" content="software ferretería Chile, sistema gestión ferretería, ERP ferretería, panel vendedor ferretería, stock ferretería digital">
+  <title>FerreSystem — Plataforma multi-tenant ERP-agnóstica para comercio y servicios</title>
+  <meta name="description" content="FerreSystem conecta cualquier ERP con paneles web modernos. Multi-tenant, white-label, ERP-agnóstico. Compatible con JustWeb, Transtecnia, Rex+, Buk, Excel. Ferreterías, almacenes, distribuidoras y más.">
+  <meta name="keywords" content="software ERP Chile, panel gestión comercial, multi-tenant SaaS Chile, ferretería digital, almacén distribuidora sistema gestión">
   <style>
     /* ============================================================
        RESET & BASE
@@ -41,24 +41,16 @@
       --sombra:   0 4px 24px rgba(0,0,0,0.4);
     }
 
-    /* ============================================================
-       SCROLL REVEAL — CSS puro (sin JS)
-    ============================================================ */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .reveal {
-      opacity: 0;
-      animation: fadeUp 0.6s ease forwards;
-    }
+    .reveal { opacity: 0; animation: fadeUp 0.6s ease forwards; }
     .reveal.d1 { animation-delay: 0.05s; }
     .reveal.d2 { animation-delay: 0.15s; }
     .reveal.d3 { animation-delay: 0.25s; }
     .reveal.d4 { animation-delay: 0.35s; }
-    @media (prefers-reduced-motion: reduce) {
-      .reveal { animation: none; opacity: 1; }
-    }
+    @media (prefers-reduced-motion: reduce) { .reveal { animation: none; opacity: 1; } }
 
     /* ============================================================
        LAYOUT
@@ -82,7 +74,7 @@
     .section-sub {
       color: var(--muted);
       font-size: 1.05rem;
-      max-width: 540px;
+      max-width: 560px;
       margin-bottom: 3rem;
     }
 
@@ -90,45 +82,29 @@
        NAVBAR
     ============================================================ */
     nav {
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      background: rgba(15,17,23,0.9);
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(15,17,23,0.92);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--borde);
     }
     .nav-inner {
-      max-width: 1080px;
-      margin: 0 auto;
+      max-width: 1080px; margin: 0 auto;
       padding: 0.9rem 1.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
     }
     .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--blanco);
-      text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 1.2rem; font-weight: 800; color: var(--blanco);
     }
-    .nav-logo svg { display: block; }
     .nav-links { display: flex; gap: 1.5rem; }
     .nav-links a { font-size: 0.875rem; color: var(--muted); transition: color 0.2s; }
     .nav-links a:hover { color: var(--blanco); }
     .nav-cta {
-      background: var(--rojo);
-      color: var(--blanco);
-      padding: 0.5rem 1.1rem;
-      border-radius: 7px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      transition: background 0.2s, transform 0.15s;
-      white-space: nowrap;
+      background: var(--rojo); color: var(--blanco);
+      padding: 0.5rem 1.1rem; border-radius: 7px;
+      font-size: 0.875rem; font-weight: 600;
+      transition: background 0.2s, transform 0.15s; white-space: nowrap;
     }
     .nav-cta:hover { background: var(--rojo-h); transform: translateY(-1px); }
     @media (max-width: 640px) { .nav-links { display: none; } }
@@ -137,27 +113,19 @@
        BOTONES
     ============================================================ */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 1rem;
-      transition: all 0.2s;
-      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.5rem; border-radius: 8px;
+      font-weight: 700; font-size: 1rem;
+      transition: all 0.2s; cursor: pointer;
     }
     .btn-rojo { background: var(--rojo); color: #fff; border: 2px solid var(--rojo); }
     .btn-rojo:hover { background: var(--rojo-h); border-color: var(--rojo-h); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(192,57,43,0.35); }
     .btn-outline { background: transparent; color: var(--blanco); border: 2px solid var(--borde); }
     .btn-outline:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); }
     .btn-wa {
-      background: #25d366;
-      color: #fff;
-      font-size: 1.1rem;
-      padding: 0.9rem 2rem;
-      border-radius: 10px;
-      border: none;
+      background: #25d366; color: #fff;
+      font-size: 1.1rem; padding: 0.9rem 2rem;
+      border-radius: 10px; border: none;
       box-shadow: 0 6px 20px rgba(37,211,102,0.3);
     }
     .btn-wa:hover { background: #1fbd5a; transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,211,102,0.4); }
@@ -171,434 +139,275 @@
       background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(192,57,43,0.18) 0%, transparent 70%);
     }
     .hero-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      justify-content: center;
-      margin-bottom: 2rem;
+      display: flex; flex-wrap: wrap; gap: 0.6rem;
+      justify-content: center; margin-bottom: 2rem;
     }
     .badge {
       background: rgba(192,57,43,0.12);
       border: 1px solid rgba(192,57,43,0.28);
-      color: #e88;
-      border-radius: 100px;
-      padding: 0.3rem 0.9rem;
-      font-size: 0.8rem;
-      font-weight: 600;
+      color: #e88; border-radius: 100px;
+      padding: 0.3rem 0.9rem; font-size: 0.8rem; font-weight: 600;
     }
     .hero h1 {
       font-size: clamp(2.2rem, 6vw, 4.2rem);
-      font-weight: 900;
-      line-height: 1.08;
-      margin-bottom: 1.2rem;
-      max-width: 820px;
-      margin-left: auto;
-      margin-right: auto;
+      font-weight: 900; line-height: 1.08;
+      margin-bottom: 1.2rem; max-width: 860px;
+      margin-left: auto; margin-right: auto;
     }
-    .hero h1 em {
-      color: var(--rojo);
-      font-style: normal;
-    }
+    .hero h1 em { color: var(--rojo); font-style: normal; }
     .hero-tagline {
       font-size: clamp(1rem, 2vw, 1.2rem);
-      color: var(--muted);
-      max-width: 560px;
+      color: var(--muted); max-width: 600px;
       margin: 0 auto 2.5rem;
     }
     .hero-ctas { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
     .hero-note { margin-top: 2rem; font-size: 0.8rem; color: var(--muted); }
 
     /* ============================================================
+       2. ARQUITECTURA — FLUJO MULTI-TENANT
+    ============================================================ */
+    .arch-bg { background: var(--gris-1); }
+    .arch-flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 0;
+      border: 1px solid var(--borde);
+      border-radius: var(--r);
+      overflow: hidden;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .arch-layer {
+      padding: 1.75rem 1.5rem;
+      border-right: 1px solid var(--borde);
+      position: relative;
+    }
+    .arch-layer:last-child { border-right: none; }
+    .arch-layer-num {
+      font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--rojo); font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .arch-layer-title { font-size: 1rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .arch-layer-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+    .arch-arrow {
+      display: none;
+      text-align: center; font-size: 1.5rem; color: var(--rojo); padding: 0.5rem;
+    }
+    .arch-layer-tag {
+      display: inline-block;
+      background: var(--rojo-s); color: #e88;
+      border-radius: 4px; padding: 0.15rem 0.5rem;
+      font-size: 0.7rem; font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    @media (max-width: 768px) {
+      .arch-flow { grid-template-columns: 1fr; }
+      .arch-layer { border-right: none; border-bottom: 1px solid var(--borde); }
+      .arch-layer:last-child { border-bottom: none; }
+    }
+
+    /* ============================================================
        CARRUSEL — VISTA REAL
     ============================================================ */
     .carousel-section {
-      background: var(--gris-1);
+      background: var(--negro);
       padding: 4rem 1.25rem 5rem;
     }
     .carousel-section .section-label { text-align: center; }
     .carousel-section .section-title { text-align: center; margin-bottom: 0.5rem; }
-    .carousel-section .section-sub {
-      text-align: center;
-      margin: 0 auto 2.5rem;
-    }
-
-    .carousel-stage {
-      max-width: 1040px;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    /* Contenedor del slide: mock izquierda + texto derecha */
-    .carousel-track {
-      position: relative;
-      min-height: 420px;
-    }
-    .carousel-slide {
-      display: none;
-      align-items: center;
-      gap: 3rem;
-    }
+    .carousel-section .section-sub { text-align: center; margin: 0 auto 2.5rem; }
+    .carousel-stage { max-width: 1040px; margin: 0 auto; position: relative; }
+    .carousel-track { position: relative; min-height: 420px; }
+    .carousel-slide { display: none; align-items: center; gap: 3rem; }
     .carousel-slide.active { display: flex; }
-
-    /* MOCK PANEL — ventana de browser falsa */
     .mock-window {
       flex: 0 0 520px;
-      background: var(--gris-2);
-      border-radius: 12px;
+      background: var(--gris-2); border-radius: 12px;
       border: 1px solid var(--borde);
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      overflow: hidden;
-      min-width: 0;
+      overflow: hidden; min-width: 0;
     }
     .mock-bar {
-      background: var(--gris-3);
-      padding: 0.55rem 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      background: var(--gris-3); padding: 0.55rem 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
       border-bottom: 1px solid var(--borde);
     }
     .mock-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
     .mock-url {
-      flex: 1;
-      background: rgba(0,0,0,0.3);
-      border-radius: 4px;
-      padding: 0.2rem 0.6rem;
-      font-size: 0.7rem;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      flex: 1; background: rgba(0,0,0,0.3); border-radius: 4px;
+      padding: 0.2rem 0.6rem; font-size: 0.7rem; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .mock-body {
-      padding: 0;
-    }
-
-    /* ---- Panel Admin Mock ---- */
     .mock-admin-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--borde);
-      background: var(--negro);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem; border-bottom: 1px solid var(--borde); background: var(--negro);
     }
-    .mock-logo-row {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.8rem;
-      font-weight: 800;
-    }
+    .mock-logo-row { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 800; }
     .mock-logo-icon {
-      background: var(--rojo);
-      color: #fff;
-      width: 22px; height: 22px;
-      border-radius: 5px;
+      background: var(--rojo); color: #fff;
+      width: 22px; height: 22px; border-radius: 5px;
       display: flex; align-items: center; justify-content: center;
       font-size: 0.7rem; font-weight: 900;
     }
     .mock-subtitle { font-size: 0.7rem; color: var(--muted); }
-
     .mock-kpis {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
       border-bottom: 1px solid var(--borde);
     }
-    .mock-kpi {
-      padding: 0.65rem 0.75rem;
-      border-right: 1px solid var(--borde);
-    }
+    .mock-kpi { padding: 0.65rem 0.75rem; border-right: 1px solid var(--borde); }
     .mock-kpi:last-child { border-right: none; }
     .mock-kpi-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.15rem; }
     .mock-kpi-val { font-size: 1rem; font-weight: 800; color: var(--texto); }
     .mock-kpi-sub { font-size: 0.6rem; color: #6ee7a0; }
-
     .mock-table-wrap { padding: 0.5rem 0; }
     .mock-table-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0 0.75rem 0.3rem; }
-    table.mock-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.72rem;
-    }
+    table.mock-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
     table.mock-table th {
-      text-align: left;
-      padding: 0.25rem 0.75rem;
-      color: var(--muted);
-      font-size: 0.62rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border-bottom: 1px solid var(--borde);
+      text-align: left; padding: 0.25rem 0.75rem;
+      color: var(--muted); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.06em; border-bottom: 1px solid var(--borde);
     }
-    table.mock-table td {
-      padding: 0.4rem 0.75rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      vertical-align: middle;
-    }
+    table.mock-table td { padding: 0.4rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
     table.mock-table tr:last-child td { border-bottom: none; }
     .mock-medal { font-size: 0.85rem; }
     .mock-num { color: var(--muted); }
     .mock-green { color: #6ee7a0; font-weight: 700; }
-    .mock-footer-bar {
-      border-top: 1px solid var(--borde);
-      padding: 0.4rem 0.75rem;
-      font-size: 0.62rem;
-      color: var(--muted);
-      text-align: right;
-    }
-
-    /* ---- Panel Vendedor Mock ---- */
+    .mock-footer-bar { border-top: 1px solid var(--borde); padding: 0.4rem 0.75rem; font-size: 0.62rem; color: var(--muted); text-align: right; }
     .mock-vendedor-search {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.6rem 0.75rem;
-      border-bottom: 1px solid var(--borde);
-      background: var(--negro);
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--borde); background: var(--negro);
     }
     .mock-search-box {
-      flex: 1;
-      background: var(--gris-3);
-      border-radius: 6px;
-      padding: 0.3rem 0.6rem;
-      font-size: 0.72rem;
-      color: var(--muted);
-      border: 1px solid var(--borde);
+      flex: 1; background: var(--gris-3); border-radius: 6px;
+      padding: 0.3rem 0.6rem; font-size: 0.72rem; color: var(--muted); border: 1px solid var(--borde);
     }
-    .mock-search-btn {
-      background: var(--rojo);
-      color: #fff;
-      border-radius: 5px;
-      padding: 0.3rem 0.6rem;
-      font-size: 0.65rem;
-      font-weight: 700;
-    }
+    .mock-search-btn { background: var(--rojo); color: #fff; border-radius: 5px; padding: 0.3rem 0.6rem; font-size: 0.65rem; font-weight: 700; }
     .mock-producto-row {
-      display: grid;
-      grid-template-columns: 1fr auto auto auto;
-      gap: 0.5rem;
-      align-items: center;
-      padding: 0.5rem 0.75rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      font-size: 0.72rem;
+      display: grid; grid-template-columns: 1fr auto auto auto;
+      gap: 0.5rem; align-items: center;
+      padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.72rem;
     }
     .mock-producto-row:last-child { border-bottom: none; }
     .mock-prod-cod { font-size: 0.6rem; color: var(--muted); }
     .mock-prod-name { font-weight: 600; font-size: 0.72rem; line-height: 1.3; }
-    .mock-prod-stock { text-align: right; }
     .mock-prod-stock-ok { color: #6ee7a0; font-weight: 700; font-size: 0.7rem; }
     .mock-prod-stock-low { color: #f8d66e; font-weight: 700; font-size: 0.7rem; }
     .mock-prod-price { font-weight: 800; color: var(--texto); text-align: right; white-space: nowrap; }
-    .mock-prod-wa {
-      background: #25d366;
-      color: #fff;
-      border-radius: 4px;
-      padding: 0.2rem 0.45rem;
-      font-size: 0.6rem;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    /* ---- Panel Cliente Mock ---- */
-    .mock-catalog-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
-      padding: 0.6rem;
-    }
-    .mock-catalog-item {
-      background: var(--negro);
-      border: 1px solid var(--borde);
-      border-radius: 7px;
-      padding: 0.6rem;
-      text-align: center;
-    }
+    .mock-prod-wa { background: #25d366; color: #fff; border-radius: 4px; padding: 0.2rem 0.45rem; font-size: 0.6rem; font-weight: 700; white-space: nowrap; }
+    .mock-catalog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; padding: 0.6rem; }
+    .mock-catalog-item { background: var(--negro); border: 1px solid var(--borde); border-radius: 7px; padding: 0.6rem; text-align: center; }
     .mock-catalog-icon { font-size: 1.4rem; margin-bottom: 0.25rem; }
     .mock-catalog-name { font-size: 0.6rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.2rem; color: var(--texto); }
     .mock-catalog-price { font-size: 0.68rem; font-weight: 800; color: var(--rojo); margin-bottom: 0.3rem; }
-    .mock-catalog-btn {
-      display: block;
-      background: #25d366;
-      color: #fff;
-      border-radius: 4px;
-      padding: 0.15rem 0;
-      font-size: 0.58rem;
-      font-weight: 700;
-      text-align: center;
-      width: 100%;
-    }
-    .mock-catalog-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.6rem 0.75rem;
-      background: var(--negro);
-      border-bottom: 1px solid var(--borde);
-      font-size: 0.72rem;
-    }
+    .mock-catalog-btn { display: block; background: #25d366; color: #fff; border-radius: 4px; padding: 0.15rem 0; font-size: 0.58rem; font-weight: 700; text-align: center; width: 100%; }
+    .mock-catalog-header { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem; background: var(--negro); border-bottom: 1px solid var(--borde); font-size: 0.72rem; }
     .mock-catalog-title { font-weight: 800; }
     .mock-catalog-sub { font-size: 0.62rem; color: var(--muted); }
-    .mock-catalog-search {
-      margin: 0.5rem 0.6rem;
-      background: var(--gris-3);
-      border-radius: 5px;
-      padding: 0.3rem 0.6rem;
-      font-size: 0.7rem;
-      color: var(--muted);
-      border: 1px solid var(--borde);
-      width: calc(100% - 1.2rem);
-    }
-
-    /* TEXTO DEL SLIDE (columna derecha) */
-    .slide-text {
-      flex: 1;
-      min-width: 0;
-    }
-    .slide-tag {
-      display: inline-block;
-      background: var(--rojo-s);
-      color: #e88;
-      border-radius: 6px;
-      padding: 0.2rem 0.6rem;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.75rem;
-    }
-    .slide-text h3 {
-      font-size: clamp(1.25rem, 2.5vw, 1.8rem);
-      font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 0.75rem;
-    }
-    .slide-text p {
-      font-size: 0.95rem;
-      color: var(--muted);
-      margin-bottom: 1.25rem;
-      max-width: 340px;
-    }
-    .slide-bullets {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .slide-bullets li {
-      font-size: 0.875rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+    .mock-catalog-search { margin: 0.5rem 0.6rem; background: var(--gris-3); border-radius: 5px; padding: 0.3rem 0.6rem; font-size: 0.7rem; color: var(--muted); border: 1px solid var(--borde); width: calc(100% - 1.2rem); }
+    .slide-text { flex: 1; min-width: 0; }
+    .slide-tag { display: inline-block; background: var(--rojo-s); color: #e88; border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+    .slide-text h3 { font-size: clamp(1.25rem, 2.5vw, 1.8rem); font-weight: 800; line-height: 1.2; margin-bottom: 0.75rem; }
+    .slide-text p { font-size: 0.95rem; color: var(--muted); margin-bottom: 1.25rem; max-width: 340px; }
+    .slide-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .slide-bullets li { font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem; }
     .slide-bullets li::before { content: '→'; color: var(--rojo); font-weight: 700; }
-
-    /* CONTROLES */
-    .carousel-controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    .carousel-btn {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      border: 1.5px solid var(--borde);
-      background: var(--gris-2);
-      color: var(--texto);
-      font-size: 1rem;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, transform 0.15s;
-    }
-    .carousel-btn:hover {
-      border-color: var(--rojo);
-      background: var(--rojo-s);
-      transform: scale(1.08);
-    }
-    .carousel-dots {
-      display: flex;
-      gap: 0.5rem;
-    }
-    .carousel-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--borde);
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
-      padding: 0;
-    }
-    .carousel-dot.active {
-      background: var(--rojo);
-      transform: scale(1.3);
-    }
-
-    /* Mobile: apilado */
+    .carousel-controls { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-top: 2rem; }
+    .carousel-btn { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--borde); background: var(--gris-2); color: var(--texto); font-size: 1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.15s; }
+    .carousel-btn:hover { border-color: var(--rojo); background: var(--rojo-s); transform: scale(1.08); }
+    .carousel-dots { display: flex; gap: 0.5rem; }
+    .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--borde); border: none; cursor: pointer; transition: background 0.2s, transform 0.2s; padding: 0; }
+    .carousel-dot.active { background: var(--rojo); transform: scale(1.3); }
     @media (max-width: 820px) {
       .carousel-slide { flex-direction: column; gap: 1.5rem; }
       .mock-window { flex: none; width: 100%; }
     }
 
     /* ============================================================
-       2. PROBLEMA
+       3. VERTICALES — EXPANSIÓN POR RUBRO
     ============================================================ */
-    .problema-grid {
+    .verticales-bg { background: var(--gris-1); }
+    .verticales-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
     }
-    .problema-card {
-      background: var(--gris-1);
-      border: 1px solid var(--borde);
-      border-radius: var(--r);
-      padding: 1.75rem;
-      transition: border-color 0.2s;
+    .vertical-card {
+      background: var(--negro); border: 1px solid var(--borde);
+      border-radius: var(--r); padding: 1.5rem;
+      transition: transform 0.2s, border-color 0.2s;
+      position: relative; overflow: hidden;
     }
-    .problema-card:hover { border-color: rgba(192,57,43,0.4); }
-    .problema-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
-    .problema-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .problema-card p { font-size: 0.9rem; color: var(--muted); }
+    .vertical-card:hover { transform: translateY(-3px); border-color: rgba(192,57,43,0.4); }
+    .vertical-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    }
+    .vertical-card.v5 { border-color: rgba(192,57,43,0.5); background: rgba(192,57,43,0.05); }
+    .vertical-card.v5::after { background: var(--rojo); }
+    .vertical-card.v4::after { background: #27ae60; }
+    .vertical-card.v3::after { background: #2980b9; }
+    .vertical-card.v2::after { background: #f39c12; }
+    .vertical-card.v1::after { background: var(--muted); }
+    .vertical-icon { font-size: 2rem; margin-bottom: 0.6rem; }
+    .vertical-name { font-size: 1rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .vertical-factib {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; margin-bottom: 0.5rem;
+    }
+    .f5 { color: var(--rojo); }
+    .f4 { color: #6ee7a0; }
+    .f3 { color: #6eb5ff; }
+    .f2 { color: #f8d66e; }
+    .f1 { color: var(--muted); }
+    .vertical-req { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .stars { font-size: 0.85rem; margin-bottom: 0.4rem; }
 
     /* ============================================================
-       3. PANELES
+       4. CÓMO FUNCIONA
     ============================================================ */
-    .paneles-bg { background: var(--gris-1); }
+    .pasos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+    .paso { background: var(--gris-1); border: 1px solid var(--borde); border-radius: var(--r); padding: 1.75rem; }
+    .paso-num { font-size: 3rem; font-weight: 900; color: rgba(192,57,43,0.18); line-height: 1; margin-bottom: 0.75rem; }
+    .paso h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .paso p { font-size: 0.9rem; color: var(--muted); }
+
+    /* ============================================================
+       5. COMPATIBILIDAD / ADAPTADORES
+    ============================================================ */
+    .compat-bg { background: var(--gris-1); }
+    .compat-table-wrap { overflow-x: auto; }
+    .compat-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    .compat-table th { text-align: left; padding: 0.75rem 1rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border-bottom: 1px solid var(--borde); }
+    .compat-table td { padding: 1rem; border-bottom: 1px solid var(--borde); vertical-align: middle; }
+    .compat-table tr:last-child td { border-bottom: none; }
+    .compat-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .compat-erp { font-weight: 700; }
+    .chip { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 100px; font-size: 0.78rem; font-weight: 600; }
+    .chip-ok { background: rgba(39,174,96,0.15); color: #6ee7a0; }
+    .chip-pronto { background: rgba(241,196,15,0.12); color: #f8d66e; }
+
+    /* ============================================================
+       6. PANELES
+    ============================================================ */
     .paneles-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
       gap: 1.5rem;
     }
     .panel-card {
-      background: var(--negro);
-      border: 1px solid var(--borde);
-      border-radius: var(--r);
-      padding: 1.75rem;
-      position: relative;
-      overflow: hidden;
+      background: var(--gris-1); border: 1px solid var(--borde);
+      border-radius: var(--r); padding: 1.75rem;
+      position: relative; overflow: hidden;
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .panel-card:hover { transform: translateY(-3px); box-shadow: var(--sombra); }
-    .panel-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: var(--rojo);
-    }
-    .panel-tipo {
-      display: inline-block;
-      background: var(--rojo-s);
-      color: #e88;
-      border-radius: 6px;
-      padding: 0.2rem 0.6rem;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.75rem;
-    }
+    .panel-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--rojo); }
+    .panel-tipo { display: inline-block; background: var(--rojo-s); color: #e88; border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
     .panel-card h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 0.6rem; }
     .panel-card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; }
     .panel-features { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
@@ -606,235 +415,68 @@
     .panel-features li::before { content: '\2192'; color: var(--rojo); font-weight: 700; }
 
     /* ============================================================
-       4. COMO FUNCIONA
-    ============================================================ */
-    .pasos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
-      position: relative;
-    }
-    .paso {
-      background: var(--gris-1);
-      border: 1px solid var(--borde);
-      border-radius: var(--r);
-      padding: 1.75rem;
-    }
-    .paso-num {
-      font-size: 3rem;
-      font-weight: 900;
-      color: rgba(192,57,43,0.18);
-      line-height: 1;
-      margin-bottom: 0.75rem;
-    }
-    .paso h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
-    .paso p { font-size: 0.9rem; color: var(--muted); }
-
-    /* ============================================================
-       5. COMPATIBILIDAD
-    ============================================================ */
-    .compat-bg { background: var(--gris-1); }
-    .compat-table-wrap { overflow-x: auto; }
-    .compat-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
-    }
-    .compat-table th {
-      text-align: left;
-      padding: 0.75rem 1rem;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      border-bottom: 1px solid var(--borde);
-    }
-    .compat-table td {
-      padding: 1rem;
-      border-bottom: 1px solid var(--borde);
-      vertical-align: middle;
-    }
-    .compat-table tr:last-child td { border-bottom: none; }
-    .compat-table tr:hover td { background: rgba(255,255,255,0.02); }
-    .compat-erp { font-weight: 700; }
-    .chip {
-      display: inline-block;
-      padding: 0.2rem 0.7rem;
-      border-radius: 100px;
-      font-size: 0.78rem;
-      font-weight: 600;
-    }
-    .chip-ok { background: rgba(39,174,96,0.15); color: #6ee7a0; }
-    .chip-pronto { background: rgba(241,196,15,0.12); color: #f8d66e; }
-
-    /* ============================================================
-       6. PRECIOS
+       7. PRECIOS
     ============================================================ */
     .precios-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-      max-width: 960px;
-      margin: 0 auto;
+      gap: 1.5rem; max-width: 960px; margin: 0 auto;
     }
     .precio-card {
-      background: var(--gris-1);
-      border: 1px solid var(--borde);
-      border-radius: var(--r);
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
+      background: var(--gris-1); border: 1px solid var(--borde);
+      border-radius: var(--r); padding: 2rem;
+      display: flex; flex-direction: column;
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .precio-card:hover { transform: translateY(-3px); box-shadow: var(--sombra); }
-    .precio-card.destacado {
-      border-color: var(--rojo);
-      background: rgba(192,57,43,0.06);
-      position: relative;
-    }
-    .precio-popular {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--rojo);
-      color: #fff;
-      font-size: 0.7rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 0.25rem 0.8rem;
-      border-radius: 100px;
-      white-space: nowrap;
-    }
+    .precio-card.destacado { border-color: var(--rojo); background: rgba(192,57,43,0.06); position: relative; }
+    .precio-popular { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--rojo); color: #fff; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.25rem 0.8rem; border-radius: 100px; white-space: nowrap; }
     .precio-plan { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--rojo); margin-bottom: 0.5rem; }
-    .precio-valor {
-      font-size: 2.2rem;
-      font-weight: 900;
-      line-height: 1;
-      margin-bottom: 0.25rem;
-    }
+    .precio-valor { font-size: 2.2rem; font-weight: 900; line-height: 1; margin-bottom: 0.25rem; }
     .precio-valor span { font-size: 1rem; font-weight: 400; color: var(--muted); }
     .precio-tipo { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.25rem; }
     .precio-lista { list-style: none; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.75rem; }
     .precio-lista li { font-size: 0.875rem; display: flex; align-items: flex-start; gap: 0.5rem; }
     .precio-lista li::before { content: '\2713'; color: #6ee7a0; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
-    .precio-nota {
-      text-align: center;
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 2rem;
-      padding: 1rem;
-      background: rgba(255,255,255,0.02);
-      border-radius: 8px;
-      border: 1px solid var(--borde);
-    }
+    .precio-nota { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 2rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--borde); }
 
     /* ============================================================
-       7. GARANTIA
+       8. GARANTÍA
     ============================================================ */
-    .garantia-bg {
-      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(192,57,43,0.1) 0%, transparent 70%);
-    }
-    .garantia-box {
-      max-width: 680px;
-      margin: 0 auto;
-      text-align: center;
-    }
+    .garantia-bg { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(192,57,43,0.1) 0%, transparent 70%); }
+    .garantia-box { max-width: 680px; margin: 0 auto; text-align: center; }
     .garantia-icon { font-size: 3.5rem; margin-bottom: 1rem; }
     .garantia-box h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 800; margin-bottom: 1rem; }
     .garantia-box p { color: var(--muted); font-size: 1rem; margin-bottom: 0.75rem; }
-    .garantia-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--borde);
-      border-radius: 8px;
-      padding: 0.6rem 1.2rem;
-      font-size: 0.875rem;
-      color: var(--muted);
-      margin-top: 0.75rem;
-    }
+    .garantia-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.04); border: 1px solid var(--borde); border-radius: 8px; padding: 0.6rem 1.2rem; font-size: 0.875rem; color: var(--muted); margin-top: 0.75rem; }
 
     /* ============================================================
-       8. FAQ ACCORDION
+       9. FAQ
     ============================================================ */
     .faq-bg { background: var(--gris-1); }
     .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.75rem; }
-    .faq-item {
-      background: var(--negro);
-      border: 1px solid var(--borde);
-      border-radius: var(--r);
-      overflow: hidden;
-    }
-    .faq-btn {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      padding: 1.1rem 1.25rem;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--texto);
-      text-align: left;
-      background: none;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+    .faq-item { background: var(--negro); border: 1px solid var(--borde); border-radius: var(--r); overflow: hidden; }
+    .faq-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.1rem 1.25rem; font-size: 0.95rem; font-weight: 600; color: var(--texto); text-align: left; background: none; border: none; cursor: pointer; transition: background 0.2s; }
     .faq-btn:hover { background: rgba(255,255,255,0.03); }
-    .faq-arrow {
-      flex-shrink: 0;
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      border: 1.5px solid var(--borde);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem;
-      transition: transform 0.3s, border-color 0.2s;
-    }
+    .faq-arrow { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--borde); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; transition: transform 0.3s, border-color 0.2s; }
     .faq-item.open .faq-arrow { transform: rotate(180deg); border-color: var(--rojo); color: var(--rojo); }
-    .faq-body {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.35s ease;
-    }
-    .faq-body p {
-      padding: 0 1.25rem 1.1rem;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
+    .faq-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+    .faq-body p { padding: 0 1.25rem 1.1rem; font-size: 0.9rem; color: var(--muted); }
 
     /* ============================================================
-       9. CONTACTO FINAL
+       10. CONTACTO FINAL
     ============================================================ */
-    .contacto-final {
-      text-align: center;
-      background: var(--negro);
-      border-top: 1px solid var(--borde);
-    }
+    .contacto-final { text-align: center; background: var(--negro); border-top: 1px solid var(--borde); }
     .contacto-final h2 { font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800; margin-bottom: 0.75rem; }
     .contacto-final p { color: var(--muted); margin-bottom: 2rem; }
     .contacto-ctas { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
     .contacto-email { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; }
     .contacto-email a { color: #6eb5ff; text-decoration: underline; }
-    .contacto-respuesta { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
 
     /* ============================================================
        FOOTER
     ============================================================ */
-    footer {
-      padding: 1.75rem 1.25rem;
-      border-top: 1px solid var(--borde);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      max-width: 1080px;
-      margin: 0 auto;
-    }
+    footer { padding: 1.75rem 1.25rem; border-top: 1px solid var(--borde); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; max-width: 1080px; margin: 0 auto; }
     .footer-logo { font-weight: 800; font-size: 1rem; }
     .footer-logo em { color: var(--rojo); font-style: normal; }
     footer small { font-size: 0.78rem; color: var(--muted); }
@@ -842,28 +484,8 @@
     /* ============================================================
        STICKY CTA MOBILE
     ============================================================ */
-    .sticky-cta {
-      display: none;
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 300;
-      background: rgba(15,17,23,0.97);
-      border-top: 1px solid var(--borde);
-      padding: 0.75rem 1.25rem;
-    }
-    .sticky-cta a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      background: #25d366;
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.95rem;
-      padding: 0.75rem;
-      border-radius: 9px;
-      width: 100%;
-    }
+    .sticky-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 300; background: rgba(15,17,23,0.97); border-top: 1px solid var(--borde); padding: 0.75rem 1.25rem; }
+    .sticky-cta a { display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: #25d366; color: #fff; font-weight: 700; font-size: 0.95rem; padding: 0.75rem; border-radius: 9px; width: 100%; }
     @media (max-width: 768px) { .sticky-cta { display: block; } body { padding-bottom: 72px; } }
   </style>
 </head>
@@ -873,48 +495,88 @@
 <nav>
   <div class="nav-inner">
     <a href="#" class="nav-logo">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 36" width="140" height="32" aria-label="FerreSystem" role="img">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 36" width="160" height="32" aria-label="FerreSystem" role="img">
         <rect x="0" y="4" width="28" height="28" rx="6" fill="#c0392b"/>
         <text x="7" y="23" font-family="Segoe UI,Arial,sans-serif" font-size="16" font-weight="900" fill="#fff">F</text>
         <text x="36" y="26" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="800" fill="#ffffff">Ferre<tspan fill="#c0392b">System</tspan></text>
       </svg>
     </a>
     <div class="nav-links">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#verticales">Rubros</a>
       <a href="#paneles">Paneles</a>
-      <a href="#carousel-vista">Vista real</a>
       <a href="#precios">Precios</a>
-      <a href="#faq">FAQ</a>
       <a href="#contacto">Contacto</a>
     </div>
-    <a href="https://wa.me/TUNUMERO?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem%20para%20mi%20ferret%C3%ADa" target="_blank" rel="noopener" class="nav-cta">Pedir demo →</a>
+    <a href="https://wa.me/TUNUMERO?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem" target="_blank" rel="noopener" class="nav-cta">Pedir demo →</a>
   </div>
 </nav>
 
-<!-- 1. HERO -->
+<!-- ============================================================
+     1. HERO
+============================================================ -->
 <section class="hero">
   <div class="hero-badges">
-    <span class="badge">✅ Costo $0 infraestructura</span>
-    <span class="badge">✅ Funciona con tu ERP actual</span>
-    <span class="badge">✅ Listo en 2 semanas</span>
+    <span class="badge">✅ Multi-tenant · un código, N negocios</span>
+    <span class="badge">✅ ERP-agnóstico · se conecta a tu sistema actual</span>
+    <span class="badge">✅ Infraestructura $0 en Firebase</span>
+    <span class="badge">✅ White-label por cliente</span>
   </div>
   <h1 class="reveal d1">
-    Tu ferretera,<br>
-    <em>digitalizada.</em><br>
-    Sin mensualidades de servidor.
+    Dashboards modernos<br>
+    para cualquier negocio.<br>
+    <em>Sin reemplazar tu ERP.</em>
   </h1>
   <p class="hero-tagline reveal d2">
-    Panel de administrador, vendedor y catálogo de clientes — conectado a tu ERP.
-    Stock, ventas y pedidos en tiempo real. Sin reemplazar tu sistema actual.
+    FerreSystem conecta cualquier sistema de gestión (JustWeb, Transtecnia, Excel, Buk…) con paneles web
+    personalizados para admin, vendedor y cliente. Multi-tenant, white-label, listo en días.
   </p>
   <div class="hero-ctas reveal d3">
-    <a href="https://wa.me/TUNUMERO?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem%20para%20mi%20ferret%C3%ADa"
+    <a href="https://wa.me/TUNUMERO?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem"
        target="_blank" rel="noopener" class="btn btn-wa">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       Quiero una demo
     </a>
-    <a href="#paneles" class="btn btn-outline">Ver los paneles ↓</a>
+    <a href="#como-funciona" class="btn btn-outline">Ver cómo funciona ↓</a>
   </div>
-  <p class="hero-note reveal d4">Probado en producción real desde 2025 · Rancagua, Chile</p>
+  <p class="hero-note reveal d4">Motor ERP-agnóstico · Multi-tenant · Chile 🇨🇱</p>
+</section>
+
+<!-- ============================================================
+     2. ARQUITECTURA MULTI-TENANT
+============================================================ -->
+<section id="arquitectura" class="arch-bg">
+  <div class="container">
+    <p class="section-label">Arquitectura</p>
+    <h2 class="section-title">Un motor, múltiples negocios</h2>
+    <p class="section-sub">Cada cliente tiene su propio tenant.json con credenciales, branding y bodegas. Cero datos cruzados entre negocios.</p>
+    <div class="arch-flow reveal d1">
+      <div class="arch-layer">
+        <div class="arch-layer-num">Capa 1</div>
+        <div class="arch-layer-tag">Fuente</div>
+        <div class="arch-layer-title">ERP / Sistema actual</div>
+        <div class="arch-layer-desc">JustWeb · Transtecnia · Rex+ · Buk · Excel/CSV. El ERP no se toca ni se reemplaza.</div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-layer-num">Capa 2</div>
+        <div class="arch-layer-tag">Core</div>
+        <div class="arch-layer-title">ERPAdapter + Pipeline</div>
+        <div class="arch-layer-desc">Adaptador por sistema hereda de ERPAdapter ABC. Normaliza datos al contrato JSON estándar.</div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-layer-num">Capa 3</div>
+        <div class="arch-layer-tag">Distribución</div>
+        <div class="arch-layer-title">Firebase Hosting / CDN</div>
+        <div class="arch-layer-desc">JSONs publicados en hosting gratuito. Cada tenant en su propio proyecto Firebase. Infraestructura $0.</div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-layer-num">Capa 4</div>
+        <div class="arch-layer-tag">Frontend</div>
+        <div class="arch-layer-title">Paneles White-Label</div>
+        <div class="arch-layer-desc">panel-admin.html · panel-vendedor.html · panel-cliente.html. Branding y colores por cliente.</div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- ============================================================
@@ -925,7 +587,6 @@
     <p class="section-label">Vista real</p>
     <h2 class="section-title">Así se ven los paneles</h2>
     <p class="section-sub">Datos en tiempo real, directamente desde tu ERP. Sin apps, desde cualquier navegador.</p>
-
     <div class="carousel-stage">
       <div class="carousel-track">
 
@@ -936,617 +597,10 @@
               <span class="mock-dot" style="background:#ff5f57"></span>
               <span class="mock-dot" style="background:#febc2e"></span>
               <span class="mock-dot" style="background:#28c840"></span>
-              <span class="mock-url">ferreteria-ejemplo.web.app/admin/vendedores</span>
+              <span class="mock-url">mi-negocio.web.app/admin/vendedores</span>
             </div>
             <div class="mock-body">
               <div class="mock-admin-header">
                 <div class="mock-logo-row">
-                  <div class="mock-logo-icon">F</div>
-                  <span>Mi Ferretería</span>
-                </div>
-                <span class="mock-subtitle">Ranking Vendedores — Junio 2026</span>
-              </div>
-              <div class="mock-kpis">
-                <div class="mock-kpi">
-                  <div class="mock-kpi-label">Ventas mes</div>
-                  <div class="mock-kpi-val">$62.1M</div>
-                  <div class="mock-kpi-sub">↑ 8% vs mayo</div>
-                </div>
-                <div class="mock-kpi">
-                  <div class="mock-kpi-label">Transacciones</div>
-                  <div class="mock-kpi-val">555</div>
-                  <div class="mock-kpi-sub">↑ 12%</div>
-                </div>
-                <div class="mock-kpi">
-                  <div class="mock-kpi-label">Ticket prom.</div>
-                  <div class="mock-kpi-val">$111.9K</div>
-                  <div class="mock-kpi-sub">↑ 3%</div>
-                </div>
-              </div>
-              <div class="mock-table-wrap">
-                <div class="mock-table-title">Ranking de vendedores</div>
-                <table class="mock-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Vendedor</th>
-                      <th>Ventas</th>
-                      <th>Transacc.</th>
-                      <th>Ticket prom.</th>
-                      <th>Cotiz.</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><span class="mock-medal">🥇</span></td>
-                      <td>Vendedor A</td>
-                      <td class="mock-green">$18.450.000</td>
-                      <td>142</td>
-                      <td>$129.930</td>
-                      <td class="mock-num">38</td>
-                    </tr>
-                    <tr>
-                      <td><span class="mock-medal">🥈</span></td>
-                      <td>Vendedor B</td>
-                      <td class="mock-green">$15.200.000</td>
-                      <td>128</td>
-                      <td>$118.750</td>
-                      <td class="mock-num">27</td>
-                    </tr>
-                    <tr>
-                      <td><span class="mock-medal">🥉</span></td>
-                      <td>Vendedor C</td>
-                      <td class="mock-green">$12.800.000</td>
-                      <td>115</td>
-                      <td>$111.304</td>
-                      <td class="mock-num">31</td>
-                    </tr>
-                    <tr>
-                      <td class="mock-num">4</td>
-                      <td>Vendedor D</td>
-                      <td>$9.350.000</td>
-                      <td>98</td>
-                      <td>$95.408</td>
-                      <td class="mock-num">19</td>
-                    </tr>
-                    <tr>
-                      <td class="mock-num">5</td>
-                      <td>Vendedor E</td>
-                      <td>$7.100.000</td>
-                      <td>72</td>
-                      <td>$98.611</td>
-                      <td class="mock-num">14</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="mock-footer-bar">Datos del mes en curso · Actualizado hace 23 min</div>
-            </div>
-          </div>
-          <div class="slide-text">
-            <span class="slide-tag">Panel Admin</span>
-            <h3>¿Quién vende más y mejor?</h3>
-            <p>Ranking de vendedores con ventas totales, transacciones, ticket promedio y cotizaciones creadas.</p>
-            <ul class="slide-bullets">
-              <li>Datos del mes en curso en tiempo real</li>
-              <li>Comparativa con mes anterior</li>
-              <li>Desglose por vendedor y período</li>
-              <li>KPIs de equipo de un vistazo</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- SLIDE 2: Panel Vendedor -->
-        <div class="carousel-slide" id="slide-1">
-          <div class="mock-window">
-            <div class="mock-bar">
-              <span class="mock-dot" style="background:#ff5f57"></span>
-              <span class="mock-dot" style="background:#febc2e"></span>
-              <span class="mock-dot" style="background:#28c840"></span>
-              <span class="mock-url">ferreteria-ejemplo.web.app/vendedor</span>
-            </div>
-            <div class="mock-body">
-              <div class="mock-admin-header">
-                <div class="mock-logo-row">
-                  <div class="mock-logo-icon">F</div>
-                  <span>Mi Ferretería</span>
-                </div>
-                <span class="mock-subtitle">Panel Vendedor · Juan P.</span>
-              </div>
-              <div class="mock-vendedor-search">
-                <div class="mock-search-box">🔍  Buscar por código o descripción…</div>
-                <div class="mock-search-btn">Buscar</div>
-              </div>
-              <!-- productos -->
-              <div class="mock-producto-row">
-                <div>
-                  <div class="mock-prod-cod">COD-0041</div>
-                  <div class="mock-prod-name">Lija al agua #120 — hoja A4</div>
-                </div>
-                <div class="mock-prod-stock"><span class="mock-prod-stock-ok">✔ 340 u.</span></div>
-                <div class="mock-prod-price">$890</div>
-                <div class="mock-prod-wa">WA →</div>
-              </div>
-              <div class="mock-producto-row">
-                <div>
-                  <div class="mock-prod-cod">COD-0218</div>
-                  <div class="mock-prod-name">Taladro percutor 13mm 750W</div>
-                </div>
-                <div class="mock-prod-stock"><span class="mock-prod-stock-ok">✔ 12 u.</span></div>
-                <div class="mock-prod-price">$89.990</div>
-                <div class="mock-prod-wa">WA →</div>
-              </div>
-              <div class="mock-producto-row">
-                <div>
-                  <div class="mock-prod-cod">COD-0553</div>
-                  <div class="mock-prod-name">Bisagra acero inox 3" x 2,5"</div>
-                </div>
-                <div class="mock-prod-stock"><span class="mock-prod-stock-low">⚠ 8 u.</span></div>
-                <div class="mock-prod-price">$1.450</div>
-                <div class="mock-prod-wa">WA →</div>
-              </div>
-              <div class="mock-producto-row">
-                <div>
-                  <div class="mock-prod-cod">COD-0097</div>
-                  <div class="mock-prod-name">Cemento Portland 25 kg</div>
-                </div>
-                <div class="mock-prod-stock"><span class="mock-prod-stock-ok">✔ 185 u.</span></div>
-                <div class="mock-prod-price">$7.200</div>
-                <div class="mock-prod-wa">WA →</div>
-              </div>
-              <div class="mock-producto-row">
-                <div>
-                  <div class="mock-prod-cod">COD-0312</div>
-                  <div class="mock-prod-name">Cinta métrica 5m c/freno</div>
-                </div>
-                <div class="mock-prod-stock"><span class="mock-prod-stock-ok">✔ 57 u.</span></div>
-                <div class="mock-prod-price">$3.490</div>
-                <div class="mock-prod-wa">WA →</div>
-              </div>
-              <div class="mock-footer-bar">Stock actualizado hace 18 min · 4.812 productos</div>
-            </div>
-          </div>
-          <div class="slide-text">
-            <span class="slide-tag">Panel Vendedor</span>
-            <h3>Catálogo y stock en el bolsillo</h3>
-            <p>Busca cualquier producto por código o nombre, ve el stock en tiempo real y envía la cotización por WhatsApp en 1 clic.</p>
-            <ul class="slide-bullets">
-              <li>Búsqueda instantánea en 4.800+ productos</li>
-              <li>Stock por bodega en tiempo real</li>
-              <li>Precios siempre actualizados desde el ERP</li>
-              <li>Cotización a WhatsApp sin copiar nada</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- SLIDE 3: Panel Cliente -->
-        <div class="carousel-slide" id="slide-2">
-          <div class="mock-window">
-            <div class="mock-bar">
-              <span class="mock-dot" style="background:#ff5f57"></span>
-              <span class="mock-dot" style="background:#febc2e"></span>
-              <span class="mock-dot" style="background:#28c840"></span>
-              <span class="mock-url">ferreteria-ejemplo.web.app/catalogo</span>
-            </div>
-            <div class="mock-body">
-              <div class="mock-catalog-header">
-                <div>
-                  <div class="mock-catalog-title">🛍️ Mi Ferretería</div>
-                  <div class="mock-catalog-sub">Catálogo — Herramientas eléctricas</div>
-                </div>
-                <div style="font-size:0.62rem;color:var(--muted)">Actualizado hoy</div>
-              </div>
-              <input class="mock-catalog-search" type="text" placeholder="🔍  Buscar producto…" readonly>
-              <div class="mock-catalog-grid">
-                <div class="mock-catalog-item">
-                  <div class="mock-catalog-icon">🔧</div>
-                  <div class="mock-catalog-name">Taladro percutor 13mm</div>
-                  <div class="mock-catalog-price">$89.990</div>
-                  <div class="mock-catalog-btn">Cotizar WA</div>
-                </div>
-                <div class="mock-catalog-item">
-                  <div class="mock-catalog-icon">🪚</div>
-                  <div class="mock-catalog-name">Sierra circular 7¼" 1400W</div>
-                  <div class="mock-catalog-price">$119.990</div>
-                  <div class="mock-catalog-btn">Cotizar WA</div>
-                </div>
-                <div class="mock-catalog-item">
-                  <div class="mock-catalog-icon">🔩</div>
-                  <div class="mock-catalog-name">Atornillador inalámb. 18V</div>
-                  <div class="mock-catalog-price">$74.900</div>
-                  <div class="mock-catalog-btn">Cotizar WA</div>
-                </div>
-                <div class="mock-catalog-item">
-                  <div class="mock-catalog-icon">💡</div>
-                  <div class="mock-catalog-name">Amoladora 4½" 850W</div>
-                  <div class="mock-catalog-price">$49.990</div>
-                  <div class="mock-catalog-btn">Cotizar WA</div>
-                </div>
-                <div class="mock-catalog-item">
-                  <div class="mock-catalog-icon">🪛</div>
-                  <div class="mock-catalog-name">Lijadora orbital 125mm</div>
-                  <div class="mock-catalog-price">$39.990</div>
-                  <div class="mock-catalog-btn">Cotizar WA</div>
-                </div>
-                <div class="mock-catalog-item">
-                  <div class="mock-catalog-icon">🏗️</div>
-                  <div class="mock-catalog-name">Rotomartillo SDS+ 800W</div>
-                  <div class="mock-catalog-price">$134.990</div>
-                  <div class="mock-catalog-btn">Cotizar WA</div>
-                </div>
-              </div>
-              <div class="mock-footer-bar">286 productos en esta categoría</div>
-            </div>
-          </div>
-          <div class="slide-text">
-            <span class="slide-tag">Panel Cliente</span>
-            <h3>Tu catálogo digital, sin app</h3>
-            <p>Tus clientes navegan el catálogo desde cualquier celular, ven precios y piden cotización directo a tu WhatsApp.</p>
-            <ul class="slide-bullets">
-              <li>Acceso desde cualquier navegador, sin app</li>
-              <li>Precios visibles u ocultos por cliente</li>
-              <li>Cotización a WhatsApp en 1 clic</li>
-              <li>Cupones de descuento personalizados</li>
-            </ul>
-          </div>
-        </div>
-
-      </div><!-- /carousel-track -->
-
-      <!-- Controles -->
-      <div class="carousel-controls">
-        <button class="carousel-btn" id="btn-prev" aria-label="Anterior">←</button>
-        <div class="carousel-dots">
-          <button class="carousel-dot active" data-idx="0" aria-label="Panel Admin"></button>
-          <button class="carousel-dot" data-idx="1" aria-label="Panel Vendedor"></button>
-          <button class="carousel-dot" data-idx="2" aria-label="Panel Cliente"></button>
-        </div>
-        <button class="carousel-btn" id="btn-next" aria-label="Siguiente">→</button>
-      </div>
-    </div><!-- /carousel-stage -->
-  </div>
-</section>
-
-<!-- 2. PROBLEMA -->
-<section id="problema">
-  <div class="container">
-    <p class="section-label">El problema</p>
-    <h2 class="section-title">¿Te suena familiar?</h2>
-    <p class="section-sub">Los dueños de ferreterías pierden miles de pesos al mes por falta de visibilidad real de su negocio.</p>
-    <div class="problema-grid">
-      <div class="problema-card reveal d1">
-        <div class="problema-icon">📊</div>
-        <h3>¿No sabes qué producto rota más?</h3>
-        <p>Tu ERP guarda todo, pero no te muestra los rankings de venta, quiebres de stock ni rotación por bodega.</p>
-      </div>
-      <div class="problema-card reveal d2">
-        <div class="problema-icon">👥</div>
-        <h3>¿No ves el desempeño real de tus vendedores?</h3>
-        <p>¿Cuánto vendió cada uno? ¿Quién crea más cotizaciones? ¿Quién tiene el ticket promedio más alto?</p>
-      </div>
-      <div class="problema-card reveal d3">
-        <div class="problema-icon">📦</div>
-        <h3>¿Tu stock en Excel se desactualiza solo?</h3>
-        <p>Las planillas manuales se van desfasando. Cuando el vendedor mira el stock, ya no es real.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 3. PANELES -->
-<section id="paneles" class="paneles-bg">
-  <div class="container">
-    <p class="section-label">La solución</p>
-    <h2 class="section-title">3 paneles para 3 roles</h2>
-    <p class="section-sub">Cada usuario ve exactamente lo que necesita. Nada más, nada menos.</p>
-    <div class="paneles-grid">
-      <div class="panel-card reveal d1">
-        <div class="panel-tipo">Admin</div>
-        <h3>🖥️ Panel Administrador</h3>
-        <p>Visión completa del negocio. Datos para tomar decisiones, no solo operar.</p>
-        <ul class="panel-features">
-          <li>Análisis de ventas por período</li>
-          <li>Rankings de productos y vendedores</li>
-          <li>Stock consolidado por bodega</li>
-          <li>Adquisiciones y pedidos pendientes</li>
-          <li>Rotación y quiebre de stock</li>
-        </ul>
-      </div>
-      <div class="panel-card reveal d2">
-        <div class="panel-tipo">Vendedor</div>
-        <h3>📱 Panel Vendedor</h3>
-        <p>Herramienta de ventas en el mesón o terreno. Rápido, desde cualquier celular.</p>
-        <ul class="panel-features">
-          <li>Catálogo con precios actualizados</li>
-          <li>Búsqueda por código o descripción</li>
-          <li>Stock disponible en tiempo real</li>
-          <li>Cotizaciones directas por WhatsApp</li>
-          <li>Historial de ventas propias</li>
-        </ul>
-      </div>
-      <div class="panel-card reveal d3">
-        <div class="panel-tipo">Cliente</div>
-        <h3>🛍️ Panel Cliente / Catálogo</h3>
-        <p>Catálogo público o privado para que tus clientes vean productos y coticen solos.</p>
-        <ul class="panel-features">
-          <li>Catálogo público o con acceso privado</li>
-          <li>Precios visibles u ocultos según cliente</li>
-          <li>Cotización por WhatsApp en 1 clic</li>
-          <li>Cupones de descuento</li>
-          <li>Sin necesidad de app</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 4. COMO FUNCIONA -->
-<section id="como-funciona">
-  <div class="container">
-    <p class="section-label">Proceso</p>
-    <h2 class="section-title">Funcionando en 3 pasos</h2>
-    <p class="section-sub">Tu equipo no necesita instalar nada ni aprender un sistema nuevo.</p>
-    <div class="pasos-grid">
-      <div class="paso reveal d1">
-        <div class="paso-num">01</div>
-        <h3>Conectamos tu ERP o Excel</h3>
-        <p>Configuramos el adaptador para tu sistema actual. La sincronización ocurre automáticamente, sin interrumpir tu operación.</p>
-      </div>
-      <div class="paso reveal d2">
-        <div class="paso-num">02</div>
-        <h3>Configuramos bodegas y vendedores</h3>
-        <p>Definimos qué bodegas son comerciales y cuáles logísticas. Creamos los accesos por rol para cada persona de tu equipo.</p>
-      </div>
-      <div class="paso reveal d3">
-        <div class="paso-num">03</div>
-        <h3>Tu equipo ya puede usarlo</h3>
-        <p>Sin instalar apps. Se accede desde cualquier navegador, en cualquier dispositivo. El link es tuyo, con tu nombre.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 5. COMPATIBILIDAD -->
-<section id="compatibilidad" class="compat-bg">
-  <div class="container">
-    <p class="section-label">Compatibilidad</p>
-    <h2 class="section-title">Compatible con tu ERP actual</h2>
-    <p class="section-sub">Si usas otro sistema, Excel funciona como puente universal.</p>
-    <div class="compat-table-wrap">
-      <table class="compat-table">
-        <thead>
-          <tr><th>ERP</th><th>Estado</th><th>Descripción</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="compat-erp">JustWeb</td>
-            <td><span class="chip chip-ok">✅ Disponible</span></td>
-            <td style="color:var(--muted);font-size:.9rem">Integración completa. Probado en producción.</td>
-          </tr>
-          <tr>
-            <td class="compat-erp">Excel / CSV</td>
-            <td><span class="chip chip-ok">✅ Disponible</span></td>
-            <td style="color:var(--muted);font-size:.9rem">Fallback universal. Cualquier comercio puede empezar con Excel.</td>
-          </tr>
-          <tr>
-            <td class="compat-erp">Transtecnia</td>
-            <td><span class="chip chip-pronto">🔜 Próximamente</span></td>
-            <td style="color:var(--muted);font-size:.9rem">En desarrollo. Contacta si lo usas y lo priorizamos.</td>
-          </tr>
-          <tr>
-            <td class="compat-erp">Rex+</td>
-            <td><span class="chip chip-pronto">🔜 Próximamente</span></td>
-            <td style="color:var(--muted);font-size:.9rem">En desarrollo. Contacta si lo usas y lo priorizamos.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- 6. PRECIOS -->
-<section id="precios">
-  <div class="container">
-    <p class="section-label">Precios</p>
-    <h2 class="section-title" style="text-align:center">Pago único, sin sorpresas</h2>
-    <p class="section-sub" style="margin:0 auto 3rem;text-align:center">Instalación y configuración. Sin costo mensual de servidor.</p>
-    <div class="precios-grid">
-      <div class="precio-card reveal d1">
-        <div class="precio-plan">Básico</div>
-        <div class="precio-valor">$290.000<span> CLP</span></div>
-        <div class="precio-tipo">Instalación única</div>
-        <ul class="precio-lista">
-          <li>Panel Vendedor + Panel Cliente</li>
-          <li>Conexión ERP o Excel</li>
-          <li>Hasta 3 usuarios</li>
-          <li>1 mes de soporte incluido</li>
-        </ul>
-        <a href="https://wa.me/TUNUMERO?text=Hola%2C%20me%20interesa%20el%20plan%20B%C3%A1sico%20de%20FerreSystem" target="_blank" rel="noopener" class="btn btn-outline" style="justify-content:center">Comenzar →</a>
-      </div>
-      <div class="precio-card destacado reveal d2">
-        <div class="precio-popular">⭐ Más elegido</div>
-        <div class="precio-plan">Profesional</div>
-        <div class="precio-valor">$590.000<span> CLP</span></div>
-        <div class="precio-tipo">Instalación única</div>
-        <ul class="precio-lista">
-          <li>Todo lo del plan Básico</li>
-          <li>Panel Admin completo</li>
-          <li>Análisis de rotación y quiebre</li>
-          <li>Rankings de vendedores y productos</li>
-          <li>Hasta 10 usuarios</li>
-          <li>3 meses de soporte incluido</li>
-        </ul>
-        <a href="https://wa.me/TUNUMERO?text=Hola%2C%20me%20interesa%20el%20plan%20Profesional%20de%20FerreSystem" target="_blank" rel="noopener" class="btn btn-rojo" style="justify-content:center">Solicitar demo →</a>
-      </div>
-      <div class="precio-card reveal d3">
-        <div class="precio-plan">Enterprise</div>
-        <div class="precio-valor" style="font-size:1.6rem">A convenir</div>
-        <div class="precio-tipo">Cotización personalizada</div>
-        <ul class="precio-lista">
-          <li>Todo lo del plan Profesional</li>
-          <li>Múltiples sucursales</li>
-          <li>Integración ERP a medida</li>
-          <li>Soporte prioritario mensual</li>
-          <li>SLA personalizado</li>
-        </ul>
-        <a href="https://wa.me/TUNUMERO?text=Hola%2C%20quiero%20cotizar%20el%20plan%20Enterprise%20de%20FerreSystem" target="_blank" rel="noopener" class="btn btn-outline" style="justify-content:center">Conversemos →</a>
-      </div>
-    </div>
-    <p class="precio-nota reveal">🔥 Infraestructura en Google Firebase — sin costo mensual de servidor. Pagas solo la instalación y configuración inicial.</p>
-  </div>
-</section>
-
-<!-- 7. GARANTIA -->
-<section class="garantia-bg">
-  <div class="container">
-    <div class="garantia-box">
-      <div class="garantia-icon">🛡️</div>
-      <h2>Garantía de 30 días o te devolvemos el 100%</h2>
-      <p>Si en 30 días no ves el valor en tu ferretería, te devolvemos el 100% de lo pagado. Sin preguntas.</p>
-      <p>No es un riesgo — es una promesa de que sabemos lo que hacemos.</p>
-      <div class="garantia-badge">
-        📍 Probado en producción real desde 2025 en Rancagua, Chile
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 8. FAQ -->
-<section id="faq" class="faq-bg">
-  <div class="container">
-    <p class="section-label">Preguntas frecuentes</p>
-    <h2 class="section-title" style="text-align:center;margin-bottom:2.5rem">Todo lo que necesitas saber</h2>
-    <div class="faq-list">
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false">
-          ¿Necesito cambiar mi ERP actual?
-          <span class="faq-arrow">▾</span>
-        </button>
-        <div class="faq-body"><p>No. FerreSystem se conecta encima de tu ERP actual. Sigues usando JustWeb, Excel o lo que tengas — nosotros simplemente leemos los datos y los mostramos en los paneles web. No migras nada.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false">
-          ¿Funciona sin internet?
-          <span class="faq-arrow">▾</span>
-        </button>
-        <div class="faq-body"><p>El catálogo de productos tiene modo offline parcial: una vez cargado en el celular del vendedor, puede consultarlo sin señal. Las funciones de sincronización y actualización de stock requieren conexión.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false">
-          ¿Cuánto demora la instalación?
-          <span class="faq-arrow">▾</span>
-        </button>
-        <div class="faq-body"><p>Entre 1 y 2 semanas, dependiendo del ERP y la complejidad de las bodegas. JustWeb con estructura simple puede estar listo en menos de una semana.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false">
-          ¿Qué pasa si mi ERP no está en la lista?
-          <span class="faq-arrow">▾</span>
-        </button>
-        <div class="faq-body"><p>Excel y CSV funcionan como puente universal. Si tu ERP puede exportar un Excel, podemos conectarlo. Para ERPs con API o base de datos accesible, lo evaluamos sin costo antes de cotizar.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false">
-          ¿Hay costo mensual?
-          <span class="faq-arrow">▾</span>
-        </button>
-        <div class="faq-body"><p>La infraestructura en Google Firebase es $0 mensual (plan Spark gratuito). El soporte post-instalación es opcional y se cotiza por separado. No hay suscripción obligatoria.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 9. CONTACTO FINAL -->
-<section id="contacto" class="contacto-final">
-  <div class="container">
-    <h2>¿Listo para digitalizar tu ferretería?</h2>
-    <p>Demo gratuita de 30 minutos. Te mostramos el sistema con datos reales de tu rubro.</p>
-    <div class="contacto-ctas">
-      <a href="https://wa.me/TUNUMERO?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem%20para%20mi%20ferret%C3%ADa"
-         target="_blank" rel="noopener"
-         class="btn btn-wa" style="font-size:1.1rem;padding:1rem 2.5rem">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Agendar demo gratuita
-      </a>
-      <div class="contacto-email">
-        o escíbenos a <a href="mailto:contacto@ferresystem.cl">contacto@ferresystem.cl</a>
-      </div>
-      <p class="contacto-respuesta">⏱️ Respondemos en menos de 24 horas</p>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-logo">Ferre<em>System</em></div>
-  <small>© 2026 FerreSystem · Plataforma SaaS multi-tenant para ferreterías · Chile</small>
-</footer>
-
-<!-- STICKY CTA MOBILE -->
-<div class="sticky-cta">
-  <a href="https://wa.me/TUNUMERO?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem%20para%20mi%20ferret%C3%ADa"
-     target="_blank" rel="noopener">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-    Agendar demo gratuita — WhatsApp
-  </a>
-</div>
-
-<!-- FAQ ACCORDION + CARRUSEL JS -->
-<script>
-(function(){
-  /* --- FAQ --- */
-  document.querySelectorAll('.faq-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var item = btn.closest('.faq-item');
-      var body = item.querySelector('.faq-body');
-      var isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item.open').forEach(function(el){
-        el.classList.remove('open');
-        el.querySelector('.faq-body').style.maxHeight = '0';
-        el.querySelector('.faq-btn').setAttribute('aria-expanded','false');
-      });
-      if(!isOpen){
-        item.classList.add('open');
-        body.style.maxHeight = body.scrollHeight + 'px';
-        btn.setAttribute('aria-expanded','true');
-      }
-    });
-  });
-
-  /* --- CARRUSEL --- */
-  var total = 3;
-  var current = 0;
-
-  function goTo(idx) {
-    document.getElementById('slide-' + current).classList.remove('active');
-    document.querySelectorAll('.carousel-dot')[current].classList.remove('active');
-    current = (idx + total) % total;
-    document.getElementById('slide-' + current).classList.add('active');
-    document.querySelectorAll('.carousel-dot')[current].classList.add('active');
-  }
-
-  document.getElementById('btn-prev').addEventListener('click', function(){ goTo(current - 1); });
-  document.getElementById('btn-next').addEventListener('click', function(){ goTo(current + 1); });
-  document.querySelectorAll('.carousel-dot').forEach(function(dot){
-    dot.addEventListener('click', function(){ goTo(parseInt(dot.getAttribute('data-idx'))); });
-  });
-
-  /* Auto-avance cada 5s */
-  var autoTimer = setInterval(function(){ goTo(current + 1); }, 5000);
-  document.querySelector('.carousel-stage').addEventListener('mouseenter', function(){ clearInterval(autoTimer); });
-  document.querySelector('.carousel-stage').addEventListener('mouseleave', function(){
-    autoTimer = setInterval(function(){ goTo(current + 1); }, 5000);
-  });
-
-  /* Swipe touch */
-  var touchStartX = 0;
-  var stage = document.querySelector('.carousel-track');
-  stage.addEventListener('touchstart', function(e){ touchStartX = e.touches[0].clientX; }, {passive:true});
-  stage.addEventListener('touchend', function(e){
-    var dx = e.changedTouches[0].clientX - touchStartX;
-    if(Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
-  }, {passive:true});
-})();
-</script>
-
-</body>
-</html>
+                  <div class="mock-logo-icon">N</div>
+                  <span>Mi Negocio
