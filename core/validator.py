@@ -1,25 +1,34 @@
 """
 validator.py — Validador post-pipeline genérico (solo lectura).
 
-Basado en validar_jsons.py de Ferretería Oviedo. Corre entre la generación
-de JSONs (generar_jsons.py) y rotar_token.py / deploy. Si algún JSON de
-salida quedó roto, vacío o a medio generar, bloquea el deploy con exit(1)
-ANTES de publicar datos inconsistentes.
+Migrado desde validar_jsons.py de Ferretería Oviedo: corre entre la
+generación de JSONs y rotar_token.py / deploy. Si algún JSON de salida
+quedó roto, vacío o a medio generar, bloquea el deploy ANTES de publicar
+datos inconsistentes.
 
 No escribe ni modifica ningún JSON. Solo lee y valida.
 
-El esquema (SCHEMA) ya no es fijo por cliente: cada tenant puede declarar
-su propio esquema en tenants/{tenant_id}.json -> "validacion", o usar un
-esquema genérico mínimo (raw_dict/raw_list/wrapped) por archivo.
+A diferencia del original, el esquema (qué archivos existen y qué forma
+deben tener) no está hardcodeado: se recibe como parámetro. Cada tenant
+declara su propio schema (típicamente en tenants/{id}.json -> "validacion"
+o en un archivo aparte) y lo pasa a validar_pipeline().
 
-Uso: python validator.py <ruta_data_dir> <ruta_schema_json>
+Formato de schema (dict, clave = nombre de archivo dentro de output_dir):
+    {
+      'nombre.json': {
+          'kind': 'wrapped' | 'raw_dict' | 'raw_list',
+          'keys': [...],            # solo 'wrapped': claves raíz obligatorias
+          'array_field': 'campo',   # opcional en 'wrapped': debe ser lista/dict no vacío
+          'optional': True,         # si falta el archivo, se omite en vez de fallar
+      },
+      ...
+    }
 """
 import json
 import os
-import sys
 
 
-def contar(valor):
+def _contar(valor):
     if isinstance(valor, list):
         return len(valor)
     if isinstance(valor, dict):
@@ -27,9 +36,7 @@ def contar(valor):
     return None
 
 
-def validar_archivo(nombre, spec, base_dir):
-    ruta = os.path.join(spec.get('dir', base_dir), nombre)
-
+def _validar_archivo(ruta, spec):
     if not os.path.isfile(ruta):
         if spec.get('optional'):
             return None, 'OMITIDO (opcional, no generado en esta corrida)'
@@ -65,13 +72,13 @@ def validar_archivo(nombre, spec, base_dir):
     if kind == 'wrapped':
         if not isinstance(data, dict):
             return False, 'SE ESPERABA UN OBJETO en la raiz: ' + ruta
-        faltantes = [k for k in spec['keys'] if k not in data]
+        faltantes = [k for k in spec.get('keys', []) if k not in data]
         if faltantes:
             return False, 'FALTAN CLAVES ' + str(faltantes) + ' en: ' + ruta
 
         array_field = spec.get('array_field')
         if array_field:
-            cnt = contar(data.get(array_field))
+            cnt = _contar(data.get(array_field))
             if cnt is None:
                 return False, 'CAMPO "' + array_field + '" no es lista/objeto en: ' + ruta
             if cnt < 1:
@@ -80,20 +87,16 @@ def validar_archivo(nombre, spec, base_dir):
 
         return True, 'OK (sin campo de conteo)'
 
-    return False, 'KIND DESCONOCIDO EN SCHEMA: ' + kind
+    return False, 'KIND DESCONOCIDO EN SCHEMA: ' + str(kind)
 
 
-def main():
-    if len(sys.argv) < 3:
-        print('Uso: python validator.py <data_dir> <schema_json>')
-        sys.exit(1)
+def validar_pipeline(output_dir: str, schema: dict) -> bool:
+    """Valida todos los archivos declarados en schema dentro de output_dir.
 
-    data_dir = sys.argv[1]
-    schema_path = sys.argv[2]
-
-    with open(schema_path, 'r', encoding='utf-8') as f:
-        schema = json.load(f)
-
+    Imprime un resumen [OK]/[ERROR]/[OMITIDO] por archivo y un veredicto
+    final. Devuelve True si no hubo errores (OMITIDOs no cuentan como
+    error), False si al menos un archivo falló la validación.
+    """
     print('=' * 60)
     print('VALIDACION POST-PIPELINE DE JSONs')
     print('=' * 60)
@@ -102,7 +105,8 @@ def main():
     resumen = []
 
     for nombre, spec in schema.items():
-        ok, msg = validar_archivo(nombre, spec, data_dir)
+        ruta = os.path.join(output_dir, nombre)
+        ok, msg = _validar_archivo(ruta, spec)
         if ok is None:
             resumen.append((nombre, 'OMITIDO', msg))
         elif ok:
@@ -123,12 +127,18 @@ def main():
         print('=' * 60)
         for e in errores:
             print('  - ' + e)
-        sys.exit(1)
+        return False
 
     print('RESULTADO: OK -- todos los JSONs validados correctamente')
     print('=' * 60)
-    sys.exit(0)
+    return True
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    if len(sys.argv) < 3:
+        print('Uso: python validator.py <output_dir> <schema_json>')
+        sys.exit(1)
+    with open(sys.argv[2], 'r', encoding='utf-8') as f:
+        _schema = json.load(f)
+    sys.exit(0 if validar_pipeline(sys.argv[1], _schema) else 1)
