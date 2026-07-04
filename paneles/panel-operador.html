@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Operador — FerreSystem</title>
+<style>
+  :root {
+    --bg: #0b0e17;
+    --bg-card: #131620;
+    --bg-card2: #181c28;
+    --border: #252838;
+    --primario: #6c63ff;
+    --text: #e8eaf0;
+    --text-muted: #6b7280;
+    --ok: #10b981;
+    --ok-bg: rgba(16,185,129,0.1);
+    --warn: #f59e0b;
+    --warn-bg: rgba(245,158,11,0.1);
+    --error: #ef4444;
+    --error-bg: rgba(239,68,68,0.1);
+    --radius: 10px;
+    --font: 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px; height: 56px;
+    background: var(--bg-card); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .nav-logo-dot {
+    width: 30px; height: 30px; border-radius: 7px;
+    background: var(--primario); display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 0.9rem; color: #fff;
+  }
+  .nav-tag {
+    font-size: 0.7rem; background: rgba(108,99,255,0.15); color: var(--primario);
+    border: 1px solid var(--primario); border-radius: 4px; padding: 2px 7px;
+    margin-left: 8px; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .nav-right { display: flex; align-items: center; gap: 16px; font-size: 0.82rem; }
+  #last-refresh { color: var(--text-muted); }
+  .btn-refresh {
+    background: var(--primario); color: #fff; border: none;
+    border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 0.82rem; font-weight: 600;
+  }
+  .btn-refresh:hover { opacity: 0.85; }
+
+  /* LAYOUT */
+  main { padding: 28px 32px; max-width: 1200px; margin: 0 auto; }
+  h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: var(--text-muted); font-size: 0.83rem; margin-bottom: 24px; }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .stat {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px;
+  }
+  .stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+  .stat-value { font-size: 2rem; font-weight: 800; margin: 6px 0 2px; }
+  .stat-sub { font-size: 0.73rem; color: var(--text-muted); }
+  .stat.ok .stat-value { color: var(--ok); }
+  .stat.warn .stat-value { color: var(--warn); }
+  .stat.error .stat-value { color: var(--error); }
+
+  /* TABLA TENANTS */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 24px;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-weight: 600; font-size: 0.95rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th {
+    text-align: left; padding: 10px 16px;
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-muted); border-bottom: 1px solid var(--border);
+    background: var(--bg-card2);
+  }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-card2); }
+
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+  .dot.ok { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+  .dot.warn { background: var(--warn); }
+  .dot.error { background: var(--error); box-shadow: 0 0 6px var(--error); }
+  .dot.inactivo { background: var(--text-muted); }
+
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600;
+  }
+  .badge.ok    { background: var(--ok-bg);    color: var(--ok);    border: 1px solid var(--ok); }
+  .badge.warn  { background: var(--warn-bg);  color: var(--warn);  border: 1px solid var(--warn); }
+  .badge.error { background: var(--error-bg); color: var(--error); border: 1px solid var(--error); }
+  .badge.inactivo { background: rgba(107,114,128,0.1); color: var(--text-muted); border: 1px solid var(--border); }
+
+  .mono { font-family: 'Consolas', monospace; font-size: 0.8rem; color: var(--text-muted); }
+
+  /* LOGS */
+  .log-panel {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 20px; font-family: 'Consolas', monospace;
+    font-size: 0.78rem; line-height: 1.6; max-height: 300px; overflow-y: auto;
+  }
+  .log-line { display: flex; gap: 10px; margin-bottom: 2px; }
+  .log-ts { color: var(--text-muted); min-width: 180px; }
+  .log-level { min-width: 50px; font-weight: 700; }
+  .log-level.ok    { color: var(--ok); }
+  .log-level.warn  { color: var(--warn); }
+  .log-level.error { color: var(--error); }
+  .log-level.info  { color: var(--primario); }
+  .log-msg { color: var(--text); }
+
+  /* DETAIL MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; width: 560px; max-width: 95vw; max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .modal-title { font-weight: 700; font-size: 1rem; }
+  .btn-close { background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
+  .modal-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .modal-row:last-child { border-bottom: none; }
+  .modal-key { color: var(--text-muted); }
+
+  @media (max-width: 700px) {
+    main { padding: 16px; }
+    table { font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-dot">F</div>
+    <span>FerreSystem</span>
+    <span class="nav-tag">Operador</span>
+  </div>
+  <div class="nav-right">
+    <span id="last-refresh">Actualizado: —</span>
+    <button class="btn-refresh" onclick="cargarDatos()">↻ Actualizar</button>
+  </div>
+</nav>
+
+<main>
+  <h2>Dashboard de salud del pipeline</h2>
+  <p class="subtitle">Estado en tiempo real de todos los tenants activos</p>
+
+  <div class="stats" id="stats-globales"></div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Tenants</span>
+      <span id="resumen-tenants" style="font-size:0.8rem;color:var(--text-muted)"></span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Estado</th>
+          <th>Tenant</th>
+          <th>ERP</th>
+          <th>Última sync OK</th>
+          <th>Próxima sync</th>
+          <th>Registros</th>
+          <th>Fallos consecut.</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-tenants"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Log del pipeline (últimas 50 líneas)</span>
+    </div>
+    <div class="log-panel" id="log-panel"></div>
+  </div>
+</main>
+
+<!-- Modal detalle tenant -->
+<div class="modal-overlay" id="modal-overlay" onclick="cerrarModal(event)">
+  <div class="modal" id="modal-contenido">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-titulo">Detalle</span>
+      <button class="btn-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATOS DEMO ──────────────────────────────────────────────────────────────
+// En producción, estos datos vienen de Firestore: colección pipeline_logs/{tenant_id}
+// escritos por pipeline/scheduler.py al terminar cada corrida.
+
+const TENANTS_DEMO = [
+  {
+    id: "ferreteria-norte",
+    nombre: "Ferretería Norte",
+    erp: "JustWeb",
+    activo: true,
+    ultima_sync_ok: "2026-07-03 21:58",
+    proxima_sync: "2026-07-03 22:00",
+    estado: "ok",
+    fallos_consecutivos: 0,
+    registros: { productos: 1423, stock: 3891, ventas: 247 },
+    data_size_kb: 892,
+    tiempo_pipeline_seg: 43,
+    firebase_project: "ferreteria-norte-prod",
+    ultima_sync_error: null,
+  },
+  {
+    id: "distribuidora-sur",
+    nombre: "Distribuidora Sur",
+    erp: "Bsale",
+    activo: true,
+    ultima_sync_ok: "2026-07-03 14:30",
+    proxima_sync: "2026-07-03 22:00",
+    estado: "warn",
+    fallos_consecutivos: 1,
+    registros: { productos: 892, stock: 1204, ventas: 89 },
+    data_size_kb: 410,
+    tiempo_pipeline_seg: 28,
+    firebase_project: "distribuidora-sur-prod",
+    ultima_sync_error: "TimeoutError: ERP no respondió en 30s (intento 1/3)",
+  },
+  {
+    id: "materiales-central",
+    nombre: "Materiales Central",
+    erp: "Rex Plus",
+    activo: true,
+    ultima_sync_ok: "2026-07-02 22:02",
+    proxima_sync: "2026-07-03 22:00",
+    estado: "error",
+    fallos_consecutivos: 3,
+    registros: { productos: 0, stock: 0, ventas: 0 },
+    data_size_kb: 0,
+    tiempo_pipeline_seg: 0,
+    firebase_project: "materiales-central-prod",
+    ultima_sync_error: "ConnectionRefusedError: [Errno 111] ERP SQL no accesible en 192.168.1.50:1433",
+  },
+  {
+    id: "ferreteria-oriente",
+    nombre: "Ferretería Oriente",
+    erp: "Excel",
+    activo: false,
+    ultima_sync_ok: "2026-06-28 09:15",
+    proxima_sync: "—",
+    estado: "inactivo",
+    fallos_consecutivos: 0,
+    registros: { productos: 342, stock: 342, ventas: 0 },
+    data_size_kb: 88,
+    tiempo_pipeline_seg: 4,
+    firebase_project: "ferreteria-oriente-dev",
+    ultima_sync_error: null,
+  },
+];
+
+const LOGS_DEMO = [
+  { ts: "2026-07-03 21:58:04", level: "ok",    tenant: "ferreteria-norte",    msg: "Pipeline completado OK — 43s" },
+  { ts: "2026-07-03 21:58:01", level: "info",  tenant: "ferreteria-norte",    msg: "Rotando token dataAccessToken/current" },
+  { ts: "2026-07-03 21:57:44", level: "info",  tenant: "ferreteria-norte",    msg: "Validación post-pipeline: 4/4 archivos OK" },
+  { ts: "2026-07-03 21:57:22", level: "info",  tenant: "ferreteria-norte",    msg: "get_ventas: 247 líneas" },
+  { ts: "2026-07-03 21:57:01", level: "info",  tenant: "ferreteria-norte",    msg: "get_stock: 3891 líneas" },
+  { ts: "2026-07-03 21:56:40", level: "info",  tenant: "ferreteria-norte",    msg: "get_productos: 1423 productos" },
+  { ts: "2026-07-03 21:56:38", level: "info",  tenant: "ferreteria-norte",    msg: "Conexión ERP: OK" },
+  { ts: "2026-07-03 21:56:35", level: "info",  tenant: "ferreteria-norte",    msg: "Iniciando pipeline (intento 1/4)" },
+  { ts: "2026-07-03 14:32:11", level: "warn",  tenant: "distribuidora-sur",   msg: "Reintentando en 60s (intento 1/4 fallido)" },
+  { ts: "2026-07-03 14:31:01", level: "error", tenant: "distribuidora-sur",   msg: "TimeoutError: ERP no respondió en 30s" },
+  { ts: "2026-07-03 14:30:59", level: "info",  tenant: "distribuidora-sur",   msg: "Iniciando pipeline (intento 1/4)" },
+  { ts: "2026-07-03 22:01:44", level: "error", tenant: "materiales-central",  msg: "Agotó 4 intentos. Notificación enviada." },
+  { ts: "2026-07-03 22:00:59", level: "error", tenant: "materiales-central",  msg: "ConnectionRefusedError: [Errno 111] 192.168.1.50:1433" },
+  { ts: "2026-07-03 22:00:01", level: "info",  tenant: "materiales-central",  msg: "Iniciando pipeline (intento 1/4)" },
+];
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+
+function estadoIcon(e) {
+  return `<span class="dot ${e}"></span>`;
+}
+
+function estadoBadge(e, fallos) {
+  const labels = { ok: '✓ OK', warn: `⚠ ${fallos} fallo`, error: `✕ Error`, inactivo: '— Inactivo' };
+  return `<span class="badge ${e}">${labels[e]}</span>`;
+}
+
+function fmtRegistros(r) {
+  if (!r.productos && !r.stock) return '<span style="color:var(--text-muted)">—</span>';
+  return `<span style="font-size:0.8rem">
+    <b>${r.productos.toLocaleString()}</b> prod ·
+    <b>${r.stock.toLocaleString()}</b> stock ·
+    <b>${r.ventas.toLocaleString()}</b> vtas
+  </span>`;
+}
+
+function renderStats() {
+  const total    = TENANTS_DEMO.length;
+  const activos  = TENANTS_DEMO.filter(t => t.activo).length;
+  const ok       = TENANTS_DEMO.filter(t => t.estado === 'ok').length;
+  const warn     = TENANTS_DEMO.filter(t => t.estado === 'warn').length;
+  const errores  = TENANTS_DEMO.filter(t => t.estado === 'error').length;
+
+  document.getElementById('stats-globales').innerHTML = `
+    <div class="stat">
+      <div class="stat-label">Tenants totales</div>
+      <div class="stat-value">${total}</div>
+      <div class="stat-sub">${activos} activos</div>
+    </div>
+    <div class="stat ok">
+      <div class="stat-label">Pipelines OK</div>
+      <div class="stat-value">${ok}</div>
+      <div class="stat-sub">última sync exitosa</div>
+    </div>
+    <div class="stat warn">
+      <div class="stat-label">Con advertencias</div>
+      <div class="stat-value">${warn}</div>
+      <div class="stat-sub">fallos transitorios</div>
+    </div>
+    <div class="stat error">
+      <div class="stat-label">Con errores</div>
+      <div class="stat-value">${errores}</div>
+      <div class="stat-sub">requieren atención</div>
+    </div>
+  `;
+  document.getElementById('resumen-tenants').textContent =
+    `${total} tenants · ${activos} activos`;
+}
+
+function renderTabla() {
+  const sorted = [...TENANTS_DEMO].sort((a, b) => {
+    const orden = { error: 0, warn: 1, ok: 2, inactivo: 3 };
+    return orden[a.estado] - orden[b.estado];
+  });
+
+  document.getElementById('tabla-tenants').innerHTML = sorted.map(t => `
+    <tr>
+      <td>${estadoBadge(t.estado, t.fallos_consecutivos)}</td>
+      <td>
+        <div style="font-weight:600">${t.nombre}</div>
+        <div class="mono">${t.id}</div>
+      </td>
+      <td style="color:var(--text-muted);font-size:0.82rem">${t.erp}</td>
+      <td>
+        <span style="font-size:0.83rem">${t.ultima_sync_ok}</span>
+        ${t.tiempo_pipeline_seg ? `<div class="mono">${t.tiempo_pipeline_seg}s · ${t.data_size_kb}KB</div>` : ''}
+      </td>
+      <td style="font-size:0.83rem">${t.proxima_sync}</td>
+      <td>${fmtRegistros(t.registros)}</td>
+      <td style="text-align:center">
+        ${t.fallos_consecutivos > 0
+          ? `<span style="color:var(--error);font-weight:700">${t.fallos_consecutivos}</span>`
+          : `<span style="color:var(--ok)">0</span>`}
+      </td>
+      <td>
+        <button onclick='verDetalle(${JSON.stringify(t)})'
+          style="background:var(--bg-card2);border:1px solid var(--border);color:var(--text);
+                 border-radius:5px;padding:4px 10px;cursor:pointer;font-size:0.78rem">
+          Ver →
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderLogs() {
+  const panel = document.getElementById('log-panel');
+  panel.innerHTML = LOGS_DEMO.map(l => `
+    <div class="log-line">
+      <span class="log-ts">${l.ts}</span>
+      <span class="log-level ${l.level}">${l.level.toUpperCase()}</span>
+      <span style="color:var(--primario);min-width:160px;font-size:0.76rem">[${l.tenant}]</span>
+      <span class="log-msg">${l.msg}</span>
+    </div>
+  `).join('');
+  panel.scrollTop = 0;
+}
+
+function cargarDatos() {
+  renderStats();
+  renderTabla();
+  renderLogs();
+  const now = new Date();
+  document.getElementById('last-refresh').textContent =
+    'Actualizado: ' + now.toLocaleTimeString('es-CL');
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+
+function verDetalle(t) {
+  document.getElementById('modal-titulo').textContent = t.nombre;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-row"><span class="modal-key">Tenant ID</span><span class="mono">${t.id}</span></div>
+    <div class="modal-row"><span class="modal-key">Estado</span>${estadoBadge(t.estado, t.fallos_consecutivos)}</div>
+    <div class="modal-row"><span class="modal-key">ERP</span><span>${t.erp}</span></div>
+    <div class="modal-row"><span class="modal-key">Firebase project</span><span class="mono">${t.firebase_project}</span></div>
+    <div class="modal-row"><span class="modal-key">Última sync OK</span><span>${t.ultima_sync_ok}</span></div>
+    <div class="modal-row"><span class="modal-key">Próxima sync</span><span>${t.proxima_sync}</span></div>
+    <div class="modal-row"><span class="modal-key">Tiempo último pipeline</span><span>${t.tiempo_pipeline_seg ? t.tiempo_pipeline_seg + 's' : '—'}</span></div>
+    <div class="modal-row"><span class="modal-key">Tamaño datos</span><span>${t.data_size_kb ? t.data_size_kb + ' KB' : '—'}</span></div>
+    <div class="modal-row"><span class="modal-key">Productos</span><span>${t.registros.productos.toLocaleString()}</span></div>
+    <div class="modal-row"><span class="modal-key">Líneas de stock</span><span>${t.registros.stock.toLocaleString()}</span></div>
+    <div class="modal-row"><span class="modal-key">Ventas del día</span><span>${t.registros.ventas.toLocaleString()}</span></div>
+    <div class="modal-row"><span class="modal-key">Fallos consecutivos</span><span style="color:${t.fallos_consecutivos>0?'var(--error)':'var(--ok)'}">${t.fallos_consecutivos}</span></div>
+    ${t.ultima_sync_error ? `
+    <div style="margin-top:12px">
+      <div class="modal-key" style="margin-bottom:6px">Último error:</div>
+      <div style="background:var(--error-bg);border:1px solid var(--error);border-radius:6px;
+                  padding:10px 12px;font-family:Consolas,monospace;font-size:0.75rem;
+                  color:var(--error);line-height:1.5">${t.ultima_sync_error}</div>
+    </div>` : ''}
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function cerrarModal(e) {
+  if (!e || e.target.id === 'modal-overlay') {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+cargarDatos();
+</script>
+</body>
+</html>
