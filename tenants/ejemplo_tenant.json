@@ -32,7 +32,12 @@
     "logo": "branding/ejemplo/logo.png"
   },
   "pipeline": {
+    "activo": true,
     "hora_sync_sql": "22:00",
+    "intervalo_minutos": null,
+    "max_reintentos": 3,
+    "backoff_base_segundos": 60,
+    "notificar_email": "admin@cliente.cl",
     "ttl_token_horas": 8
   }
 }
