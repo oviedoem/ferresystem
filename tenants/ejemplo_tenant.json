@@ -31,6 +31,18 @@
     "color_secundario": "#2c3e50",
     "logo": "branding/ejemplo/logo.png"
   },
+  "modulos_activos": {
+    "_comentario": "Feature flags por tenant. false = módulo oculto en el panel (no facturado).",
+    "stock":        true,
+    "ventas":       true,
+    "cotizador":    true,
+    "alertas":      true,
+    "pedidos":      false,
+    "despachos":    false,
+    "merma":        false,
+    "panel_cliente": true,
+    "panel_admin":  false
+  },
   "pipeline": {
     "activo": true,
     "hora_sync_sql": "22:00",

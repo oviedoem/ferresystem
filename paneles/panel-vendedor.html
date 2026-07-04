@@ -317,7 +317,11 @@ const TENANT_CONFIG = {
   nombre_corto: "Demo",
   color_primario: "#e74c3c",
   stock_minimo_default: 5,
-  // Por categoría: si el producto tiene categoria, se usa este umbral
+  modulos_activos: {
+    stock:     true,
+    cotizador: true,   // false = oculta la sección Cotizador del sidebar
+    alertas:   true,   // false = oculta Stock crítico y badge nav
+  },
   alertas: {
     stock_minimo_por_categoria: {
       "Tornillería": 20,
@@ -328,6 +332,11 @@ const TENANT_CONFIG = {
     }
   }
 };
+
+// ─── FEATURE FLAGS ───────────────────────────────────────────────────────────
+const MOD = TENANT_CONFIG.modulos_activos || {};
+const MOD_COTIZADOR = MOD.cotizador !== false;
+const MOD_ALERTAS   = MOD.alertas   !== false;
 
 // Datos demo — en producción vienen de data/{tenant_id}/{token}/stock.json
 const STOCK_DATA = [
@@ -594,6 +603,19 @@ function imprimirCotiz() {
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 aplicarBranding();
+
+// Aplicar feature flags: ocultar módulos no contratados
+if (!MOD_COTIZADOR) {
+  const navCotiz = document.querySelector('.nav-item[onclick*="cotizador"]');
+  if (navCotiz) navCotiz.style.display = 'none';
+  document.getElementById('page-cotizador').style.display = 'none';
+}
+if (!MOD_ALERTAS) {
+  const navAlerta = document.getElementById('menu-alertas');
+  if (navAlerta) navAlerta.style.display = 'none';
+  document.getElementById('badge-alertas').style.display = 'none';
+}
+
 renderStatsStock();
 renderTablaStock(STOCK_DATA);
 renderAlertas();

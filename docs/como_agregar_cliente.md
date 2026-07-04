@@ -15,3 +15,21 @@ Resumen técnico:
 
 Ningún paso debe requerir tocar `core/`, `adapters/` (salvo ERP nuevo) ni
 los paneles HTML.
+
+## Módulos disponibles por tenant
+
+En `tenants/{id}.json → modulos_activos` se declara qué módulos tiene
+habilitados el cliente. Los paneles leen este campo y ocultan lo que no
+está contratado — sin enforcement de backend en v0.1.
+
+| Clave | Panel | Qué controla |
+|---|---|---|
+| `stock` | Vendedor | Sección consulta de stock |
+| `cotizador` | Vendedor + Cliente | Carrito / cotizador rápido |
+| `alertas` | Vendedor | Badge de stock crítico y sección alertas |
+| `ventas` | Admin | Pestaña de ventas |
+| `pedidos` | Admin | Pestaña de pedidos pendientes |
+| `despachos` | Admin | Pestaña de despachos |
+| `merma` | Admin | Pestaña de merma/devoluciones |
+| `panel_cliente` | — | Habilita el panel público de catálogo |
+| `panel_admin` | — | Habilita el panel de administración |
