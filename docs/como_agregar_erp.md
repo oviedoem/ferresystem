@@ -25,4 +25,16 @@ devuelve `True` contra el ERP real del cliente piloto.
 ## 5. Agregar al tenant.json
 
 En `tenants/{id}.json`, setear `erp.tipo` al nombre registrado en el
-paso 3, y completar host/puerto/usuario/password_enc.
+paso 3, y completar los campos requeridos por el adapter.
+
+---
+
+## Adapters disponibles
+
+| Clave `erp.tipo` | Clase | Método acceso | Campos requeridos en `erp` |
+|---|---|---|---|
+| `justweb` | `JustWebAdapter` | SSRS/HTTP CSV | `host`, `puerto`, `usuario`, `password_enc` |
+| `excel` | `ExcelAdapter` | Archivo local | `archivo_path` |
+| `transtecnia` | `TranstecniaAdapter` | SQL directo | `host`, `puerto`, `usuario`, `password_enc`, `db` |
+| `rexplus` | `RexPlusAdapter` | SQL directo | `host`, `puerto`, `usuario`, `password_enc`, `db` |
+| `bsale` | `BsaleAdapter` | API REST v1 | `access_token`, `office_ids` |

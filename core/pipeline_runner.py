@@ -34,6 +34,11 @@ except ImportError:
     RexPlusAdapter = None
 
 try:
+    from adapters.bsale_adapter import BsaleAdapter
+except ImportError:
+    BsaleAdapter = None
+
+try:
     from adapters.buk_adapter import BukAdapter
 except ImportError:
     BukAdapter = None
@@ -46,6 +51,8 @@ if TranstecniaAdapter:
     ADAPTERS_DISPONIBLES["transtecnia"] = TranstecniaAdapter
 if RexPlusAdapter:
     ADAPTERS_DISPONIBLES["rexplus"] = RexPlusAdapter
+if BsaleAdapter:
+    ADAPTERS_DISPONIBLES["bsale"] = BsaleAdapter
 
 log = get_logger("pipeline_runner")
 

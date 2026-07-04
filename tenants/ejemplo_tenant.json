@@ -3,11 +3,18 @@
   "tenant_id": "nombre-unico-cliente",
   "nombre_comercial": "Ferretería Ejemplo",
   "erp": {
-    "tipo": "justweb|transtecnia|rexplus|excel",
-    "host": "IP o URL del ERP",
+    "tipo": "justweb|transtecnia|rexplus|excel|bsale",
+    "host": "IP o URL del ERP (no aplica para bsale)",
     "puerto": 80,
-    "usuario": "usuario_erp",
-    "password_enc": "cifrado con DPAPI — nunca texto plano"
+    "usuario": "usuario_erp (no aplica para bsale)",
+    "password_enc": "cifrado con DPAPI — nunca texto plano (no aplica para bsale)",
+    "_bsale": "Campos específicos de Bsale (solo si erp.tipo = bsale):",
+    "access_token": "API key de Bsale del tenant — sin esquema",
+    "office_ids": [1, 2],
+    "precio_tipo_id": null,
+    "api_version": "1",
+    "timeout": 30,
+    "max_paginas": 50
   },
   "bodegas": {
     "comerciales": ["BOD1", "BOD2"],
