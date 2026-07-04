@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "panel-vendedor",
+      "runtimeExecutable": "E:\\python-portable\\python.exe",
+      "runtimeArgs": ["-m", "http.server", "5500", "--directory", "paneles"],
+      "port": 5500
+    }
+  ]
+}

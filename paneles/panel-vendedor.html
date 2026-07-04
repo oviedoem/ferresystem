@@ -2,10 +2,601 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel Vendedor — FerreSystem</title>
-<!-- TODO: cargar branding/{tenant_id}/branding.json -->
+<style>
+  :root {
+    --color-primario: #e74c3c;
+    --color-secundario: #2c3e50;
+    --bg: #0f1117;
+    --bg-card: #1a1d27;
+    --bg-card2: #20232f;
+    --border: #2a2d3a;
+    --text: #e8eaf0;
+    --text-muted: #7c8099;
+    --alerta: #e74c3c;
+    --alerta-bg: rgba(231,76,60,0.12);
+    --ok: #2ecc71;
+    --ok-bg: rgba(46,204,113,0.10);
+    --warn: #f39c12;
+    --warn-bg: rgba(243,156,18,0.12);
+    --radius: 10px;
+    --font: 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 56px;
+    background: var(--bg-card); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; }
+  .nav-logo-dot {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--color-primario); display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 1rem; color: #fff;
+  }
+  .nav-right { display: flex; align-items: center; gap: 16px; }
+  .nav-badge {
+    background: var(--alerta-bg); color: var(--alerta);
+    border: 1px solid var(--alerta); border-radius: 20px;
+    padding: 3px 10px; font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; display: none;
+  }
+  .nav-badge.visible { display: inline-flex; align-items: center; gap: 5px; }
+  .nav-user { color: var(--text-muted); font-size: 0.85rem; }
+
+  /* LAYOUT */
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 56px); }
+
+  /* SIDEBAR */
+  aside {
+    background: var(--bg-card); border-right: 1px solid var(--border);
+    padding: 20px 0;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; cursor: pointer; font-size: 0.9rem;
+    color: var(--text-muted); border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg-card2); color: var(--text); }
+  .nav-item.active { color: var(--text); border-left-color: var(--color-primario); background: var(--bg-card2); }
+  .nav-item .icon { font-size: 1.1rem; }
+  .nav-section { padding: 16px 20px 6px; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* MAIN */
+  main { padding: 28px 32px; overflow-y: auto; }
+  .page { display: none; }
+  .page.active { display: block; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+  .page-subtitle { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px; }
+
+  /* STATS ROW */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px;
+  }
+  .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-value { font-size: 1.8rem; font-weight: 800; margin: 6px 0 2px; }
+  .stat-sub { font-size: 0.75rem; color: var(--text-muted); }
+  .stat-card.alerta { border-color: var(--alerta); background: var(--alerta-bg); }
+  .stat-card.alerta .stat-value { color: var(--alerta); }
+  .stat-card.ok .stat-value { color: var(--ok); }
+
+  /* TABLA */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 24px;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-weight: 600; font-size: 0.95rem; }
+  .search-input {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px; padding: 6px 12px;
+    font-size: 0.85rem; outline: none; width: 220px;
+  }
+  .search-input:focus { border-color: var(--color-primario); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th {
+    text-align: left; padding: 10px 16px;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-muted); border-bottom: 1px solid var(--border);
+    background: var(--bg-card2);
+  }
+  td { padding: 11px 16px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-card2); }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600;
+  }
+  .badge.rojo { background: var(--alerta-bg); color: var(--alerta); border: 1px solid var(--alerta); }
+  .badge.amarillo { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn); }
+  .badge.verde { background: var(--ok-bg); color: var(--ok); border: 1px solid var(--ok); }
+
+  /* COTIZADOR */
+  .cotiz-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+  .cotiz-items { }
+  .cotiz-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .cotiz-row:last-child { border-bottom: none; }
+  .cotiz-prod { flex: 1; }
+  .cotiz-prod-nombre { font-weight: 500; font-size: 0.9rem; }
+  .cotiz-prod-sku { font-size: 0.75rem; color: var(--text-muted); }
+  .cotiz-qty {
+    width: 60px; background: var(--bg-card2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px; padding: 5px 8px;
+    font-size: 0.85rem; text-align: center; outline: none;
+  }
+  .cotiz-precio { width: 100px; text-align: right; font-weight: 600; }
+  .btn-remove { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 4px; }
+  .btn-remove:hover { color: var(--alerta); }
+  .resumen-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; align-self: start; position: sticky; top: 76px;
+  }
+  .resumen-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.875rem; }
+  .resumen-total { font-weight: 800; font-size: 1.1rem; color: var(--color-primario); }
+  .btn {
+    display: block; width: 100%; padding: 11px; border-radius: 8px;
+    border: none; cursor: pointer; font-weight: 700; font-size: 0.9rem; margin-top: 12px;
+  }
+  .btn-primary { background: var(--color-primario); color: #fff; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-secondary {
+    background: transparent; color: var(--text-muted);
+    border: 1px solid var(--border); margin-top: 8px;
+  }
+  .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+  .empty-cotiz { color: var(--text-muted); font-size: 0.875rem; padding: 20px 0; text-align: center; }
+
+  /* BUSCADOR COTIZ */
+  .buscar-prod {
+    display: flex; gap: 10px; margin-bottom: 16px;
+  }
+  .buscar-prod input { flex: 1; }
+  #resultados-busqueda {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; display: none;
+  }
+  .result-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; cursor: pointer; font-size: 0.875rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-item:last-child { border-bottom: none; }
+  .result-item:hover { background: var(--bg-card); }
+  .result-stock-ok { color: var(--ok); font-size: 0.8rem; }
+  .result-stock-warn { color: var(--warn); font-size: 0.8rem; }
+  .result-stock-rojo { color: var(--alerta); font-size: 0.8rem; }
+
+  /* ALERTAS PAGE */
+  .alerta-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+  }
+  .alerta-item:last-child { border-bottom: none; }
+  .alerta-icon { font-size: 1.4rem; }
+  .alerta-info { flex: 1; }
+  .alerta-nombre { font-weight: 600; font-size: 0.9rem; }
+  .alerta-detalle { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+  .alerta-stock { text-align: right; }
+  .alerta-stock-num { font-size: 1.4rem; font-weight: 800; color: var(--alerta); }
+  .alerta-stock-min { font-size: 0.75rem; color: var(--text-muted); }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { display: none; }
+    main { padding: 16px; }
+    .cotiz-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
-<!-- TODO: consulta de stock, cotizador, ranking de vendedor -->
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-dot" id="nav-inicial">F</div>
+    <span id="nav-nombre">FerreSystem</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-badge" id="badge-alertas" onclick="irAlertas()">⚠ <span id="badge-count">0</span> alertas</span>
+    <span class="nav-user">Vendedor</span>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside>
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" onclick="showPage('stock', this)"><span class="icon">📦</span> Stock</div>
+    <div class="nav-item" onclick="showPage('cotizador', this)"><span class="icon">🧾</span> Cotizador</div>
+    <div class="nav-section">Alertas</div>
+    <div class="nav-item" onclick="showPage('alertas', this)" id="menu-alertas"><span class="icon">⚠️</span> Stock crítico</div>
+  </aside>
+
+  <main>
+
+    <!-- PÁGINA: STOCK -->
+    <div class="page active" id="page-stock">
+      <h2>Consulta de Stock</h2>
+      <p class="page-subtitle">Inventario actual sincronizado desde el ERP</p>
+
+      <div class="stats" id="stats-stock"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Todos los productos</span>
+          <input class="search-input" type="text" placeholder="Buscar producto o SKU…" oninput="filtrarStock(this.value)">
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Producto</th>
+              <th>Bodega</th>
+              <th>Stock actual</th>
+              <th>Stock mínimo</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-stock"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PÁGINA: COTIZADOR -->
+    <div class="page" id="page-cotizador">
+      <h2>Cotizador rápido</h2>
+      <p class="page-subtitle">Arma una cotización en segundos</p>
+
+      <div class="cotiz-grid">
+        <div>
+          <div class="buscar-prod">
+            <input class="search-input" type="text" id="input-buscar" placeholder="Buscar producto para agregar…" oninput="buscarProducto(this.value)" style="width:100%">
+          </div>
+          <div id="resultados-busqueda"></div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Ítems de la cotización</span></div>
+            <div id="cotiz-items" style="padding:4px 0">
+              <div class="empty-cotiz">Sin productos — busca arriba para agregar</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="resumen-card">
+            <div class="card-title" style="margin-bottom:16px">Resumen</div>
+            <div id="resumen-items"></div>
+            <hr style="border-color:var(--border);margin:12px 0">
+            <div class="resumen-row"><span>Subtotal</span><span id="res-subtotal">$0</span></div>
+            <div class="resumen-row"><span>IVA (19%)</span><span id="res-iva">$0</span></div>
+            <div class="resumen-row resumen-total"><span>Total</span><span id="res-total">$0</span></div>
+            <button class="btn btn-primary" onclick="imprimirCotiz()">Imprimir / PDF</button>
+            <button class="btn btn-secondary" onclick="limpiarCotiz()">Limpiar cotización</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PÁGINA: ALERTAS -->
+    <div class="page" id="page-alertas">
+      <h2>Stock crítico</h2>
+      <p class="page-subtitle">Productos bajo el mínimo configurado — requieren reposición</p>
+
+      <div class="stats" id="stats-alertas"></div>
+
+      <div class="card" id="card-alertas">
+        <div id="lista-alertas"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ─── CONFIG & DATOS ─────────────────────────────────────────────────────────
+// En producción, TENANT_CONFIG se inyecta desde tenants/{id}.json
+// y STOCK_DATA desde data/{id}/{token}/stock.json via Firestore token.
+// Aquí usamos datos de demostración para que el panel sea navegable.
+
+const TENANT_CONFIG = {
+  nombre_corto: "Demo",
+  color_primario: "#e74c3c",
+  stock_minimo_default: 5,
+  // Por categoría: si el producto tiene categoria, se usa este umbral
+  alertas: {
+    stock_minimo_por_categoria: {
+      "Tornillería": 20,
+      "Herramientas": 3,
+      "Electricidad": 10,
+      "Plomería": 8,
+      "Pintura": 5
+    }
+  }
+};
+
+// Datos demo — en producción vienen de data/{tenant_id}/{token}/stock.json
+const STOCK_DATA = [
+  { sku:"TOR-001", nombre:"Tornillo 6x1\" C/Plana Zincado x100", categoria:"Tornillería", bodega:"Principal", stock:3,  precio:1490 },
+  { sku:"TOR-002", nombre:"Perno Hex M8x50 Galvanizado", categoria:"Tornillería", bodega:"Principal", stock:45, precio:290 },
+  { sku:"TOR-003", nombre:"Tuerca M8 Galvanizada x50", categoria:"Tornillería", bodega:"Principal", stock:2,  precio:890 },
+  { sku:"HER-001", nombre:"Destornillador Plano 6\"", categoria:"Herramientas", bodega:"Principal", stock:12, precio:3990 },
+  { sku:"HER-002", nombre:"Martillo Carpintero 500g", categoria:"Herramientas", bodega:"Principal", stock:1,  precio:8490 },
+  { sku:"HER-003", nombre:"Llave Combinada 13mm", categoria:"Herramientas", bodega:"Secundaria", stock:7,  precio:4290 },
+  { sku:"ELE-001", nombre:"Cable THHN 2.5mm Rojo x100m", categoria:"Electricidad", bodega:"Principal", stock:4,  precio:89900 },
+  { sku:"ELE-002", nombre:"Interruptor Simple Legrand",  categoria:"Electricidad", bodega:"Principal", stock:18, precio:4990 },
+  { sku:"ELE-003", nombre:"Enchufe Triple c/tierra", categoria:"Electricidad", bodega:"Principal", stock:9,  precio:2990 },
+  { sku:"PLO-001", nombre:"Codo PVC 110mm 90°", categoria:"Plomería", bodega:"Principal", stock:6,  precio:1890 },
+  { sku:"PLO-002", nombre:"Llave de Paso 1/2\" Bronce", categoria:"Plomería", bodega:"Principal", stock:2,  precio:7990 },
+  { sku:"PIN-001", nombre:"Pintura Látex Blanco 4L", categoria:"Pintura", bodega:"Principal", stock:0,  precio:15990 },
+  { sku:"PIN-002", nombre:"Rodillo Antigota 23cm",       categoria:"Pintura", bodega:"Principal", stock:11, precio:3290 },
+  { sku:"TOR-004", nombre:"Clavo Punta París 3\" x1kg",  categoria:"Tornillería", bodega:"Secundaria",stock:88, precio:1990 },
+  { sku:"HER-004", nombre:"Sierra Caladora Black+Decker", categoria:"Herramientas",bodega:"Principal",stock:2, precio:54990},
+];
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+function stockMinimo(prod) {
+  const porCat = TENANT_CONFIG.alertas?.stock_minimo_por_categoria;
+  return (porCat && porCat[prod.categoria]) ?? TENANT_CONFIG.stock_minimo_default;
+}
+
+function estadoStock(prod) {
+  const min = stockMinimo(prod);
+  if (prod.stock === 0) return 'rojo';
+  if (prod.stock <= min * 0.5) return 'rojo';
+  if (prod.stock <= min) return 'amarillo';
+  return 'verde';
+}
+
+function badgeEstado(prod) {
+  const estado = estadoStock(prod);
+  const labels = { rojo: '⚠ Crítico', amarillo: '↓ Bajo', verde: '✓ OK' };
+  return `<span class="badge ${estado}">${labels[estado]}</span>`;
+}
+
+function fmt(n) {
+  return '$' + Math.round(n).toLocaleString('es-CL');
+}
+
+// ─── BRANDING ───────────────────────────────────────────────────────────────
+function aplicarBranding() {
+  const cfg = TENANT_CONFIG;
+  document.documentElement.style.setProperty('--color-primario', cfg.color_primario || '#e74c3c');
+  const inicial = (cfg.nombre_corto || 'F')[0].toUpperCase();
+  document.getElementById('nav-inicial').textContent = inicial;
+  document.getElementById('nav-nombre').textContent = cfg.nombre_corto || 'FerreSystem';
+  document.title = 'Panel Vendedor — ' + (cfg.nombre_corto || 'FerreSystem');
+}
+
+// ─── NAVEGACIÓN ─────────────────────────────────────────────────────────────
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+function irAlertas() {
+  showPage('alertas', document.getElementById('menu-alertas'));
+}
+
+// ─── STOCK ──────────────────────────────────────────────────────────────────
+let stockFiltrado = [...STOCK_DATA];
+
+function renderTablaStock(datos) {
+  const tbody = document.getElementById('tabla-stock');
+  tbody.innerHTML = datos.map(p => `
+    <tr>
+      <td style="font-family:monospace;font-size:0.8rem;color:var(--text-muted)">${p.sku}</td>
+      <td>${p.nombre}</td>
+      <td style="color:var(--text-muted);font-size:0.83rem">${p.bodega}</td>
+      <td><strong style="font-size:1rem">${p.stock}</strong> <span style="font-size:0.75rem;color:var(--text-muted)">un</span></td>
+      <td style="color:var(--text-muted)">${stockMinimo(p)}</td>
+      <td>${badgeEstado(p)}</td>
+    </tr>
+  `).join('');
+}
+
+function filtrarStock(q) {
+  q = q.toLowerCase();
+  stockFiltrado = STOCK_DATA.filter(p =>
+    p.nombre.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
+  );
+  renderTablaStock(stockFiltrado);
+}
+
+function renderStatsStock() {
+  const total = STOCK_DATA.length;
+  const criticos = STOCK_DATA.filter(p => estadoStock(p) === 'rojo').length;
+  const bajos    = STOCK_DATA.filter(p => estadoStock(p) === 'amarillo').length;
+  const ok       = STOCK_DATA.filter(p => estadoStock(p) === 'verde').length;
+  document.getElementById('stats-stock').innerHTML = `
+    <div class="stat-card ${criticos > 0 ? 'alerta' : ''}">
+      <div class="stat-label">Críticos / sin stock</div>
+      <div class="stat-value">${criticos}</div>
+      <div class="stat-sub">requieren reposición urgente</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Stock bajo</div>
+      <div class="stat-value" style="color:var(--warn)">${bajos}</div>
+      <div class="stat-sub">bajo el mínimo configurado</div>
+    </div>
+    <div class="stat-card ok">
+      <div class="stat-label">Sin alertas</div>
+      <div class="stat-value">${ok}</div>
+      <div class="stat-sub">de ${total} productos totales</div>
+    </div>
+  `;
+}
+
+// ─── ALERTAS ────────────────────────────────────────────────────────────────
+function renderAlertas() {
+  const alertas = STOCK_DATA
+    .filter(p => estadoStock(p) !== 'verde')
+    .sort((a, b) => a.stock - b.stock);
+
+  const badge = document.getElementById('badge-alertas');
+  const count = document.getElementById('badge-count');
+
+  if (alertas.length > 0) {
+    badge.classList.add('visible');
+    count.textContent = alertas.length;
+  } else {
+    badge.classList.remove('visible');
+  }
+
+  const criticos = alertas.filter(p => estadoStock(p) === 'rojo').length;
+  const bajos    = alertas.filter(p => estadoStock(p) === 'amarillo').length;
+
+  document.getElementById('stats-alertas').innerHTML = alertas.length === 0 ? '' : `
+    <div class="stat-card alerta">
+      <div class="stat-label">Críticos / sin stock</div>
+      <div class="stat-value">${criticos}</div>
+      <div class="stat-sub">acción urgente</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Stock bajo</div>
+      <div class="stat-value" style="color:var(--warn)">${bajos}</div>
+      <div class="stat-sub">pedir pronto</div>
+    </div>
+  `;
+
+  const lista = document.getElementById('lista-alertas');
+  if (alertas.length === 0) {
+    lista.innerHTML = '<div class="empty-state"><div class="icon">✅</div><div>Todo el stock está sobre el mínimo</div></div>';
+    return;
+  }
+
+  lista.innerHTML = alertas.map(p => {
+    const estado = estadoStock(p);
+    const min = stockMinimo(p);
+    const icono = estado === 'rojo' ? '🔴' : '🟡';
+    return `
+      <div class="alerta-item">
+        <div class="alerta-icon">${icono}</div>
+        <div class="alerta-info">
+          <div class="alerta-nombre">${p.nombre}</div>
+          <div class="alerta-detalle">SKU: ${p.sku} · ${p.categoria} · ${p.bodega}</div>
+        </div>
+        <div class="alerta-stock">
+          <div class="alerta-stock-num">${p.stock}</div>
+          <div class="alerta-stock-min">mín: ${min} un</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ─── COTIZADOR ──────────────────────────────────────────────────────────────
+let cotizItems = [];
+
+function buscarProducto(q) {
+  const box = document.getElementById('resultados-busqueda');
+  if (!q || q.length < 2) { box.style.display = 'none'; return; }
+  const res = STOCK_DATA.filter(p =>
+    (p.nombre.toLowerCase().includes(q.toLowerCase()) || p.sku.toLowerCase().includes(q.toLowerCase()))
+    && !cotizItems.find(c => c.sku === p.sku)
+  ).slice(0, 6);
+
+  if (!res.length) { box.style.display = 'none'; return; }
+  const estado = p => estadoStock(p);
+  const stockClass = p => estado(p) === 'rojo' ? 'result-stock-rojo' : estado(p) === 'amarillo' ? 'result-stock-warn' : 'result-stock-ok';
+  box.innerHTML = res.map(p => `
+    <div class="result-item" onclick="agregarACotiz('${p.sku}')">
+      <div>
+        <div style="font-weight:500">${p.nombre}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted)">${p.sku} · ${p.bodega}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:600">${fmt(p.precio)}</div>
+        <div class="${stockClass(p)}">Stock: ${p.stock}</div>
+      </div>
+    </div>
+  `).join('');
+  box.style.display = 'block';
+}
+
+function agregarACotiz(sku) {
+  const prod = STOCK_DATA.find(p => p.sku === sku);
+  if (!prod) return;
+  cotizItems.push({ ...prod, qty: 1 });
+  document.getElementById('input-buscar').value = '';
+  document.getElementById('resultados-busqueda').style.display = 'none';
+  renderCotiz();
+}
+
+function renderCotiz() {
+  const cont = document.getElementById('cotiz-items');
+  if (!cotizItems.length) {
+    cont.innerHTML = '<div class="empty-cotiz">Sin productos — busca arriba para agregar</div>';
+    document.getElementById('resumen-items').innerHTML = '';
+    ['res-subtotal','res-iva','res-total'].forEach(id => document.getElementById(id).textContent = '$0');
+    return;
+  }
+
+  cont.innerHTML = cotizItems.map((p, i) => `
+    <div class="cotiz-row" style="padding:10px 16px">
+      <div class="cotiz-prod">
+        <div class="cotiz-prod-nombre">${p.nombre}</div>
+        <div class="cotiz-prod-sku">${p.sku}</div>
+      </div>
+      <input class="cotiz-qty" type="number" min="1" value="${p.qty}"
+        onchange="cambiarQty(${i}, this.value)">
+      <div class="cotiz-precio">${fmt(p.precio * p.qty)}</div>
+      <button class="btn-remove" onclick="quitarItem(${i})">✕</button>
+    </div>
+  `).join('');
+
+  const subtotal = cotizItems.reduce((s, p) => s + p.precio * p.qty, 0);
+  const iva = subtotal * 0.19;
+  const total = subtotal + iva;
+
+  document.getElementById('resumen-items').innerHTML = cotizItems.map(p =>
+    `<div class="resumen-row"><span style="font-size:0.8rem">${p.nombre.slice(0,26)}… x${p.qty}</span><span>${fmt(p.precio*p.qty)}</span></div>`
+  ).join('');
+  document.getElementById('res-subtotal').textContent = fmt(subtotal);
+  document.getElementById('res-iva').textContent = fmt(iva);
+  document.getElementById('res-total').textContent = fmt(total);
+}
+
+function cambiarQty(i, val) {
+  cotizItems[i].qty = Math.max(1, parseInt(val) || 1);
+  renderCotiz();
+}
+
+function quitarItem(i) {
+  cotizItems.splice(i, 1);
+  renderCotiz();
+}
+
+function limpiarCotiz() {
+  cotizItems = [];
+  renderCotiz();
+}
+
+function imprimirCotiz() {
+  window.print();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+aplicarBranding();
+renderStatsStock();
+renderTablaStock(STOCK_DATA);
+renderAlertas();
+</script>
 </body>
 </html>
