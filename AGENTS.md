@@ -61,6 +61,41 @@ NO TOCO:     [qué queda igual y por qué]
 
 ---
 
+## FLUJO DE DESARROLLO (desde v0.2)
+
+### Git: siempre en ramas de feature
+
+```
+git checkout -b feat/<nombre-corto>   # nueva rama antes de empezar
+# ... cambios ...
+git push origin feat/<nombre-corto>
+# PR o merge a main al terminar
+```
+
+Nunca commitear directamente en `main` salvo hotfixes críticos.
+
+### Tests: correr antes y después de cada cambio a core/
+
+```
+E:\python-portable\python.exe -m pytest
+```
+
+- Suite baseline: **51 tests en `tests/`**
+- Si el cambio toca `core/` o `adapters/` → los tests deben pasar antes
+  de mergear. Si rompen tests existentes → arreglar antes de avanzar.
+- Nuevas funcionalidades en `core/` → agregar tests en `tests/` (TDD).
+
+### Superpowers Framework (metodología)
+
+FerreSystem usa el Superpowers Framework como metodología de desarrollo:
+- **`/brainstorming`** — antes de diseñar features nuevas o adapters
+- **`/writing-plans`** — antes de implementar (desglosa en tareas de 2-5 min)
+- **`/dispatching-parallel-agents`** — cuando adapter + panel se desarrollan juntos
+- **`/systematic-debugging`** — cuando falla el pipeline de un tenant
+- **`/verification-before-completion`** — antes de declarar cualquier tarea lista
+
+---
+
 ## SEGURIDAD
 
 - Nunca guardar archivos del proyecto en `C:` (proyecto en `E:\ferresystem\`)
@@ -83,3 +118,6 @@ Ver `README.md` y `docs/arquitectura.md` para el detalle de capas
 - v0.1 — Esqueleto inicial: estructura de carpetas, contrato `ERPAdapter`,
   validador y rotación de token genéricos (adaptados de Ferretería
   Oviedo), landing page, sin lógica de negocio de ningún cliente real.
+- v0.2 — Motor completo: BsaleAdapter, scheduler con retry, wizard
+  onboarding, panel-vendedor, panel-cliente, panel-operador, feature
+  flags por módulo, suite pytest 51 tests, Superpowers integrado.
