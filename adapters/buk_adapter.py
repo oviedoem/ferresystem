@@ -107,3 +107,34 @@ class BukAdapter:
 
         log.info(f"get_resumen_dotacion: {len(resumen)} empleados")
         return resumen
+
+    def get_ausencias(self, desde: str, hasta: str) -> list[dict]:
+        """Descarga ausencias y licencias del rango [desde, hasta] (YYYY-MM-DD).
+
+        Consulta /companies/{id}/leave_requests filtrando por fecha.
+        Cada registro: empleado_id, nombre, tipo_ausencia, fecha_inicio,
+        fecha_fin, dias_habiles, estado.
+
+        Args:
+            desde: Fecha inicio ISO (YYYY-MM-DD).
+            hasta: Fecha fin ISO (YYYY-MM-DD).
+        """
+        params = {"start_date": desde, "end_date": hasta}
+        raw = self._paginar(f"/companies/{self._company_id}/leave_requests", params)
+
+        ausencias = []
+        for item in raw:
+            emp = item.get("employee") or {}
+            nombre = f"{emp.get('first_name', '')} {emp.get('last_name', '')}".strip()
+            ausencias.append({
+                "empleado_id":   emp.get("id") or item.get("employee_id"),
+                "nombre":        nombre,
+                "tipo_ausencia": item.get("leave_type") or item.get("absence_type") or "",
+                "fecha_inicio":  item.get("start_date") or "",
+                "fecha_fin":     item.get("end_date") or "",
+                "dias_habiles":  float(item.get("business_days") or item.get("days") or 0),
+                "estado":        item.get("status") or "pendiente",
+            })
+
+        log.info(f"get_ausencias ({desde}→{hasta}): {len(ausencias)} registros")
+        return ausencias

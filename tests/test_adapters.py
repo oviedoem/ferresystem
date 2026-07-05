@@ -319,7 +319,114 @@ class TestERPAdapterContrato:
         from core.erp_adapter import ERPAdapter
         assert issubclass(BsaleAdapter, ERPAdapter)
 
-    def test_dataclasses_tienen_campos_requeridos(self):
+# ─── BukAdapter ──────────────────────────────────────────────────────────────
+
+class TestBukAdapter:
+    """Tests para adapters/buk_adapter.py — API REST Buk RR.HH."""
+
+    @pytest.fixture
+    def config(self):
+        return {
+            "access_token": "tok_buk_test",
+            "company_id": 42,
+            "timeout": 5,
+            "max_paginas": 3,
+        }
+
+    @pytest.fixture
+    def adapter(self, config):
+        from adapters.buk_adapter import BukAdapter
+        return BukAdapter(config)
+
+    def _mock_paginar(self, adapter, items: list):
+        return patch.object(adapter, "_paginar", return_value=items)
+
+    # --- get_resumen_dotacion ---
+
+    def test_get_resumen_dotacion_normaliza_campos(self, adapter):
+        raw = [{
+            "id": 1, "first_name": "Ana", "last_name": "López",
+            "job_title": "Vendedora", "department": "Ventas", "status": "activo",
+        }]
+        with self._mock_paginar(adapter, raw):
+            resultado = adapter.get_resumen_dotacion()
+        assert len(resultado) == 1
+        r = resultado[0]
+        assert r["empleado_id"] == 1
+        assert r["nombre"] == "Ana López"
+        assert r["cargo"] == "Vendedora"
+        assert r["departamento"] == "Ventas"
+        assert r["estado"] == "activo"
+
+    def test_get_resumen_dotacion_usa_position_si_no_hay_job_title(self, adapter):
+        raw = [{"id": 2, "first_name": "Luis", "last_name": "R",
+                "job_title": None, "position": "Bodeguero", "department": "", "status": "activo"}]
+        with self._mock_paginar(adapter, raw):
+            resultado = adapter.get_resumen_dotacion()
+        assert resultado[0]["cargo"] == "Bodeguero"
+
+    def test_get_resumen_dotacion_vacia_devuelve_lista_vacia(self, adapter):
+        with self._mock_paginar(adapter, []):
+            assert adapter.get_resumen_dotacion() == []
+
+    # --- get_ausencias ---
+
+    def test_get_ausencias_normaliza_campos(self, adapter):
+        raw = [{
+            "employee": {"id": 5, "first_name": "Carlos", "last_name": "M"},
+            "leave_type": "Licencia médica",
+            "start_date": "2026-07-01", "end_date": "2026-07-05",
+            "business_days": 4.0, "status": "aprobada",
+        }]
+        with self._mock_paginar(adapter, raw):
+            resultado = adapter.get_ausencias("2026-07-01", "2026-07-31")
+        assert len(resultado) == 1
+        a = resultado[0]
+        assert a["empleado_id"] == 5
+        assert a["nombre"] == "Carlos M"
+        assert a["tipo_ausencia"] == "Licencia médica"
+        assert a["fecha_inicio"] == "2026-07-01"
+        assert a["dias_habiles"] == 4.0
+        assert a["estado"] == "aprobada"
+
+    def test_get_ausencias_usa_employee_id_si_no_hay_objeto_employee(self, adapter):
+        raw = [{"employee_id": 9, "employee": None,
+                "leave_type": "Vacaciones", "start_date": "2026-08-01",
+                "end_date": "2026-08-10", "days": 8, "status": "aprobada"}]
+        with self._mock_paginar(adapter, raw):
+            resultado = adapter.get_ausencias("2026-08-01", "2026-08-31")
+        assert resultado[0]["empleado_id"] == 9
+        assert resultado[0]["dias_habiles"] == 8.0
+
+    def test_get_ausencias_vacia_devuelve_lista_vacia(self, adapter):
+        with self._mock_paginar(adapter, []):
+            assert adapter.get_ausencias("2026-07-01", "2026-07-31") == []
+
+    # --- test_conexion ---
+
+    def test_test_conexion_ok(self, adapter):
+        with patch.object(adapter, "_get", return_value={"id": 42, "name": "Empresa"}):
+            assert adapter.test_conexion() is True
+
+    def test_test_conexion_error_red_false(self, adapter):
+        import urllib.error
+        with patch.object(adapter, "_get", side_effect=urllib.error.URLError("timeout")):
+            assert adapter.test_conexion() is False
+
+    # --- config ---
+
+    def test_config_lee_company_id_desde_tenant(self, config):
+        config_custom = {**config, "company_id": 99, "access_token": "otro_tok"}
+        from adapters.buk_adapter import BukAdapter
+        a = BukAdapter(config_custom)
+        assert a._company_id == 99
+        assert a._token == "otro_tok"
+
+
+class TestERPAdapterContrato:
+    """Verifica que el contrato base funcione correctamente."""
+
+    def test_adapter_concreto_implementa_todos_los_metodos(self):
         p = Producto(codigo="A1", descripcion="Test")
         assert p.codigo == "A1"
         assert p.activo is True  # default
