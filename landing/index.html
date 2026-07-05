@@ -326,7 +326,7 @@
     footer::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.07) 25%,rgba(231,76,60,0.18) 50%,rgba(255,255,255,0.07) 75%,transparent)}
     /* STICKY */
     .sticky-cta{display:none;position:fixed;bottom:0;left:0;right:0;z-index:400;background:rgba(9,12,20,0.97);border-top:1px solid var(--borde);padding:0.75rem 1.25rem}
-    .sticky-cta a{display:flex;align-items:center;justify-content:center;gap:0.5rem;background:#25d366;color:#fff;font-weight:700;font-size:0.95rem;padding:0.8rem;border-radius:10px;width:100%}
+    .sticky-cta a{display:flex;align-items:center;justify-content:center;gap:0.5rem;background:var(--rojo);color:#fff;font-weight:700;font-size:0.95rem;padding:0.8rem;border-radius:10px;width:100%}
     @media(max-width:768px){.sticky-cta{display:block}body{padding-bottom:72px}}
 
     /* ===== BROWSER MOCKUP ===== */
@@ -415,6 +415,38 @@
     .price-cta-ghost:hover{border-color:rgba(255,255,255,0.22);color:#fff}
     .price-cta-primary{background:var(--rojo);color:#fff;border:1.5px solid transparent}
     .price-cta-primary:hover{background:var(--rojo-h);transform:translateY(-1px);box-shadow:0 6px 20px rgba(231,76,60,0.35)}
+
+    /* ===== RESPONSIVE — MOBILE ===== */
+    @media(max-width:768px){
+      section,.pricing-section,.testimonial-section{padding:4.5rem 1.25rem}
+      .hero{padding:6rem 1.25rem 3.5rem}
+      .hero-stats{gap:1rem 2rem;margin-top:2.5rem;padding-top:2rem}
+      .hero-stat-val{font-size:1.65rem}
+      .hero-mockup{margin-top:2.5rem}
+      .logos-row{gap:0.85rem 1.5rem}
+      .sec-sub{margin-bottom:2.5rem}
+      .pricing-grid{display:flex;flex-direction:column;gap:1rem}
+      .price-featured{order:-1}
+      .cta-box{padding:2.5rem 1.5rem}
+      .panel-card{padding:1.5rem}
+      .price-card{padding:1.5rem}
+      .testi-card{padding:1.5rem}
+      .noticia-card{padding:1.25rem}
+    }
+    @media(max-width:480px){
+      section,.pricing-section,.testimonial-section{padding:3.25rem 1rem}
+      .hero{padding:5.5rem 1rem 3rem}
+      .hero h1{font-size:2.2rem}
+      .hero-stats{gap:0.6rem 1rem}
+      .hero-stat-val{font-size:1.45rem}
+      .hero-mockup{display:none}
+      .logos-row{gap:0.6rem 1rem}
+      .faq-btn{font-size:0.88rem;padding:1rem 1.25rem}
+      .faq-body p{padding:0 1.25rem 1rem}
+      .sec-title{letter-spacing:-0.01em}
+      .panel-card{padding:1.25rem}
+    }
+
   </style>
 </head>
 <body>
@@ -1089,7 +1121,7 @@
 
 <!-- STICKY MOBILE -->
 <div class="sticky-cta">
-  <a href="https://wa.me/56900000000?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem" target="_blank" rel="noopener">Pide una Demo →</a>
+  <a href="#paneles">Ver los paneles →</a>
 </div>
 
 <script>
