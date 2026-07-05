@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Interactivo — FerreSystem</title>
+<style>
+  :root {
+    --cp:     #e74c3c;
+    --bg:     #0E1318;
+    --card:   #1A2530;
+    --border: #2C3A47;
+    --text:   #E8E2D9;
+    --muted:  #7A8A96;
+    --font:   'Segoe UI', system-ui, -apple-system, sans-serif;
+    --bar-h:  54px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); overflow: hidden; }
+
+  /* ── TOP BAR ── */
+  .demo-bar {
+    height: var(--bar-h);
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0;
+    padding: 0 20px;
+    position: relative; z-index: 20;
+  }
+  .demo-brand {
+    display: flex; align-items: center; gap: 9px;
+    font-weight: 700; font-size: .95rem; white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .demo-dot {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: var(--cp); display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: .9rem; color: #fff;
+    flex-shrink: 0;
+  }
+  .demo-badge {
+    font-size: .62rem; font-weight: 800; letter-spacing: .14em;
+    text-transform: uppercase; padding: 3px 8px; border-radius: 3px;
+    background: rgba(217,101,31,.18); color: #E07C3A;
+    border: 1px solid rgba(217,101,31,.35); flex-shrink: 0;
+  }
+  .demo-sep { width: 1px; background: var(--border); height: 24px; margin: 0 16px; flex-shrink: 0; }
+
+  /* ── ROLE TABS ── */
+  .role-tabs {
+    display: flex; align-items: center; gap: 2px;
+    background: rgba(0,0,0,.25); border-radius: 7px;
+    padding: 3px;
+  }
+  .role-tab {
+    padding: 5px 14px; border-radius: 5px; cursor: pointer;
+    font-size: .78rem; font-weight: 600; color: var(--muted);
+    border: none; background: none; font-family: var(--font);
+    transition: background .12s, color .12s;
+    white-space: nowrap;
+  }
+  .role-tab:hover { color: var(--text); }
+  .role-tab.active {
+    background: var(--cp); color: #fff;
+  }
+  .role-tab .role-icon { margin-right: 5px; font-size: .82rem; }
+
+  .demo-right {
+    margin-left: auto; display: flex; align-items: center; gap: 14px; flex-shrink: 0;
+  }
+  .demo-hint { font-size: .72rem; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+  .demo-hint svg { opacity: .6; }
+  .demo-cta {
+    padding: 7px 16px; border-radius: 6px; font-size: .8rem; font-weight: 700;
+    background: var(--cp); color: #fff; border: none; cursor: pointer;
+    font-family: var(--font); text-decoration: none;
+    transition: opacity .12s;
+    white-space: nowrap;
+  }
+  .demo-cta:hover { opacity: .88; }
+
+  /* ── IFRAME ── */
+  .demo-frame-wrap {
+    position: relative;
+    height: calc(100vh - var(--bar-h));
+    width: 100%;
+  }
+  .demo-frame-wrap iframe {
+    width: 100%; height: 100%; border: none; display: block;
+  }
+
+  /* ── OFFLINE TOAST ── */
+  .offline-toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #1A2530; border: 1px solid #E07C3A;
+    color: #E07C3A; font-size: .78rem; font-weight: 600;
+    padding: 9px 18px; border-radius: 6px; z-index: 9999;
+    display: none; align-items: center; gap: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  }
+  .offline-toast.show { display: flex; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .demo-brand span.name { display: none; }
+    .demo-hint { display: none; }
+    .role-tab .role-icon { margin: 0; }
+    .role-tab { padding: 5px 10px; font-size: .72rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <div class="demo-brand">
+    <div class="demo-dot">F</div>
+    <span class="name">FerreSystem</span>
+  </div>
+  <span class="demo-badge">Demo</span>
+  <div class="demo-sep"></div>
+
+  <div class="role-tabs">
+    <button class="role-tab active" data-src="panel-admin.html" onclick="switchPanel(this)">
+      <span class="role-icon">📊</span>Admin
+    </button>
+    <button class="role-tab" data-src="panel-vendedor.html" onclick="switchPanel(this)">
+      <span class="role-icon">💼</span>Vendedor
+    </button>
+    <button class="role-tab" data-src="panel-cliente.html" onclick="switchPanel(this)">
+      <span class="role-icon">👤</span>Cliente
+    </button>
+    <button class="role-tab" data-src="panel-operador.html" onclick="switchPanel(this)">
+      <span class="role-icon">🔧</span>Operador
+    </button>
+  </div>
+
+  <div class="demo-right">
+    <div class="demo-hint">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="8" cy="8" r="6.5"/>
+        <path d="M8 7v4M8 5.5v.5"/>
+      </svg>
+      Datos de ejemplo — sin login
+    </div>
+    <a class="demo-cta" href="../landing/index.html">Ver planes</a>
+  </div>
+</div>
+
+<div class="demo-frame-wrap">
+  <iframe id="demo-frame" src="panel-admin.html" title="Demo FerreSystem" loading="eager"></iframe>
+</div>
+
+<div class="offline-toast" id="offline-toast">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+    <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 11a.75.75 0 1 1 0-1.5A.75.75 0 0 1 8 12zm.75-4.5a.75.75 0 0 1-1.5 0V5.5a.75.75 0 0 1 1.5 0V7.5z"/>
+  </svg>
+  Sin conexión — mostrando versión en caché
+</div>
+
+<script>
+function switchPanel(btn) {
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('demo-frame').src = btn.dataset.src;
+}
+
+window.addEventListener('offline', () => {
+  document.getElementById('offline-toast').classList.add('show');
+});
+window.addEventListener('online', () => {
+  document.getElementById('offline-toast').classList.remove('show');
+});
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

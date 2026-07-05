@@ -661,6 +661,10 @@ if (!MOD_ALERTAS) {
 renderStatsStock();
 renderTablaStock(STOCK_DATA);
 renderAlertas();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
