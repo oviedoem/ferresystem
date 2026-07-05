@@ -11,6 +11,7 @@
     --bg-card2: #181c28;
     --border: #252838;
     --primario: #6c63ff;
+    --primario-bg: rgba(108,99,255,0.12);
     --text: #e8eaf0;
     --text-muted: #6b7280;
     --ok: #10b981;
@@ -19,6 +20,7 @@
     --warn-bg: rgba(245,158,11,0.1);
     --error: #ef4444;
     --error-bg: rgba(239,68,68,0.1);
+    --info: #818cf8;
     --radius: 10px;
     --font: 'Segoe UI', system-ui, sans-serif;
   }
@@ -28,7 +30,7 @@
   /* NAV */
   nav {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0 28px; height: 56px;
+    padding: 0 24px; height: 56px;
     background: var(--bg-card); border-bottom: 1px solid var(--border);
     position: sticky; top: 0; z-index: 100;
   }
@@ -39,22 +41,39 @@
     justify-content: center; font-weight: 900; font-size: 0.9rem; color: #fff;
   }
   .nav-tag {
-    font-size: 0.7rem; background: rgba(108,99,255,0.15); color: var(--primario);
+    font-size: 0.7rem; background: var(--primario-bg); color: var(--primario);
     border: 1px solid var(--primario); border-radius: 4px; padding: 2px 7px;
-    margin-left: 8px; letter-spacing: 0.5px; text-transform: uppercase;
+    margin-left: 4px; letter-spacing: 0.5px; text-transform: uppercase;
   }
   .nav-right { display: flex; align-items: center; gap: 16px; font-size: 0.82rem; }
   #last-refresh { color: var(--text-muted); }
   .btn-refresh {
     background: var(--primario); color: #fff; border: none;
     border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 0.82rem; font-weight: 600;
+    transition: opacity 0.15s;
   }
   .btn-refresh:hover { opacity: 0.85; }
 
   /* LAYOUT */
-  main { padding: 28px 32px; max-width: 1200px; margin: 0 auto; }
-  h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
-  .subtitle { color: var(--text-muted); font-size: 0.83rem; margin-bottom: 24px; }
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 56px); }
+
+  /* SIDEBAR */
+  aside { background: var(--bg-card); border-right: 1px solid var(--border); padding: 20px 0; }
+  .nav-section { padding: 16px 20px 6px; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; cursor: pointer; font-size: 0.9rem;
+    color: var(--text-muted); border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg-card2); color: var(--text); }
+  .nav-item.active { color: var(--text); border-left-color: var(--primario); background: var(--bg-card2); }
+  .nav-item .icon { font-size: 1.1rem; }
+
+  /* MAIN */
+  main { padding: 28px 32px; overflow-y: auto; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+  .page-subtitle { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px; }
 
   /* STATS */
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 28px; }
@@ -63,22 +82,33 @@
     border-radius: var(--radius); padding: 16px 18px;
   }
   .stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
-  .stat-value { font-size: 2rem; font-weight: 800; margin: 6px 0 2px; }
+  .stat-value { font-size: 2rem; font-weight: 800; margin: 6px 0 2px; font-variant-numeric: tabular-nums; }
   .stat-sub { font-size: 0.73rem; color: var(--text-muted); }
-  .stat.ok .stat-value { color: var(--ok); }
-  .stat.warn .stat-value { color: var(--warn); }
+  .stat.ok .stat-value    { color: var(--ok); }
+  .stat.warn .stat-value  { color: var(--warn); }
   .stat.error .stat-value { color: var(--error); }
 
-  /* TABLA TENANTS */
+  /* CARD */
   .card {
     background: var(--bg-card); border: 1px solid var(--border);
     border-radius: var(--radius); overflow: hidden; margin-bottom: 24px;
   }
   .card-header {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center; gap: 12px;
     padding: 14px 20px; border-bottom: 1px solid var(--border);
   }
   .card-title { font-weight: 600; font-size: 0.95rem; }
+  .card-count { font-size: 0.78rem; color: var(--text-muted); }
+
+  /* SEARCH */
+  .search-input {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px; padding: 6px 12px;
+    font-size: 0.82rem; outline: none;
+  }
+  .search-input:focus { border-color: var(--primario); }
+
+  /* TABLE */
   table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
   th {
     text-align: left; padding: 10px 16px;
@@ -88,44 +118,137 @@
   }
   td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--bg-card2); }
+  tr { border-left: 3px solid transparent; }
+  tr.row-ok    { border-left-color: var(--ok); }
+  tr.row-warn  { border-left-color: var(--warn); }
+  tr.row-error { border-left-color: var(--error); }
+  tr:hover td  { background: var(--bg-card2); }
 
   .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
-  .dot.ok { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
-  .dot.warn { background: var(--warn); }
-  .dot.error { background: var(--error); box-shadow: 0 0 6px var(--error); }
+  .dot.ok       { background: var(--ok);    box-shadow: 0 0 6px var(--ok); }
+  .dot.warn     { background: var(--warn); }
+  .dot.error    { background: var(--error); box-shadow: 0 0 6px var(--error); }
   .dot.inactivo { background: var(--text-muted); }
 
   .badge {
     display: inline-flex; align-items: center;
     padding: 3px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600;
   }
-  .badge.ok    { background: var(--ok-bg);    color: var(--ok);    border: 1px solid var(--ok); }
-  .badge.warn  { background: var(--warn-bg);  color: var(--warn);  border: 1px solid var(--warn); }
-  .badge.error { background: var(--error-bg); color: var(--error); border: 1px solid var(--error); }
+  .badge.ok       { background: var(--ok-bg);    color: var(--ok);    border: 1px solid var(--ok); }
+  .badge.warn     { background: var(--warn-bg);  color: var(--warn);  border: 1px solid var(--warn); }
+  .badge.error    { background: var(--error-bg); color: var(--error); border: 1px solid var(--error); }
   .badge.inactivo { background: rgba(107,114,128,0.1); color: var(--text-muted); border: 1px solid var(--border); }
 
   .mono { font-family: 'Consolas', monospace; font-size: 0.8rem; color: var(--text-muted); }
 
-  /* LOGS */
-  .log-panel {
-    background: var(--bg-card2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px 20px; font-family: 'Consolas', monospace;
-    font-size: 0.78rem; line-height: 1.6; max-height: 300px; overflow-y: auto;
-  }
-  .log-line { display: flex; gap: 10px; margin-bottom: 2px; }
-  .log-ts { color: var(--text-muted); min-width: 180px; }
-  .log-level { min-width: 50px; font-weight: 700; }
-  .log-level.ok    { color: var(--ok); }
-  .log-level.warn  { color: var(--warn); }
-  .log-level.error { color: var(--error); }
-  .log-level.info  { color: var(--primario); }
-  .log-msg { color: var(--text); }
+  /* SYNC HISTORY DOTS */
+  .sync-hist { display: flex; gap: 3px; align-items: center; }
+  .sync-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .sync-dot.ok    { background: var(--ok);    opacity: 0.85; }
+  .sync-dot.warn  { background: var(--warn);  opacity: 0.85; }
+  .sync-dot.error { background: var(--error); opacity: 0.85; }
+  .sync-dot.none  { background: var(--border); }
 
-  /* DETAIL MODAL */
+  /* SMALL BUTTONS */
+  .btn-sm {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 5px; padding: 4px 10px;
+    cursor: pointer; font-size: 0.78rem; transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-sm:hover { border-color: var(--primario); color: var(--primario); }
+  .btn-sm.sync  { color: var(--ok); border-color: rgba(16,185,129,0.4); }
+  .btn-sm.sync:hover { background: var(--ok-bg); border-color: var(--ok); }
+  .btn-sm:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+  /* LOG PANEL */
+  .log-filters {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--bg-card2);
+  }
+  .log-filter-label { font-size: 0.74rem; color: var(--text-muted); flex-shrink: 0; }
+  .nivel-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-muted); border-radius: 5px; padding: 3px 9px;
+    font-size: 0.74rem; cursor: pointer; transition: all 0.15s;
+  }
+  .nivel-btn.active          { background: var(--bg-card); color: var(--text); border-color: var(--primario); }
+  .nivel-btn.active.ok       { border-color: var(--ok);    color: var(--ok); }
+  .nivel-btn.active.warn     { border-color: var(--warn);  color: var(--warn); }
+  .nivel-btn.active.error    { border-color: var(--error); color: var(--error); }
+  select.log-tenant-sel {
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text); border-radius: 5px; padding: 3px 8px;
+    font-size: 0.78rem; outline: none;
+  }
+  .log-panel {
+    background: var(--bg-card2); padding: 10px 16px; font-family: 'Consolas', monospace;
+    font-size: 0.78rem; line-height: 1.65; max-height: 380px; overflow-y: auto;
+  }
+  .log-line { display: flex; gap: 10px; padding: 1px 0; }
+  .log-line:hover { background: rgba(255,255,255,0.03); border-radius: 3px; padding-left: 2px; }
+  .log-ts         { color: var(--text-muted); min-width: 150px; flex-shrink: 0; }
+  .log-level      { min-width: 50px; font-weight: 700; flex-shrink: 0; }
+  .log-level.ok   { color: var(--ok); }
+  .log-level.warn { color: var(--warn); }
+  .log-level.error{ color: var(--error); }
+  .log-level.info { color: var(--info); }
+  .log-tenant-tag { color: var(--primario); font-size: 0.74rem; min-width: 150px; flex-shrink: 0; }
+  .log-msg        { color: var(--text); flex: 1; word-break: break-word; }
+  .log-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 16px; border-top: 1px solid var(--border);
+    font-size: 0.74rem; color: var(--text-muted);
+  }
+  .autoscroll-toggle { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  input[type=checkbox] { accent-color: var(--primario); }
+
+  /* TENANT CARDS */
+  .tenant-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .tenant-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px;
+    border-top: 3px solid var(--border);
+  }
+  .tenant-card.ok       { border-top-color: var(--ok); }
+  .tenant-card.warn     { border-top-color: var(--warn); }
+  .tenant-card.error    { border-top-color: var(--error); }
+  .tenant-card.inactivo { border-top-color: var(--text-muted); opacity: 0.7; }
+  .tc-header  { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .tc-nombre  { font-weight: 700; font-size: 0.95rem; margin-bottom: 3px; }
+  .tc-id      { font-family: Consolas, monospace; font-size: 0.72rem; color: var(--text-muted); }
+  .tc-hist    { margin: 12px 0; }
+  .tc-hist-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 5px; }
+  .tc-meta    { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .tc-meta-key  { font-size: 0.68rem; color: var(--text-muted); margin-bottom: 1px; }
+  .tc-meta-val  { font-size: 0.82rem; font-weight: 500; }
+  .tc-actions { display: flex; gap: 8px; }
+
+  /* CONFIG PAGE */
+  .config-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .config-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+  }
+  .config-card-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 14px; }
+  .config-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.83rem; gap: 12px;
+  }
+  .config-row:last-child { border-bottom: none; }
+  .config-key { color: var(--text-muted); flex-shrink: 0; }
+  .config-val { font-family: Consolas, monospace; font-size: 0.8rem; text-align: right; word-break: break-all; }
+  .chip {
+    display: inline-flex; align-items: center; padding: 2px 8px;
+    border-radius: 4px; font-size: 0.7rem; font-weight: 600;
+  }
+  .chip.verde  { background: var(--ok-bg);       color: var(--ok); }
+  .chip.morado { background: var(--primario-bg);  color: var(--primario); }
+  .chip.gris   { background: rgba(107,114,128,0.1); color: var(--text-muted); }
+
+  /* MODAL */
   .modal-overlay {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.65); z-index: 300; align-items: center; justify-content: center;
   }
   .modal-overlay.open { display: flex; }
   .modal {
@@ -136,13 +259,65 @@
   .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .modal-title { font-weight: 700; font-size: 1rem; }
   .btn-close { background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer; }
-  .modal-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .modal-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; gap: 12px; }
   .modal-row:last-child { border-bottom: none; }
-  .modal-key { color: var(--text-muted); }
+  .modal-key { color: var(--text-muted); flex-shrink: 0; }
 
-  @media (max-width: 700px) {
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 28px; right: 28px; z-index: 400;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-left: 3px solid var(--ok);
+    border-radius: 8px; padding: 12px 18px; font-size: 0.85rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none; max-width: 320px;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.warn  { border-left-color: var(--warn); }
+  .toast.error { border-left-color: var(--error); }
+
+  /* EMPTY */
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.875rem; }
+
+  /* ANIMATIONS */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .page { display: none; }
+  .page.active { display: block; animation: pageIn .35s cubic-bezier(.22,1,.36,1) both; }
+
+  .stat { animation: rise .5s cubic-bezier(.22,1,.36,1) both; }
+  .stat:nth-child(1) { animation-delay: .02s; }
+  .stat:nth-child(2) { animation-delay: .07s; }
+  .stat:nth-child(3) { animation-delay: .12s; }
+  .stat:nth-child(4) { animation-delay: .17s; }
+
+  .tenant-card { animation: rise .5s cubic-bezier(.22,1,.36,1) both; }
+  .tenant-card:nth-child(1) { animation-delay: .04s; }
+  .tenant-card:nth-child(2) { animation-delay: .10s; }
+  .tenant-card:nth-child(3) { animation-delay: .16s; }
+  .tenant-card:nth-child(4) { animation-delay: .22s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stat, .tenant-card { animation: none; opacity: 1; transform: none; }
+    .page.active { animation: none; opacity: 1; transform: none; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { display: none; }
     main { padding: 16px; }
-    table { font-size: 0.78rem; }
+    .tenant-grid { grid-template-columns: 1fr; }
+    .log-ts, .log-tenant-tag { display: none; }
   }
 </style>
 </head>
@@ -160,45 +335,110 @@
   </div>
 </nav>
 
-<main>
-  <h2>Dashboard de salud del pipeline</h2>
-  <p class="subtitle">Estado en tiempo real de todos los tenants activos</p>
+<div class="layout">
+  <aside>
+    <div class="nav-section">Monitor</div>
+    <div class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard',this)"><span class="icon">🖥</span> Dashboard</div>
+    <div class="nav-item" id="nav-logs" onclick="showPage('logs',this)"><span class="icon">📋</span> Log Explorer</div>
+    <div class="nav-section">Tenants</div>
+    <div class="nav-item" id="nav-tenants" onclick="showPage('tenants',this)"><span class="icon">🏢</span> Gestión</div>
+    <div class="nav-section">Sistema</div>
+    <div class="nav-item" id="nav-config" onclick="showPage('config',this)"><span class="icon">⚙️</span> Configuración</div>
+  </aside>
 
-  <div class="stats" id="stats-globales"></div>
+  <main>
 
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Tenants</span>
-      <span id="resumen-tenants" style="font-size:0.8rem;color:var(--text-muted)"></span>
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <h2>Dashboard de salud</h2>
+      <p class="page-subtitle">Estado en tiempo real de todos los pipelines · <span id="dash-fecha">—</span></p>
+
+      <div class="stats" id="stats-globales"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Tenants</span>
+          <span id="resumen-tenants" class="card-count"></span>
+          <input class="search-input" type="text" placeholder="Buscar tenant…" oninput="filtrarTenants(this.value)" style="margin-left:auto;width:190px">
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Estado</th>
+                <th>Tenant</th>
+                <th>ERP</th>
+                <th>Última sync OK</th>
+                <th>Historial 7d</th>
+                <th>Registros</th>
+                <th>Fallos</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-tenants"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Log reciente</span>
+          <button class="btn-sm" style="margin-left:auto" onclick="showPage('logs',document.getElementById('nav-logs'))">Ver todo →</button>
+        </div>
+        <div class="log-panel" id="log-preview" style="max-height:200px"></div>
+      </div>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Estado</th>
-          <th>Tenant</th>
-          <th>ERP</th>
-          <th>Última sync OK</th>
-          <th>Próxima sync</th>
-          <th>Registros</th>
-          <th>Fallos consecut.</th>
-          <th>Detalle</th>
-        </tr>
-      </thead>
-      <tbody id="tabla-tenants"></tbody>
-    </table>
-  </div>
 
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Log del pipeline (últimas 50 líneas)</span>
+    <!-- LOG EXPLORER -->
+    <div class="page" id="page-logs">
+      <h2>Log Explorer</h2>
+      <p class="page-subtitle">Historial completo de ejecuciones del pipeline</p>
+
+      <div class="card">
+        <div class="log-filters">
+          <span class="log-filter-label">Tenant:</span>
+          <select class="log-tenant-sel" id="log-tenant-sel" onchange="aplicarFiltrosLog()">
+            <option value="">Todos</option>
+          </select>
+          <span class="log-filter-label" style="margin-left:6px">Nivel:</span>
+          <button class="nivel-btn active" onclick="setNivel(this,'')">Todos</button>
+          <button class="nivel-btn ok"    onclick="setNivel(this,'ok')">OK</button>
+          <button class="nivel-btn"       onclick="setNivel(this,'info')">Info</button>
+          <button class="nivel-btn warn"  onclick="setNivel(this,'warn')">Warn</button>
+          <button class="nivel-btn error" onclick="setNivel(this,'error')">Error</button>
+          <input class="search-input" type="text" id="log-search" placeholder="Buscar en log…"
+            oninput="aplicarFiltrosLog()" style="margin-left:auto;width:180px">
+        </div>
+        <div class="log-panel" id="log-full" style="max-height:500px"></div>
+        <div class="log-footer">
+          <span id="log-count">0 líneas</span>
+          <label class="autoscroll-toggle">
+            <input type="checkbox" id="autoscroll" checked> Auto-scroll
+          </label>
+        </div>
+      </div>
     </div>
-    <div class="log-panel" id="log-panel"></div>
-  </div>
-</main>
 
-<!-- Modal detalle tenant -->
+    <!-- GESTIÓN TENANTS -->
+    <div class="page" id="page-tenants">
+      <h2>Gestión de tenants</h2>
+      <p class="page-subtitle">Vista por tenant — historial de salud y acceso rápido a acciones</p>
+      <div class="tenant-grid" id="tenant-cards"></div>
+    </div>
+
+    <!-- CONFIGURACIÓN -->
+    <div class="page" id="page-config">
+      <h2>Configuración del sistema</h2>
+      <p class="page-subtitle">Parámetros globales del pipeline — vista de solo lectura</p>
+      <div class="config-grid" id="config-grid"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal -->
 <div class="modal-overlay" id="modal-overlay" onclick="cerrarModal(event)">
-  <div class="modal" id="modal-contenido">
+  <div class="modal">
     <div class="modal-header">
       <span class="modal-title" id="modal-titulo">Detalle</span>
       <button class="btn-close" onclick="cerrarModal()">✕</button>
@@ -207,9 +447,12 @@
   </div>
 </div>
 
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <script>
-// ─── DATOS DEMO ──────────────────────────────────────────────────────────────
-// En producción, estos datos vienen de Firestore: colección pipeline_logs/{tenant_id}
+// ─── DATOS DEMO ───────────────────────────────────────────────────────────────
+// En producción estos datos provienen de Firestore: colección pipeline_logs/{tenant_id}
 // escritos por pipeline/scheduler.py al terminar cada corrida.
 
 const TENANTS_DEMO = [
@@ -218,8 +461,8 @@ const TENANTS_DEMO = [
     nombre: "Ferretería Norte",
     erp: "JustWeb",
     activo: true,
-    ultima_sync_ok: "2026-07-03 21:58",
-    proxima_sync: "2026-07-03 22:00",
+    ultima_sync_ok: "2026-07-05 06:02",
+    proxima_sync: "2026-07-05 07:00",
     estado: "ok",
     fallos_consecutivos: 0,
     registros: { productos: 1423, stock: 3891, ventas: 247 },
@@ -227,14 +470,15 @@ const TENANTS_DEMO = [
     tiempo_pipeline_seg: 43,
     firebase_project: "ferreteria-norte-prod",
     ultima_sync_error: null,
+    sync_history: ["ok","ok","ok","ok","ok","ok","ok"],
   },
   {
     id: "distribuidora-sur",
     nombre: "Distribuidora Sur",
     erp: "Bsale",
     activo: true,
-    ultima_sync_ok: "2026-07-03 14:30",
-    proxima_sync: "2026-07-03 22:00",
+    ultima_sync_ok: "2026-07-04 22:30",
+    proxima_sync: "2026-07-05 07:00",
     estado: "warn",
     fallos_consecutivos: 1,
     registros: { productos: 892, stock: 1204, ventas: 89 },
@@ -242,21 +486,23 @@ const TENANTS_DEMO = [
     tiempo_pipeline_seg: 28,
     firebase_project: "distribuidora-sur-prod",
     ultima_sync_error: "TimeoutError: ERP no respondió en 30s (intento 1/3)",
+    sync_history: ["ok","ok","ok","ok","ok","warn","warn"],
   },
   {
     id: "materiales-central",
     nombre: "Materiales Central",
     erp: "Rex Plus",
     activo: true,
-    ultima_sync_ok: "2026-07-02 22:02",
-    proxima_sync: "2026-07-03 22:00",
+    ultima_sync_ok: "2026-07-03 22:02",
+    proxima_sync: "2026-07-05 07:00",
     estado: "error",
     fallos_consecutivos: 3,
     registros: { productos: 0, stock: 0, ventas: 0 },
     data_size_kb: 0,
     tiempo_pipeline_seg: 0,
     firebase_project: "materiales-central-prod",
-    ultima_sync_error: "ConnectionRefusedError: [Errno 111] ERP SQL no accesible en 192.168.1.50:1433",
+    ultima_sync_error: "ConnectionRefusedError: [Errno 111] ERP SQL no accesible",
+    sync_history: ["ok","ok","warn","warn","error","error","error"],
   },
   {
     id: "ferreteria-oriente",
@@ -272,34 +518,305 @@ const TENANTS_DEMO = [
     tiempo_pipeline_seg: 4,
     firebase_project: "ferreteria-oriente-dev",
     ultima_sync_error: null,
+    sync_history: ["ok","ok","ok","ok","none","none","none"],
   },
 ];
 
 const LOGS_DEMO = [
-  { ts: "2026-07-03 21:58:04", level: "ok",    tenant: "ferreteria-norte",    msg: "Pipeline completado OK — 43s" },
-  { ts: "2026-07-03 21:58:01", level: "info",  tenant: "ferreteria-norte",    msg: "Rotando token dataAccessToken/current" },
-  { ts: "2026-07-03 21:57:44", level: "info",  tenant: "ferreteria-norte",    msg: "Validación post-pipeline: 4/4 archivos OK" },
-  { ts: "2026-07-03 21:57:22", level: "info",  tenant: "ferreteria-norte",    msg: "get_ventas: 247 líneas" },
-  { ts: "2026-07-03 21:57:01", level: "info",  tenant: "ferreteria-norte",    msg: "get_stock: 3891 líneas" },
-  { ts: "2026-07-03 21:56:40", level: "info",  tenant: "ferreteria-norte",    msg: "get_productos: 1423 productos" },
-  { ts: "2026-07-03 21:56:38", level: "info",  tenant: "ferreteria-norte",    msg: "Conexión ERP: OK" },
-  { ts: "2026-07-03 21:56:35", level: "info",  tenant: "ferreteria-norte",    msg: "Iniciando pipeline (intento 1/4)" },
-  { ts: "2026-07-03 14:32:11", level: "warn",  tenant: "distribuidora-sur",   msg: "Reintentando en 60s (intento 1/4 fallido)" },
-  { ts: "2026-07-03 14:31:01", level: "error", tenant: "distribuidora-sur",   msg: "TimeoutError: ERP no respondió en 30s" },
-  { ts: "2026-07-03 14:30:59", level: "info",  tenant: "distribuidora-sur",   msg: "Iniciando pipeline (intento 1/4)" },
-  { ts: "2026-07-03 22:01:44", level: "error", tenant: "materiales-central",  msg: "Agotó 4 intentos. Notificación enviada." },
-  { ts: "2026-07-03 22:00:59", level: "error", tenant: "materiales-central",  msg: "ConnectionRefusedError: [Errno 111] 192.168.1.50:1433" },
-  { ts: "2026-07-03 22:00:01", level: "info",  tenant: "materiales-central",  msg: "Iniciando pipeline (intento 1/4)" },
+  { ts: "2026-07-05 06:02:04", level: "ok",    tenant: "ferreteria-norte",   msg: "Pipeline completado OK — 43s" },
+  { ts: "2026-07-05 06:01:51", level: "info",  tenant: "ferreteria-norte",   msg: "Validación post-pipeline: 4/4 archivos OK" },
+  { ts: "2026-07-05 06:01:28", level: "info",  tenant: "ferreteria-norte",   msg: "get_ventas: 247 líneas" },
+  { ts: "2026-07-05 06:01:06", level: "info",  tenant: "ferreteria-norte",   msg: "get_stock: 3891 líneas" },
+  { ts: "2026-07-05 06:00:44", level: "info",  tenant: "ferreteria-norte",   msg: "get_productos: 1423 productos" },
+  { ts: "2026-07-05 06:00:40", level: "info",  tenant: "ferreteria-norte",   msg: "Conexión ERP: OK" },
+  { ts: "2026-07-05 06:00:38", level: "info",  tenant: "ferreteria-norte",   msg: "Iniciando pipeline (intento 1/4)" },
+  { ts: "2026-07-04 22:32:11", level: "warn",  tenant: "distribuidora-sur",  msg: "Reintentando en 60s (intento 1/4 fallido)" },
+  { ts: "2026-07-04 22:31:01", level: "error", tenant: "distribuidora-sur",  msg: "TimeoutError: ERP no respondió en 30s" },
+  { ts: "2026-07-04 22:30:59", level: "info",  tenant: "distribuidora-sur",  msg: "Iniciando pipeline (intento 1/4)" },
+  { ts: "2026-07-05 07:01:44", level: "error", tenant: "materiales-central", msg: "Agotó 4 intentos — notificación enviada" },
+  { ts: "2026-07-05 07:00:59", level: "error", tenant: "materiales-central", msg: "ConnectionRefusedError: [Errno 111] 192.168.1.50:1433" },
+  { ts: "2026-07-05 07:00:01", level: "info",  tenant: "materiales-central", msg: "Iniciando pipeline (intento 1/4)" },
+  { ts: "2026-07-04 22:01:44", level: "error", tenant: "materiales-central", msg: "Agotó 4 intentos — notificación enviada" },
+  { ts: "2026-07-04 22:00:59", level: "error", tenant: "materiales-central", msg: "ConnectionRefusedError: [Errno 111] 192.168.1.50:1433" },
+  { ts: "2026-07-04 22:00:01", level: "info",  tenant: "materiales-central", msg: "Iniciando pipeline (intento 1/4)" },
 ];
 
-// ─── RENDER ──────────────────────────────────────────────────────────────────
+const CONFIG_SISTEMA = {
+  scheduler:  {
+    "Frecuencia default":          "Cada 1 hora",
+    "Frecuencia con error activo": "Cada 30 min",
+    "Zona horaria":                "America/Santiago",
+    "Ejecuciones paralelas máx.":  "2",
+  },
+  pipeline: {
+    "Máx. reintentos":      "4",
+    "Backoff (seg)":        "15 → 30 → 60 → 120",
+    "Timeout ERP":          "30s",
+    "Timeout Firebase":     "20s",
+    "Validación post-sync": "chip:verde:Activa",
+  },
+  alertas: {
+    "Email":                    "ops@ferresystem.cl",
+    "Slack":                    "chip:gris:No configurado",
+    "Umbral fallos":            "3 consecutivos",
+    "Notif. recuperación":      "chip:verde:Sí",
+  },
+};
 
-function estadoIcon(e) {
-  return `<span class="dot ${e}"></span>`;
+// ─── ESTADO ───────────────────────────────────────────────────────────────────
+let logNivelActivo  = '';
+let logSelectReady  = false;
+
+// ─── NAVEGACIÓN ──────────────────────────────────────────────────────────────
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+
+  if (id === 'logs')    renderLogsCompleto();
+  if (id === 'tenants') renderTenantCards();
+  if (id === 'config')  renderConfig();
 }
 
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function renderStats() {
+  const total    = TENANTS_DEMO.length;
+  const activos  = TENANTS_DEMO.filter(t => t.activo).length;
+  const ok       = TENANTS_DEMO.filter(t => t.estado === 'ok').length;
+  const warn     = TENANTS_DEMO.filter(t => t.estado === 'warn').length;
+  const errores  = TENANTS_DEMO.filter(t => t.estado === 'error').length;
+  const totalProd= TENANTS_DEMO.reduce((s, t) => s + t.registros.productos, 0);
+  const tasaExito= Math.round((ok / activos) * 100);
+
+  const estadoKpi = errores > 0 ? 'error' : warn > 0 ? 'warn' : 'ok';
+
+  document.getElementById('stats-globales').innerHTML = `
+    <div class="stat">
+      <div class="stat-label">Tenants activos</div>
+      <div class="stat-value">${activos}<span style="font-size:1rem;font-weight:500;color:var(--text-muted)">/${total}</span></div>
+      <div class="stat-sub">${total - activos} inactivo${total - activos !== 1 ? 's' : ''}</div>
+    </div>
+    <div class="stat ${estadoKpi}">
+      <div class="stat-label">Éxito pipelines</div>
+      <div class="stat-value">${tasaExito}<span style="font-size:1rem;font-weight:500">%</span></div>
+      <div class="stat-sub">${ok} de ${activos} activos OK</div>
+    </div>
+    <div class="stat ${errores + warn > 0 ? (errores > 0 ? 'error' : 'warn') : 'ok'}">
+      <div class="stat-label">Alertas activas</div>
+      <div class="stat-value">${errores + warn}</div>
+      <div class="stat-sub">${errores} error${errores !== 1 ? 'es' : ''} · ${warn} advert.</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Registros sincronizados</div>
+      <div class="stat-value" style="font-size:1.55rem">${totalProd.toLocaleString()}</div>
+      <div class="stat-sub">productos totales en activos</div>
+    </div>
+  `;
+}
+
+function renderTabla(query) {
+  query = (query || '').toLowerCase();
+  const sorted = [...TENANTS_DEMO]
+    .filter(t => !query ||
+      t.nombre.toLowerCase().includes(query) ||
+      t.id.includes(query) ||
+      t.erp.toLowerCase().includes(query))
+    .sort((a, b) => {
+      const orden = { error: 0, warn: 1, ok: 2, inactivo: 3 };
+      return orden[a.estado] - orden[b.estado];
+    });
+
+  document.getElementById('resumen-tenants').textContent =
+    `${TENANTS_DEMO.length} tenants · ${TENANTS_DEMO.filter(t => t.activo).length} activos`;
+
+  if (!sorted.length) {
+    document.getElementById('tabla-tenants').innerHTML =
+      `<tr><td colspan="8" class="empty-state">Sin resultados para "${query}"</td></tr>`;
+    return;
+  }
+
+  document.getElementById('tabla-tenants').innerHTML = sorted.map(t => `
+    <tr class="row-${t.estado}">
+      <td>${estadoBadge(t.estado, t.fallos_consecutivos)}</td>
+      <td>
+        <div style="font-weight:600">${t.nombre}</div>
+        <div class="mono">${t.id}</div>
+      </td>
+      <td style="color:var(--text-muted);font-size:0.82rem">${t.erp}</td>
+      <td>
+        <div style="font-size:0.83rem">${t.ultima_sync_ok}</div>
+        ${t.tiempo_pipeline_seg
+          ? `<div class="mono">${t.tiempo_pipeline_seg}s · ${t.data_size_kb}KB</div>`
+          : ''}
+      </td>
+      <td><div class="sync-hist">${syncHistHtml(t.sync_history)}</div></td>
+      <td>${fmtRegistros(t.registros)}</td>
+      <td style="text-align:center">
+        ${t.fallos_consecutivos > 0
+          ? `<span style="color:var(--error);font-weight:700">${t.fallos_consecutivos}</span>`
+          : `<span style="color:var(--ok)">0</span>`}
+      </td>
+      <td style="display:flex;gap:6px;align-items:center">
+        <button class="btn-sm sync" onclick="forzarSync('${t.id}','${t.nombre}')"
+          title="Forzar sync" ${!t.activo ? 'disabled' : ''}>↻</button>
+        <button class="btn-sm" onclick="verDetallePorId('${t.id}')">Ver →</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderLogPreview() {
+  document.getElementById('log-preview').innerHTML =
+    LOGS_DEMO.slice(0, 5).map(logLineHtml).join('');
+}
+
+function filtrarTenants(q) { renderTabla(q); }
+
+// ─── LOG EXPLORER ─────────────────────────────────────────────────────────────
+function renderLogsCompleto() {
+  if (!logSelectReady) {
+    const sel = document.getElementById('log-tenant-sel');
+    [...new Set(LOGS_DEMO.map(l => l.tenant))].forEach(id => {
+      const t = TENANTS_DEMO.find(t => t.id === id);
+      sel.add(new Option(t ? t.nombre : id, id));
+    });
+    logSelectReady = true;
+  }
+  aplicarFiltrosLog();
+}
+
+function setNivel(btn, nivel) {
+  logNivelActivo = nivel;
+  document.querySelectorAll('.nivel-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  aplicarFiltrosLog();
+}
+
+function aplicarFiltrosLog() {
+  const tenant = document.getElementById('log-tenant-sel')?.value || '';
+  const nivel  = logNivelActivo;
+  const busq   = (document.getElementById('log-search')?.value || '').toLowerCase();
+
+  const filtered = LOGS_DEMO.filter(l => {
+    if (tenant && l.tenant !== tenant) return false;
+    if (nivel  && l.level  !== nivel)  return false;
+    if (busq   && !l.msg.toLowerCase().includes(busq) && !l.tenant.includes(busq)) return false;
+    return true;
+  });
+
+  const panel = document.getElementById('log-full');
+  if (!filtered.length) {
+    panel.innerHTML = '<div class="empty-state">Sin líneas para los filtros actuales</div>';
+    document.getElementById('log-count').textContent = '0 líneas';
+    return;
+  }
+
+  panel.innerHTML = filtered.map(logLineHtml).join('');
+  document.getElementById('log-count').textContent =
+    `${filtered.length} línea${filtered.length !== 1 ? 's' : ''}`;
+
+  if (document.getElementById('autoscroll')?.checked) {
+    panel.scrollTop = panel.scrollHeight;
+  }
+}
+
+// ─── TENANT CARDS ─────────────────────────────────────────────────────────────
+function renderTenantCards() {
+  const sorted = [...TENANTS_DEMO].sort((a, b) => {
+    const orden = { error: 0, warn: 1, ok: 2, inactivo: 3 };
+    return orden[a.estado] - orden[b.estado];
+  });
+
+  document.getElementById('tenant-cards').innerHTML = sorted.map(t => `
+    <div class="tenant-card ${t.estado}">
+      <div class="tc-header">
+        <div>
+          <div class="tc-nombre">${t.nombre}</div>
+          <div class="tc-id">${t.id}</div>
+        </div>
+        ${estadoBadge(t.estado, t.fallos_consecutivos)}
+      </div>
+      <div class="tc-hist">
+        <div class="tc-hist-label">Historial 7 días (más antiguo → reciente)</div>
+        <div class="sync-hist">${syncHistHtml(t.sync_history)}</div>
+      </div>
+      <div class="tc-meta">
+        <div>
+          <div class="tc-meta-key">ERP</div>
+          <div class="tc-meta-val">${t.erp}</div>
+        </div>
+        <div>
+          <div class="tc-meta-key">Fallos consec.</div>
+          <div class="tc-meta-val" style="color:${t.fallos_consecutivos > 0 ? 'var(--error)' : 'var(--ok)'}">
+            ${t.fallos_consecutivos}
+          </div>
+        </div>
+        <div>
+          <div class="tc-meta-key">Productos</div>
+          <div class="tc-meta-val">${t.registros.productos.toLocaleString()}</div>
+        </div>
+        <div>
+          <div class="tc-meta-key">Última sync OK</div>
+          <div class="tc-meta-val" style="font-size:0.72rem">${t.ultima_sync_ok}</div>
+        </div>
+      </div>
+      <div class="tc-actions">
+        <button class="btn-sm sync" onclick="forzarSync('${t.id}','${t.nombre}')"
+          ${!t.activo ? 'disabled' : ''}>↻ Sync</button>
+        <button class="btn-sm" onclick="verDetallePorId('${t.id}')">Ver detalle →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── CONFIGURACIÓN ────────────────────────────────────────────────────────────
+function renderConfig() {
+  function renderVal(v) {
+    if (typeof v !== 'string' || !v.startsWith('chip:')) return `<span class="config-val">${v}</span>`;
+    const [, tipo, label] = v.split(':');
+    return `<span class="chip ${tipo}">${label}</span>`;
+  }
+
+  const sections = [
+    { title: '⏱ Scheduler',   data: CONFIG_SISTEMA.scheduler },
+    { title: '🔁 Pipeline',    data: CONFIG_SISTEMA.pipeline },
+    { title: '🔔 Alertas',     data: CONFIG_SISTEMA.alertas },
+  ];
+
+  const firebaseSection = `
+    <div class="config-card">
+      <div class="config-card-title">🏢 Firebase projects</div>
+      ${TENANTS_DEMO.map(t => `
+        <div class="config-row">
+          <span class="config-key">${t.nombre}</span>
+          <span class="config-val">${t.firebase_project}</span>
+        </div>
+      `).join('')}
+    </div>`;
+
+  document.getElementById('config-grid').innerHTML =
+    sections.map(s => `
+      <div class="config-card">
+        <div class="config-card-title">${s.title}</div>
+        ${Object.entries(s.data).map(([k, v]) => `
+          <div class="config-row">
+            <span class="config-key">${k}</span>
+            ${renderVal(v)}
+          </div>
+        `).join('')}
+      </div>
+    `).join('') + firebaseSection;
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
 function estadoBadge(e, fallos) {
-  const labels = { ok: '✓ OK', warn: `⚠ ${fallos} fallo`, error: `✕ Error`, inactivo: '— Inactivo' };
+  const labels = {
+    ok: '✓ OK',
+    warn: `⚠ ${fallos} fallo${fallos !== 1 ? 's' : ''}`,
+    error: '✕ Error',
+    inactivo: '— Inactivo',
+  };
   return `<span class="badge ${e}">${labels[e]}</span>`;
 }
 
@@ -312,98 +829,42 @@ function fmtRegistros(r) {
   </span>`;
 }
 
-function renderStats() {
-  const total    = TENANTS_DEMO.length;
-  const activos  = TENANTS_DEMO.filter(t => t.activo).length;
-  const ok       = TENANTS_DEMO.filter(t => t.estado === 'ok').length;
-  const warn     = TENANTS_DEMO.filter(t => t.estado === 'warn').length;
-  const errores  = TENANTS_DEMO.filter(t => t.estado === 'error').length;
-
-  document.getElementById('stats-globales').innerHTML = `
-    <div class="stat">
-      <div class="stat-label">Tenants totales</div>
-      <div class="stat-value">${total}</div>
-      <div class="stat-sub">${activos} activos</div>
-    </div>
-    <div class="stat ok">
-      <div class="stat-label">Pipelines OK</div>
-      <div class="stat-value">${ok}</div>
-      <div class="stat-sub">última sync exitosa</div>
-    </div>
-    <div class="stat warn">
-      <div class="stat-label">Con advertencias</div>
-      <div class="stat-value">${warn}</div>
-      <div class="stat-sub">fallos transitorios</div>
-    </div>
-    <div class="stat error">
-      <div class="stat-label">Con errores</div>
-      <div class="stat-value">${errores}</div>
-      <div class="stat-sub">requieren atención</div>
-    </div>
-  `;
-  document.getElementById('resumen-tenants').textContent =
-    `${total} tenants · ${activos} activos`;
+function syncHistHtml(hist) {
+  return hist.map((s, i) =>
+    `<span class="sync-dot ${s}" title="Día ${i + 1}/7: ${s}"></span>`
+  ).join('');
 }
 
-function renderTabla() {
-  const sorted = [...TENANTS_DEMO].sort((a, b) => {
-    const orden = { error: 0, warn: 1, ok: 2, inactivo: 3 };
-    return orden[a.estado] - orden[b.estado];
-  });
-
-  document.getElementById('tabla-tenants').innerHTML = sorted.map(t => `
-    <tr>
-      <td>${estadoBadge(t.estado, t.fallos_consecutivos)}</td>
-      <td>
-        <div style="font-weight:600">${t.nombre}</div>
-        <div class="mono">${t.id}</div>
-      </td>
-      <td style="color:var(--text-muted);font-size:0.82rem">${t.erp}</td>
-      <td>
-        <span style="font-size:0.83rem">${t.ultima_sync_ok}</span>
-        ${t.tiempo_pipeline_seg ? `<div class="mono">${t.tiempo_pipeline_seg}s · ${t.data_size_kb}KB</div>` : ''}
-      </td>
-      <td style="font-size:0.83rem">${t.proxima_sync}</td>
-      <td>${fmtRegistros(t.registros)}</td>
-      <td style="text-align:center">
-        ${t.fallos_consecutivos > 0
-          ? `<span style="color:var(--error);font-weight:700">${t.fallos_consecutivos}</span>`
-          : `<span style="color:var(--ok)">0</span>`}
-      </td>
-      <td>
-        <button onclick='verDetalle(${JSON.stringify(t)})'
-          style="background:var(--bg-card2);border:1px solid var(--border);color:var(--text);
-                 border-radius:5px;padding:4px 10px;cursor:pointer;font-size:0.78rem">
-          Ver →
-        </button>
-      </td>
-    </tr>
-  `).join('');
+function logLineHtml(l) {
+  const t = TENANTS_DEMO.find(t => t.id === l.tenant);
+  return `<div class="log-line">
+    <span class="log-ts">${l.ts}</span>
+    <span class="log-level ${l.level}">${l.level.toUpperCase()}</span>
+    <span class="log-tenant-tag">[${t ? t.nombre : l.tenant}]</span>
+    <span class="log-msg">${l.msg}</span>
+  </div>`;
 }
 
-function renderLogs() {
-  const panel = document.getElementById('log-panel');
-  panel.innerHTML = LOGS_DEMO.map(l => `
-    <div class="log-line">
-      <span class="log-ts">${l.ts}</span>
-      <span class="log-level ${l.level}">${l.level.toUpperCase()}</span>
-      <span style="color:var(--primario);min-width:160px;font-size:0.76rem">[${l.tenant}]</span>
-      <span class="log-msg">${l.msg}</span>
-    </div>
-  `).join('');
-  panel.scrollTop = 0;
+// ─── ACCIONES ─────────────────────────────────────────────────────────────────
+function forzarSync(tenantId, nombre) {
+  const t = TENANTS_DEMO.find(t => t.id === tenantId);
+  if (!t || !t.activo) return;
+  showToast(`Sync programada para "${nombre}"`, 'ok');
 }
 
-function cargarDatos() {
-  renderStats();
-  renderTabla();
-  renderLogs();
-  const now = new Date();
-  document.getElementById('last-refresh').textContent =
-    'Actualizado: ' + now.toLocaleTimeString('es-CL');
+function showToast(msg, tipo) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${tipo || 'ok'} show`;
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-// ─── MODAL ───────────────────────────────────────────────────────────────────
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+function verDetallePorId(id) {
+  const t = TENANTS_DEMO.find(t => t.id === id);
+  if (t) verDetalle(t);
+}
 
 function verDetalle(t) {
   document.getElementById('modal-titulo').textContent = t.nombre;
@@ -419,14 +880,22 @@ function verDetalle(t) {
     <div class="modal-row"><span class="modal-key">Productos</span><span>${t.registros.productos.toLocaleString()}</span></div>
     <div class="modal-row"><span class="modal-key">Líneas de stock</span><span>${t.registros.stock.toLocaleString()}</span></div>
     <div class="modal-row"><span class="modal-key">Ventas del día</span><span>${t.registros.ventas.toLocaleString()}</span></div>
-    <div class="modal-row"><span class="modal-key">Fallos consecutivos</span><span style="color:${t.fallos_consecutivos>0?'var(--error)':'var(--ok)'}">${t.fallos_consecutivos}</span></div>
+    <div class="modal-row"><span class="modal-key">Fallos consecutivos</span>
+      <span style="color:${t.fallos_consecutivos > 0 ? 'var(--error)' : 'var(--ok)'};font-weight:700">
+        ${t.fallos_consecutivos}
+      </span>
+    </div>
+    <div class="modal-row">
+      <span class="modal-key">Historial 7d</span>
+      <div class="sync-hist">${syncHistHtml(t.sync_history)}</div>
+    </div>
     ${t.ultima_sync_error ? `
-    <div style="margin-top:12px">
-      <div class="modal-key" style="margin-bottom:6px">Último error:</div>
-      <div style="background:var(--error-bg);border:1px solid var(--error);border-radius:6px;
-                  padding:10px 12px;font-family:Consolas,monospace;font-size:0.75rem;
-                  color:var(--error);line-height:1.5">${t.ultima_sync_error}</div>
-    </div>` : ''}
+      <div style="margin-top:12px">
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:6px">Último error:</div>
+        <div style="background:var(--error-bg);border:1px solid var(--error);border-radius:6px;
+                    padding:10px 12px;font-family:Consolas,monospace;font-size:0.75rem;
+                    color:var(--error);line-height:1.5">${t.ultima_sync_error}</div>
+      </div>` : ''}
   `;
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -436,10 +905,20 @@ function cerrarModal(e) {
     document.getElementById('modal-overlay').classList.remove('open');
   }
 }
-
 document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function cargarDatos() {
+  const now = new Date();
+  document.getElementById('last-refresh').textContent =
+    'Actualizado: ' + now.toLocaleTimeString('es-CL');
+  document.getElementById('dash-fecha').textContent =
+    now.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
+  renderStats();
+  renderTabla();
+  renderLogPreview();
+}
+
 cargarDatos();
 </script>
 </body>
