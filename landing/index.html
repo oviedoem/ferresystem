@@ -251,6 +251,15 @@
     .panel-list{list-style:none;display:flex;flex-direction:column;gap:0.45rem}
     .panel-list li{font-size:0.85rem;display:flex;align-items:center;gap:0.5rem;color:var(--texto)}
     .panel-list li::before{content:"\2192";color:var(--rojo);font-weight:700;flex-shrink:0}
+    .panel-cta{display:inline-flex;align-items:center;gap:0.4rem;margin-top:1.5rem;padding:0.55rem 1.1rem;border-radius:8px;font-size:0.83rem;font-weight:700;text-decoration:none;border:1.5px solid;transition:background 0.2s ease,color 0.2s ease}
+    .panel-card[data-role="admin"] .panel-cta{color:#818cf8;border-color:rgba(129,140,248,0.35)}
+    .panel-card[data-role="admin"] .panel-cta:hover{background:rgba(129,140,248,0.12)}
+    .panel-card[data-role="vendedor"] .panel-cta{color:#f59e0b;border-color:rgba(245,158,11,0.35)}
+    .panel-card[data-role="vendedor"] .panel-cta:hover{background:rgba(245,158,11,0.12)}
+    .panel-card[data-role="cliente"] .panel-cta{color:#34d399;border-color:rgba(52,211,153,0.35)}
+    .panel-card[data-role="cliente"] .panel-cta:hover{background:rgba(52,211,153,0.12)}
+    .panel-card[data-role="operador"] .panel-cta{color:#6c63ff;border-color:rgba(108,99,255,0.35)}
+    .panel-card[data-role="operador"] .panel-cta:hover{background:rgba(108,99,255,0.12)}
 
     /* ===== NOTICIAS ===== */
     .noticias-section{background:var(--navy2)}
@@ -453,7 +462,7 @@
     </div>
     <div class="nav-right">
       <a href="#contacto" class="nav-ingreso">Ingreso Clientes</a>
-      <a href="https://wa.me/56900000000?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem" target="_blank" rel="noopener" class="nav-cta">Pide una Demo</a>
+      <a href="#paneles" class="nav-cta">Ver paneles</a>
       <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()">
         <span></span><span></span><span></span>
       </div>
@@ -476,7 +485,7 @@
     <a href="#paneles" onclick="closeMenu()">Paneles</a>
     <a href="#faq" onclick="closeMenu()">FAQ</a>
     <a href="#contacto" onclick="closeMenu()">Contacto</a>
-    <a href="https://wa.me/56900000000?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem" target="_blank" rel="noopener" class="nav-mobile-cta" onclick="closeMenu()">Pide una Demo →</a>
+    <a href="#paneles" class="nav-mobile-cta" onclick="closeMenu()">Ver paneles →</a>
   </div>
 </div>
 
@@ -491,7 +500,7 @@
     FerreSystem actúa como capa entre tu sistema de gestión y tu equipo. Stock en el celular del vendedor, catálogo para el cliente, KPIs para el administrador — sincronizado automáticamente sin reemplazar tu ERP.
   </p>
   <div class="hero-ctas">
-    <a href="https://wa.me/56900000000?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem" target="_blank" rel="noopener" class="btn-pill btn-rojo">Pide una Demo</a>
+    <a href="#paneles" class="btn-pill btn-rojo">Ver los paneles →</a>
     <a href="#servicios" class="btn-pill btn-ghost">Descúbrelo →</a>
   </div>
   <div class="hero-stats">
@@ -841,6 +850,7 @@
           <li>KPIs con indicador de tendencia</li><li>Stock filtrable por bodega</li>
           <li>Alertas de quiebre en tiempo real</li><li>Ventas y despachos del día</li>
         </ul>
+        <a href="../paneles/panel-admin.html" class="panel-cta" target="_blank" rel="noopener">Abrir panel →</a>
       </div>
       <div class="panel-card anim d2" data-role="vendedor">
         <div class="panel-icon-wrap">
@@ -853,6 +863,7 @@
           <li>Búsqueda de productos</li><li>Stock por bodega</li>
           <li>Precios actualizados</li><li>Compartir por WhatsApp</li>
         </ul>
+        <a href="../paneles/panel-vendedor.html" class="panel-cta" target="_blank" rel="noopener">Abrir panel →</a>
       </div>
       <div class="panel-card anim d3" data-role="cliente">
         <div class="panel-icon-wrap">
@@ -865,6 +876,7 @@
           <li>Catálogo con fotos</li><li>Precios sin IVA / con IVA</li>
           <li>Botón cotizar por WhatsApp</li><li>100% personalizable</li>
         </ul>
+        <a href="../paneles/panel-cliente.html" class="panel-cta" target="_blank" rel="noopener">Abrir panel →</a>
       </div>
       <div class="panel-card anim d4" data-role="operador">
         <div class="panel-icon-wrap">
@@ -877,6 +889,7 @@
           <li>Estado de pipelines en tiempo real</li><li>Log Explorer con filtros</li>
           <li>Historial de sync por tenant</li><li>Forzar sync por demanda</li>
         </ul>
+        <a href="../paneles/panel-operador.html" class="panel-cta" target="_blank" rel="noopener">Abrir panel →</a>
       </div>
     </div>
   </div>
@@ -980,7 +993,7 @@
           <li class="yes"><span class="pi">✓</span> Branding white-label completo</li>
           <li class="yes"><span class="pi">✓</span> Soporte vía WhatsApp</li>
         </ul>
-        <a href="https://wa.me/56900000000?text=Hola%2C%20quiero%20el%20plan%20Crecimiento%20de%20FerreSystem" target="_blank" rel="noopener" class="price-cta price-cta-primary">Pide una Demo →</a>
+        <a href="#paneles" class="price-cta price-cta-primary">Ver paneles →</a>
       </div>
 
       <div class="price-card anim d3">
