@@ -114,8 +114,14 @@
     .serv-icon-wrap svg{width:24px;height:24px;fill:none;stroke:var(--rojo);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
     .serv-card h3{font-size:1.15rem;font-weight:900;margin-bottom:0.6rem;letter-spacing:-0.01em}
     .serv-card p{font-size:0.87rem;color:var(--muted);line-height:1.65;margin-bottom:1.25rem}
-    .serv-link{display:inline-flex;align-items:center;gap:5px;font-size:0.8rem;font-weight:700;color:var(--rojo);transition:gap 0.2s}
+    .serv-link{display:inline-flex;align-items:center;gap:5px;font-size:0.8rem;font-weight:700;color:var(--rojo);transition:gap 0.2s;background:none;border:none;padding:0;cursor:pointer;font-family:inherit}
     .serv-card:hover .serv-link{gap:9px}
+    .serv-detail{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--borde)}
+    .serv-detail.open{display:block}
+    .serv-detail ul{list-style:none;display:flex;flex-direction:column;gap:0.45rem}
+    .serv-detail li{font-size:0.82rem;color:var(--muted);display:flex;align-items:flex-start;gap:0.5rem;line-height:1.5}
+    .serv-detail li::before{content:"✓";color:var(--rojo);font-weight:700;flex-shrink:0;margin-top:0.05em}
+    @media(prefers-reduced-motion:reduce){.serv-detail{transition:none}}
 
     /* ===== STEPS ===== */
     .steps-section{background:var(--navy2)}
@@ -678,7 +684,15 @@
         </div>
         <h3>BI Analytics</h3>
         <p>Ve tus informes en línea y en un solo lugar. Ventas del día, stock crítico y KPIs de rendimiento actualizados cada hora.</p>
-        <span class="serv-link">Ver más →</span>
+        <button class="serv-link" onclick="toggleServ(this)" aria-expanded="false">Ver más →</button>
+        <div class="serv-detail">
+          <ul>
+            <li>Panel Admin con KPIs de ventas, stock y márgenes</li>
+            <li>Alertas automáticas de quiebre de stock por bodega</li>
+            <li>Actualización cada hora sin intervención manual</li>
+            <li>Acceso desde celular, tablet y desktop</li>
+          </ul>
+        </div>
       </div>
       <div class="serv-card anim d2">
         <div class="serv-icon-wrap">
@@ -686,7 +700,15 @@
         </div>
         <h3>Advance Analytics</h3>
         <p>Usa modelos de analítica avanzada para descubrir demandas futuras, detectar fugas y maximizar la eficiencia administrativa.</p>
-        <span class="serv-link">Ver más →</span>
+        <button class="serv-link" onclick="toggleServ(this)" aria-expanded="false">Ver más →</button>
+        <div class="serv-detail">
+          <ul>
+            <li>Predicción de demanda por SKU y temporada</li>
+            <li>Detección de fugas de inventario y merma anormal</li>
+            <li>Ranking de productos por margen y rotación</li>
+            <li>Reportes exportables para reuniones de gestión</li>
+          </ul>
+        </div>
       </div>
       <div class="serv-card anim d3">
         <div class="serv-icon-wrap">
@@ -694,7 +716,15 @@
         </div>
         <h3>Data Warehouse</h3>
         <p>Conecta, centraliza y digitaliza los datos de tu empresa. Contrato JSON estándar compatible con cualquier ERP o fuente.</p>
-        <span class="serv-link">Ver más →</span>
+        <button class="serv-link" onclick="toggleServ(this)" aria-expanded="false">Ver más →</button>
+        <div class="serv-detail">
+          <ul>
+            <li>Contrato JSON estándar: productos, stock, ventas, RRHH</li>
+            <li>Compatible con JustWeb, Rex+, Transtecnia, Excel y Bsale</li>
+            <li>Datos por tenant completamente aislados</li>
+            <li>Hosting en Firebase a costo $0 para el cliente</li>
+          </ul>
+        </div>
       </div>
       <div class="serv-card anim d4">
         <div class="serv-icon-wrap">
@@ -702,7 +732,15 @@
         </div>
         <h3>Agentes IA</h3>
         <p>Digitaliza procesos con aplicaciones web a medida. Agentes que responden, analizan y actúan sobre tus datos en tiempo real.</p>
-        <span class="serv-link">Ver más →</span>
+        <button class="serv-link" onclick="toggleServ(this)" aria-expanded="false">Ver más →</button>
+        <div class="serv-detail">
+          <ul>
+            <li>Agentes que consultan tu stock y ventas en lenguaje natural</li>
+            <li>Alertas proactivas vía WhatsApp o email</li>
+            <li>Automatización de tareas repetitivas de bodega</li>
+            <li>Integración con los paneles web existentes</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -1193,6 +1231,12 @@
 </div>
 
 <script>
+function toggleServ(btn){
+  var detail=btn.nextElementSibling;
+  var open=detail.classList.toggle('open');
+  btn.setAttribute('aria-expanded',open);
+  btn.textContent=open?'Ver menos ←':'Ver más →';
+}
 /* ===== CANVAS ANIMADO v2 — hub nodes, radial glow, screen blend ===== */
 (function(){
   var canvas=document.getElementById('canvas-bg');
