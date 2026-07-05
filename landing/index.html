@@ -237,6 +237,11 @@
     .panel-card[data-role="vendedor"] .panel-icon-wrap svg{stroke:#f59e0b}
     .panel-card[data-role="cliente"] .panel-icon-wrap{background:rgba(52,211,153,0.1)}
     .panel-card[data-role="cliente"] .panel-icon-wrap svg{stroke:#34d399}
+    .panel-card[data-role="operador"]::before{background:linear-gradient(90deg,#6c63ff,rgba(108,99,255,0.15))}
+    .panel-card[data-role="operador"]:hover{border-color:rgba(108,99,255,0.4)}
+    .panel-card[data-role="operador"] .panel-icon-wrap{background:rgba(108,99,255,0.1)}
+    .panel-card[data-role="operador"] .panel-icon-wrap svg{stroke:#6c63ff}
+    .panel-card[data-role="operador"] .panel-tag{background:rgba(108,99,255,0.12);color:#6c63ff}
     .panel-tag{display:inline-block;border-radius:6px;padding:0.2rem 0.65rem;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem}
     .panel-card[data-role="admin"] .panel-tag{background:rgba(129,140,248,0.12);color:#818cf8}
     .panel-card[data-role="vendedor"] .panel-tag{background:rgba(245,158,11,0.12);color:#f59e0b}
@@ -491,7 +496,7 @@
   </div>
   <div class="hero-stats">
     <div class="anim d1"><div class="hero-stat-val"><em>5</em>+</div><div class="hero-stat-label">ERPs compatibles</div></div>
-    <div class="anim d2"><div class="hero-stat-val"><em>3</em></div><div class="hero-stat-label">Paneles white-label</div></div>
+    <div class="anim d2"><div class="hero-stat-val"><em>4</em></div><div class="hero-stat-label">Paneles white-label</div></div>
     <div class="anim d3"><div class="hero-stat-val"><em>$0</em></div><div class="hero-stat-label">Infraestructura Firebase</div></div>
     <div class="anim d4"><div class="hero-stat-val"><em>N</em></div><div class="hero-stat-label">Clientes / tenants</div></div>
   </div>
@@ -822,7 +827,7 @@
 <section id="paneles" class="paneles-section">
   <div class="container">
     <p class="sec-overline anim">Paneles</p>
-    <h2 class="sec-title anim d1">Tres vistas, un motor</h2>
+    <h2 class="sec-title anim d1">Cuatro vistas, un motor</h2>
     <p class="sec-sub anim d2">Cada usuario accede a la información que necesita, con el branding de tu negocio.</p>
     <div class="paneles-grid">
       <div class="panel-card anim d1" data-role="admin">
@@ -831,10 +836,10 @@
         </div>
         <span class="panel-tag">Admin</span>
         <h3>Panel Administrador</h3>
-        <p>Visión completa del negocio: ventas del día, stock crítico, rendimiento por vendedor y resumen de RRHH.</p>
+        <p>Visión completa del negocio: KPIs con tendencia, stock multi-bodega, alertas de quiebre y resumen de despachos.</p>
         <ul class="panel-list">
-          <li>KPIs en tiempo real</li><li>Ranking de vendedores</li>
-          <li>Alertas de stock mínimo</li><li>Resumen financiero del día</li>
+          <li>KPIs con indicador de tendencia</li><li>Stock filtrable por bodega</li>
+          <li>Alertas de quiebre en tiempo real</li><li>Ventas y despachos del día</li>
         </ul>
       </div>
       <div class="panel-card anim d2" data-role="vendedor">
@@ -859,6 +864,18 @@
         <ul class="panel-list">
           <li>Catálogo con fotos</li><li>Precios sin IVA / con IVA</li>
           <li>Botón cotizar por WhatsApp</li><li>100% personalizable</li>
+        </ul>
+      </div>
+      <div class="panel-card anim d4" data-role="operador">
+        <div class="panel-icon-wrap">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+        </div>
+        <span class="panel-tag">Operador</span>
+        <h3>Panel Operador</h3>
+        <p>Dashboard de salud del pipeline: tenants activos, logs en tiempo real y control de sincronización por cliente.</p>
+        <ul class="panel-list">
+          <li>Estado de pipelines en tiempo real</li><li>Log Explorer con filtros</li>
+          <li>Historial de sync por tenant</li><li>Forzar sync por demanda</li>
         </ul>
       </div>
     </div>
@@ -906,21 +923,21 @@
     <div class="noticias-grid">
       <div class="noticia-card anim d1">
         <span class="noticia-tag">Producto</span>
-        <h4>Canvas animado + sistema de nodos en la landing</h4>
-        <p>Nueva tecnología visual que muestra conexiones en tiempo real inspirada en redes de datos, disponible en la portada.</p>
-        <span class="noticia-meta">Jun 2026</span>
+        <h4>Panel Operador: Log Explorer y control de sync</h4>
+        <p>Nuevo panel dedicado al equipo técnico con historial de sincronización por tenant, filtrado de logs en tiempo real y acción forzar sync por demanda.</p>
+        <span class="noticia-meta">Jul 2026</span>
       </div>
       <div class="noticia-card anim d2">
-        <span class="noticia-tag">Integración</span>
-        <h4>Adaptador Excel/CSV ahora acepta múltiples hojas</h4>
-        <p>El fallback universal se actualizó para procesar workbooks completos y generar JSONs por pestaña automáticamente.</p>
-        <span class="noticia-meta">Jun 2026</span>
+        <span class="noticia-tag">Diseño</span>
+        <h4>KPIs con tendencia y animaciones de entrada en todos los paneles</h4>
+        <p>Los cuatro paneles ahora muestran indicadores de variación porcentual en los tiles de KPI y animaciones escalonadas de entrada compatibles con prefers-reduced-motion.</p>
+        <span class="noticia-meta">Jul 2026</span>
       </div>
       <div class="noticia-card anim d3">
-        <span class="noticia-tag">Seguridad</span>
-        <h4>Rotación de tokens Firebase ahora cada 8 horas</h4>
-        <p>rotar_token.py mejorado con reintentos automáticos y log de auditoría para cumplir estándares de acceso mínimo.</p>
-        <span class="noticia-meta">May 2026</span>
+        <span class="noticia-tag">Plataforma</span>
+        <h4>Arquitectura multi-tenant: 4 paneles white-label desde un motor único</h4>
+        <p>FerreSystem consolida Admin, Vendedor, Cliente y Operador en un solo motor ERP-agnóstico. Cada panel se configura desde tenants/{id}.json sin tocar el código base.</p>
+        <span class="noticia-meta">Jul 2026</span>
       </div>
     </div>
   </div>
@@ -956,7 +973,7 @@
         <p class="price-desc">Para negocios con varios locales que necesitan visibilidad completa del negocio.</p>
         <ul class="price-list">
           <li class="yes"><span class="pi">✓</span> Hasta 3 tenants</li>
-          <li class="yes"><span class="pi">✓</span> Los 3 paneles (Admin, Vendedor, Cliente)</li>
+          <li class="yes"><span class="pi">✓</span> Los 4 paneles (Admin, Vendedor, Cliente, Operador)</li>
           <li class="yes"><span class="pi">✓</span> Pipeline automático cada 30 min</li>
           <li class="yes"><span class="pi">✓</span> Adaptadores ERP ilimitados</li>
           <li class="yes"><span class="pi">✓</span> Múltiples bodegas y sucursales</li>
