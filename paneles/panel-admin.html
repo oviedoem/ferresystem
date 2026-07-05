@@ -2,11 +2,1088 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel Admin — FerreSystem</title>
-<!-- TODO: cargar branding/{tenant_id}/branding.json (colores, logo, nombre) -->
+<style>
+  :root {
+    --cp: #e74c3c;
+    --bg: #0c0e14;
+    --bg-card: #141720;
+    --bg-card2: #1a1d28;
+    --border: #252838;
+    --text: #dde1ee;
+    --muted: #6b7090;
+    --ok: #22d3a5;
+    --ok-bg: rgba(34,211,165,0.09);
+    --warn: #f0a020;
+    --warn-bg: rgba(240,160,32,0.10);
+    --err: #e74c3c;
+    --err-bg: rgba(231,76,60,0.10);
+    --info: #818cf8;
+    --info-bg: rgba(129,140,248,0.10);
+    --r: 10px;
+    --font: 'Segoe UI', system-ui, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  /* ── ANIMATIONS ──────────────────────────────────────────────────────── */
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .kpi-card, .stat-card { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .page.active { animation: none; }
+    .nav-item { transition: none; }
+  }
+
+  /* ── NAV ─────────────────────────────────────────────────────────────── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 56px;
+    background: var(--bg-card); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.05rem; }
+  .nav-logo-dot {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--cp); display: flex; align-items: center;
+    justify-content: center; font-weight: 900; font-size: 1rem; color: #fff;
+    flex-shrink: 0;
+  }
+  .nav-role {
+    font-size: 0.68rem; background: var(--info-bg); color: var(--info);
+    border: 1px solid rgba(129,140,248,0.35); border-radius: 4px;
+    padding: 2px 8px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700;
+  }
+  .nav-right { display: flex; align-items: center; gap: 18px; }
+  .nav-sync { font-size: 0.75rem; color: var(--muted); }
+  .nav-sync strong { color: var(--ok); font-weight: 600; }
+  .nav-user { font-size: 0.8rem; color: var(--muted); }
+
+  /* ── LAYOUT ──────────────────────────────────────────────────────────── */
+  .layout { display: grid; grid-template-columns: 224px 1fr; min-height: calc(100vh - 56px); }
+
+  /* ── SIDEBAR ─────────────────────────────────────────────────────────── */
+  aside {
+    background: var(--bg-card); border-right: 1px solid var(--border);
+    padding: 16px 0; overflow-y: auto;
+  }
+  .nav-section {
+    padding: 14px 20px 5px; font-size: 0.66rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1.2px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 20px; cursor: pointer; font-size: 0.875rem;
+    color: var(--muted); border-left: 3px solid transparent;
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--bg-card2); color: var(--text); }
+  .nav-item.active {
+    color: var(--text); border-left-color: var(--cp);
+    background: var(--bg-card2); font-weight: 600;
+  }
+  .nav-item .icon { font-size: 1rem; flex-shrink: 0; }
+  .nav-dot {
+    margin-left: auto; background: var(--err); color: #fff;
+    border-radius: 10px; font-size: 0.58rem; font-weight: 800;
+    padding: 1px 6px; display: none;
+  }
+  .nav-dot.on { display: inline; }
+
+  /* ── MAIN ────────────────────────────────────────────────────────────── */
+  main { padding: 28px 32px; overflow-y: auto; }
+  .page { display: none; }
+  .page.active { display: block; animation: pageIn 0.22s cubic-bezier(.22,1,.36,1); }
+  h2 { font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.015em; }
+  .page-sub { color: var(--muted); font-size: 0.82rem; margin-bottom: 24px; }
+
+  /* ── KPI TILES ───────────────────────────────────────────────────────── */
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px; margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 18px 20px;
+    opacity: 0; transform: translateY(10px);
+    animation: rise .52s cubic-bezier(.22,1,.36,1) forwards;
+    transition: border-color 0.2s;
+  }
+  .kpi-card:nth-child(1) { animation-delay: .03s; }
+  .kpi-card:nth-child(2) { animation-delay: .08s; }
+  .kpi-card:nth-child(3) { animation-delay: .13s; }
+  .kpi-card:nth-child(4) { animation-delay: .18s; }
+  .kpi-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+  .kpi-val {
+    font-size: 1.8rem; font-weight: 900; margin: 6px 0 5px;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+  }
+  .kpi-trend { display: flex; align-items: center; gap: 4px; font-size: 0.71rem; font-weight: 600; }
+  .kpi-trend.up   { color: var(--ok); }
+  .kpi-trend.down { color: var(--err); }
+  .kpi-trend.flat { color: var(--muted); }
+  .kpi-card.err  { border-color: var(--err);  background: var(--err-bg);  }
+  .kpi-card.err  .kpi-val  { color: var(--err); }
+  .kpi-card.ok   .kpi-val  { color: var(--ok); }
+  .kpi-card.warn .kpi-val  { color: var(--warn); }
+  .kpi-card.info .kpi-val  { color: var(--info); }
+
+  /* ── STAT CARDS ──────────────────────────────────────────────────────── */
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 14px; margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 16px 18px;
+  }
+  .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-val { font-size: 1.65rem; font-weight: 800; margin: 5px 0 2px; font-variant-numeric: tabular-nums; }
+  .stat-sub { font-size: 0.72rem; color: var(--muted); }
+  .stat-card.err  { border-color: var(--err);  background: var(--err-bg);  }
+  .stat-card.err  .stat-val { color: var(--err); }
+  .stat-card.ok   .stat-val { color: var(--ok); }
+  .stat-card.warn .stat-val { color: var(--warn); }
+
+  /* ── GENERIC CARD ────────────────────────────────────────────────────── */
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--r); overflow: hidden; margin-bottom: 20px;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 20px; border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .card-title { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 7px; }
+  .card-count { font-size: 0.72rem; color: var(--muted); font-weight: 400; }
+  .card-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  /* ── INPUTS ──────────────────────────────────────────────────────────── */
+  .search-input {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px; padding: 5px 12px;
+    font-size: 0.82rem; outline: none; width: 210px;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--cp); }
+  .search-input::placeholder { color: var(--muted); }
+
+  /* ── TABLES ──────────────────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; font-size: 0.855rem; }
+  th {
+    text-align: left; padding: 9px 16px;
+    font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.6px;
+    color: var(--muted); border-bottom: 1px solid var(--border);
+    background: var(--bg-card2); white-space: nowrap;
+  }
+  th.r { text-align: right; }
+  td { padding: 10px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  td.r { text-align: right; }
+  tr:last-child td { border-bottom: none; }
+  tr { border-left: 3px solid transparent; }
+  tr.rl-r { border-left-color: var(--err); }
+  tr.rl-a { border-left-color: var(--warn); }
+  tr.rl-v { border-left-color: var(--ok); }
+  tbody tr:hover td { background: var(--bg-card2); }
+
+  /* ── RATIO BAR ───────────────────────────────────────────────────────── */
+  .ratio-wrap { display: flex; align-items: center; gap: 8px; }
+  .ratio-track { width: 56px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .ratio-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+  .ratio-fill.r  { background: var(--err); }
+  .ratio-fill.a  { background: var(--warn); }
+  .ratio-fill.v  { background: var(--ok); }
+  .ratio-lbl { font-size: 0.68rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .ratio-lbl.r { color: var(--err); }
+  .ratio-lbl.a { color: var(--warn); }
+  .ratio-lbl.v { color: var(--ok); }
+
+  /* ── DASHBOARD GRID ──────────────────────────────────────────────────── */
+  .dash-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+
+  /* ── ACTIVITY FEED ───────────────────────────────────────────────────── */
+  .feed-item {
+    display: flex; gap: 12px; padding: 11px 20px;
+    border-bottom: 1px solid var(--border); align-items: flex-start;
+  }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    margin-top: 4px; flex-shrink: 0;
+  }
+  .feed-dot.ok   { background: var(--ok); }
+  .feed-dot.warn { background: var(--warn); }
+  .feed-dot.err  { background: var(--err); box-shadow: 0 0 5px var(--err); }
+  .feed-dot.info { background: var(--info); }
+  .feed-text { font-size: 0.83rem; line-height: 1.4; }
+  .feed-meta { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+
+  /* ── BODEGA PILLS ────────────────────────────────────────────────────── */
+  .bodega-pills {
+    display: flex; gap: 7px; flex-wrap: wrap;
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
+  }
+  .bodega-pill {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    color: var(--muted); border-radius: 20px; padding: 4px 14px;
+    font-size: 0.77rem; cursor: pointer; font-weight: 500;
+    transition: all 0.18s;
+  }
+  .bodega-pill.active { background: var(--cp); border-color: var(--cp); color: #fff; }
+  .bodega-pill:hover:not(.active) { border-color: var(--muted); color: var(--text); }
+
+  /* ── PERIOD SELECTOR ─────────────────────────────────────────────────── */
+  .period-tabs {
+    display: flex; gap: 3px; background: var(--bg-card2);
+    border-radius: 8px; padding: 3px; width: fit-content;
+  }
+  .period-tab {
+    padding: 5px 16px; border-radius: 6px; font-size: 0.78rem;
+    cursor: pointer; color: var(--muted); border: none;
+    background: none; transition: all 0.18s;
+  }
+  .period-tab.active {
+    background: var(--bg-card); color: var(--text); font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+  }
+
+  /* ── STATUS BADGES ───────────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 12px; font-size: 0.7rem; font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .badge-pend { background: var(--warn-bg); color: var(--warn); border: 1px solid rgba(240,160,32,0.35); }
+  .badge-pend::before { background: var(--warn); }
+  .badge-env  { background: var(--info-bg); color: var(--info); border: 1px solid rgba(129,140,248,0.35); }
+  .badge-env::before  { background: var(--info); }
+  .badge-ok   { background: var(--ok-bg);   color: var(--ok);   border: 1px solid rgba(34,211,165,0.3); }
+  .badge-ok::before   { background: var(--ok); }
+  .badge-off  { background: rgba(107,114,128,0.1); color: var(--muted); border: 1px solid var(--border); }
+  .badge-off::before  { background: var(--muted); }
+
+  /* ── FILTER BUTTONS ──────────────────────────────────────────────────── */
+  .btn-filter {
+    padding: 4px 12px; border-radius: 6px; font-size: 0.77rem; font-weight: 500;
+    cursor: pointer; border: 1px solid var(--border); background: var(--bg-card2);
+    color: var(--muted); transition: all 0.18s;
+  }
+  .btn-filter:hover { border-color: var(--muted); color: var(--text); }
+  .btn-filter.active { background: var(--bg-card); color: var(--text); border-color: rgba(255,255,255,0.2); font-weight: 600; }
+
+  /* ── MODULE GRID ─────────────────────────────────────────────────────── */
+  .module-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px; padding: 18px;
+  }
+  .module-card {
+    background: var(--bg-card2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 13px 15px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .module-name { font-size: 0.84rem; font-weight: 600; }
+  .module-desc { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+  .mod-on  { color: var(--ok);   font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+  .mod-off { color: var(--muted); font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+
+  /* ── CONFIG ROWS ─────────────────────────────────────────────────────── */
+  .cfg-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 20px; border-bottom: 1px solid var(--border); font-size: 0.855rem;
+    gap: 16px;
+  }
+  .cfg-row:last-child { border-bottom: none; }
+  .cfg-key { color: var(--muted); flex-shrink: 0; }
+  .cfg-val { font-family: 'Consolas', monospace; font-size: 0.8rem; text-align: right; }
+
+  /* ── ALERT ITEMS ─────────────────────────────────────────────────────── */
+  .alerta-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 20px; border-bottom: 1px solid var(--border);
+  }
+  .alerta-item:last-child { border-bottom: none; }
+  .alerta-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .alerta-info { flex: 1; min-width: 0; }
+  .alerta-nombre { font-weight: 600; font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .alerta-detalle { font-size: 0.73rem; color: var(--muted); margin-top: 2px; }
+  .alerta-nums { text-align: right; flex-shrink: 0; }
+  .alerta-num { font-size: 1.3rem; font-weight: 900; color: var(--err); font-variant-numeric: tabular-nums; }
+  .alerta-min { font-size: 0.7rem; color: var(--muted); }
+
+  /* ── EMPTY STATE ─────────────────────────────────────────────────────── */
+  .empty { text-align: center; padding: 48px 20px; color: var(--muted); }
+  .empty .icon { font-size: 2rem; margin-bottom: 10px; }
+  .empty p { font-size: 0.875rem; }
+
+  /* ── MONO ────────────────────────────────────────────────────────────── */
+  .mono { font-family: 'Consolas', monospace; font-size: 0.8rem; color: var(--muted); }
+
+  /* ── RESPONSIVE ──────────────────────────────────────────────────────── */
+  @media (max-width: 960px) {
+    .dash-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { display: none; }
+    main { padding: 16px; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .kpi-row { grid-template-columns: 1fr; }
+    .search-input { width: 100%; }
+  }
+</style>
 </head>
 <body>
-<!-- TODO: tabs genéricos: Stock, Ventas, Pedidos, Despachos, Marketing -->
-<!-- TODO: nunca hardcodear bodegas ni tenant_id — leer de config inyectada en build/deploy -->
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-dot" id="nav-inicial">F</div>
+    <span id="nav-nombre">FerreSystem</span>
+    <span class="nav-role">Admin</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-sync">Sync: <strong id="nav-sync">—</strong></span>
+    <span class="nav-user" id="nav-user">Administrador</span>
+  </div>
+</nav>
+
+<div class="layout">
+  <aside>
+    <div class="nav-section">General</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <span class="icon">📊</span> Dashboard
+    </div>
+
+    <div class="nav-section">Inventario</div>
+    <div class="nav-item" onclick="showPage('stock', this)">
+      <span class="icon">📦</span> Stock
+    </div>
+    <div class="nav-item" onclick="showPage('alertas', this)" id="menu-alertas">
+      <span class="icon">⚠️</span> Stock crítico
+      <span class="nav-dot" id="dot-alertas">0</span>
+    </div>
+
+    <div class="nav-section">Comercial</div>
+    <div class="nav-item" onclick="showPage('ventas', this)">
+      <span class="icon">💰</span> Ventas
+    </div>
+    <div class="nav-item" onclick="showPage('despachos', this)">
+      <span class="icon">🚚</span> Despachos
+    </div>
+
+    <div class="nav-section">Sistema</div>
+    <div class="nav-item" onclick="showPage('config', this)">
+      <span class="icon">⚙️</span> Configuración
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ── DASHBOARD ──────────────────────────────────────────────────── -->
+    <div class="page active" id="page-dashboard">
+      <h2>Dashboard</h2>
+      <p class="page-sub" id="dash-sub">Resumen operacional</p>
+
+      <div class="kpi-row" id="kpi-row"></div>
+
+      <div class="dash-grid">
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Actividad reciente</span>
+              <span class="card-count" id="feed-count"></span>
+            </div>
+            <div id="feed-lista"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Top productos · hoy</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th class="r">Qty</th>
+                  <th class="r">Total</th>
+                </tr>
+              </thead>
+              <tbody id="top-prod"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STOCK ───────────────────────────────────────────────────────── -->
+    <div class="page" id="page-stock">
+      <h2>Stock</h2>
+      <p class="page-sub">Inventario actual sincronizado desde el ERP</p>
+
+      <div class="stats" id="stats-stock"></div>
+
+      <div class="card">
+        <div class="bodega-pills" id="bodega-pills"></div>
+        <div class="card-header">
+          <span class="card-title">
+            Productos
+            <span class="card-count" id="stock-count"></span>
+          </span>
+          <div class="card-actions">
+            <input class="search-input" type="text"
+              placeholder="Buscar producto o SKU…"
+              oninput="filtrarStock(this.value)">
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Bodega</th>
+              <th class="r">Stock</th>
+              <th class="r">Mínimo</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-stock"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ALERTAS ─────────────────────────────────────────────────────── -->
+    <div class="page" id="page-alertas">
+      <h2>Stock crítico</h2>
+      <p class="page-sub">Productos bajo mínimo — requieren reposición</p>
+
+      <div class="stats" id="stats-alertas"></div>
+
+      <div class="card">
+        <div id="lista-alertas"></div>
+      </div>
+    </div>
+
+    <!-- ── VENTAS ──────────────────────────────────────────────────────── -->
+    <div class="page" id="page-ventas">
+      <h2>Ventas</h2>
+      <p class="page-sub">Historial de transacciones del ERP</p>
+
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap">
+        <div class="period-tabs">
+          <button class="period-tab active" onclick="setPeriodo('hoy',this)">Hoy</button>
+          <button class="period-tab" onclick="setPeriodo('semana',this)">Semana</button>
+          <button class="period-tab" onclick="setPeriodo('mes',this)">Mes</button>
+        </div>
+      </div>
+
+      <div class="stats" id="stats-ventas"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">
+            Transacciones
+            <span class="card-count" id="ventas-count"></span>
+          </span>
+          <input class="search-input" type="text"
+            placeholder="Buscar producto…"
+            oninput="filtrarVentas(this.value)">
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th class="r">Qty</th>
+              <th class="r">P. unit.</th>
+              <th class="r">Total</th>
+              <th>Vendedor</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-ventas"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── DESPACHOS ───────────────────────────────────────────────────── -->
+    <div class="page" id="page-despachos">
+      <h2>Despachos</h2>
+      <p class="page-sub">Pedidos y estado de entrega</p>
+
+      <div class="stats" id="stats-despachos"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">
+            Pedidos
+            <span class="card-count" id="despachos-count"></span>
+          </span>
+          <div class="card-actions">
+            <button class="btn-filter active" onclick="setFiltroDesp('todos',this)">Todos</button>
+            <button class="btn-filter" onclick="setFiltroDesp('pendiente',this)">Pendientes</button>
+            <button class="btn-filter" onclick="setFiltroDesp('enviado',this)">En camino</button>
+            <button class="btn-filter" onclick="setFiltroDesp('entregado',this)">Entregados</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>N° Pedido</th>
+              <th>Cliente</th>
+              <th>Detalle</th>
+              <th class="r">Total</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-despachos"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── CONFIGURACIÓN ───────────────────────────────────────────────── -->
+    <div class="page" id="page-config">
+      <h2>Configuración</h2>
+      <p class="page-sub">Parámetros del tenant — solo lectura</p>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header"><span class="card-title">Módulos activos</span></div>
+        <div class="module-grid" id="module-grid"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header"><span class="card-title">Conexión ERP</span></div>
+        <div id="cfg-erp"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Pipeline de sincronización</span></div>
+        <div id="cfg-sync"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ─── TENANT CONFIG ────────────────────────────────────────────────────────────
+// En producción se inyecta desde tenants/{id}.json + branding/{id}/branding.json
+const TENANT_CONFIG = {
+  nombre_corto:    "Demo",
+  color_primario:  "#e74c3c",
+  bodegas:         ["Principal", "Secundaria"],
+  stock_minimo_default: 5,
+  modulos_activos: {
+    dashboard:     true,
+    stock:         true,
+    ventas:        true,
+    despachos:     true,
+    alertas:       true,
+    configuracion: true,
+  },
+  alertas: {
+    stock_minimo_por_categoria: {
+      "Tornillería": 20,
+      "Herramientas": 3,
+      "Electricidad": 10,
+      "Plomería": 8,
+      "Pintura": 5,
+    }
+  },
+  erp: "JustWeb",
+  sync: {
+    stock_cada_horas:  2,
+    ventas_cada_horas: 1,
+    ultima_sync:       "2026-07-05 08:45",
+    siguiente_sync:    "2026-07-05 10:45",
+  }
+};
+
+// ─── STOCK DATA ───────────────────────────────────────────────────────────────
+// En producción desde data/{tenant_id}/{token}/stock.json
+const STOCK_DATA = [
+  { sku:"TOR-001", nombre:'Tornillo 6x1" C/Plana Zincado x100', categoria:"Tornillería",  bodega:"Principal",  stock:3,  precio:1490  },
+  { sku:"TOR-002", nombre:"Perno Hex M8x50 Galvanizado",         categoria:"Tornillería",  bodega:"Principal",  stock:45, precio:290   },
+  { sku:"TOR-003", nombre:"Tuerca M8 Galvanizada x50",           categoria:"Tornillería",  bodega:"Principal",  stock:2,  precio:890   },
+  { sku:"HER-001", nombre:'Destornillador Plano 6"',             categoria:"Herramientas", bodega:"Principal",  stock:12, precio:3990  },
+  { sku:"HER-002", nombre:"Martillo Carpintero 500g",            categoria:"Herramientas", bodega:"Principal",  stock:1,  precio:8490  },
+  { sku:"HER-003", nombre:"Llave Combinada 13mm",                categoria:"Herramientas", bodega:"Secundaria", stock:7,  precio:4290  },
+  { sku:"ELE-001", nombre:"Cable THHN 2.5mm Rojo x100m",         categoria:"Electricidad", bodega:"Principal",  stock:4,  precio:89900 },
+  { sku:"ELE-002", nombre:"Interruptor Simple Legrand",          categoria:"Electricidad", bodega:"Principal",  stock:18, precio:4990  },
+  { sku:"ELE-003", nombre:"Enchufe Triple c/tierra",             categoria:"Electricidad", bodega:"Principal",  stock:9,  precio:2990  },
+  { sku:"PLO-001", nombre:"Codo PVC 110mm 90°",                  categoria:"Plomería",     bodega:"Principal",  stock:6,  precio:1890  },
+  { sku:"PLO-002", nombre:'Llave de Paso 1/2" Bronce',           categoria:"Plomería",     bodega:"Principal",  stock:2,  precio:7990  },
+  { sku:"PIN-001", nombre:"Pintura Látex Blanco 4L",             categoria:"Pintura",      bodega:"Principal",  stock:0,  precio:15990 },
+  { sku:"PIN-002", nombre:"Rodillo Antigota 23cm",               categoria:"Pintura",      bodega:"Principal",  stock:11, precio:3290  },
+  { sku:"TOR-004", nombre:'Clavo Punta París 3" x1kg',           categoria:"Tornillería",  bodega:"Secundaria", stock:88, precio:1990  },
+  { sku:"HER-004", nombre:"Sierra Caladora Black+Decker",        categoria:"Herramientas", bodega:"Principal",  stock:2,  precio:54990 },
+];
+
+// ─── VENTAS DATA ──────────────────────────────────────────────────────────────
+// En producción desde data/{tenant_id}/{token}/ventas.json
+const VENTAS_DATA = [
+  { fecha:"2026-07-05 09:12", sku:"TOR-002", nombre:"Perno Hex M8x50 Galvanizado",   categoria:"Tornillería",  qty:20, precio:290,   vendedor:"C. Muñoz" },
+  { fecha:"2026-07-05 08:55", sku:"HER-001", nombre:'Destornillador Plano 6"',        categoria:"Herramientas", qty:3,  precio:3990,  vendedor:"R. Lagos"  },
+  { fecha:"2026-07-05 08:30", sku:"ELE-002", nombre:"Interruptor Simple Legrand",    categoria:"Electricidad", qty:6,  precio:4990,  vendedor:"C. Muñoz"  },
+  { fecha:"2026-07-05 08:10", sku:"PIN-002", nombre:"Rodillo Antigota 23cm",         categoria:"Pintura",      qty:2,  precio:3290,  vendedor:"R. Lagos"  },
+  { fecha:"2026-07-04 17:45", sku:"TOR-004", nombre:'Clavo Punta París 3" x1kg',     categoria:"Tornillería",  qty:5,  precio:1990,  vendedor:"M. Vera"   },
+  { fecha:"2026-07-04 16:20", sku:"HER-003", nombre:"Llave Combinada 13mm",          categoria:"Herramientas", qty:2,  precio:4290,  vendedor:"C. Muñoz"  },
+  { fecha:"2026-07-04 15:05", sku:"ELE-003", nombre:"Enchufe Triple c/tierra",       categoria:"Electricidad", qty:4,  precio:2990,  vendedor:"R. Lagos"  },
+  { fecha:"2026-07-04 14:30", sku:"PLO-001", nombre:"Codo PVC 110mm 90°",            categoria:"Plomería",     qty:3,  precio:1890,  vendedor:"M. Vera"   },
+  { fecha:"2026-07-03 11:00", sku:"ELE-001", nombre:"Cable THHN 2.5mm Rojo x100m",  categoria:"Electricidad", qty:1,  precio:89900, vendedor:"C. Muñoz"  },
+  { fecha:"2026-07-03 10:15", sku:"HER-002", nombre:"Martillo Carpintero 500g",      categoria:"Herramientas", qty:1,  precio:8490,  vendedor:"R. Lagos"  },
+  { fecha:"2026-07-03 09:30", sku:"TOR-001", nombre:'Tornillo 6x1" C/Plana x100',    categoria:"Tornillería",  qty:10, precio:1490,  vendedor:"M. Vera"   },
+  { fecha:"2026-07-02 16:00", sku:"PLO-002", nombre:'Llave de Paso 1/2" Bronce',     categoria:"Plomería",     qty:1,  precio:7990,  vendedor:"C. Muñoz"  },
+];
+
+// ─── DESPACHOS DATA ───────────────────────────────────────────────────────────
+const DESPACHOS_DATA = [
+  { id:"PED-2026-089", cliente:"Constructora Andina",  detalle:'Tornillo 6x1" x200, Perno M8x50 x50',         total:54800,  estado:"pendiente", fecha:"2026-07-05" },
+  { id:"PED-2026-088", cliente:"Proyecto Maipú",       detalle:"Cable THHN x200m, Interruptores x10",         total:209800, estado:"enviado",   fecha:"2026-07-04" },
+  { id:"PED-2026-087", cliente:"Ferretería Central",   detalle:"Surtido herramientas — 15 ítems",             total:87500,  estado:"entregado", fecha:"2026-07-03" },
+  { id:"PED-2026-086", cliente:"Obra Los Robles",      detalle:"Codos PVC x20, Llaves de paso x5",            total:57650,  estado:"entregado", fecha:"2026-07-02" },
+  { id:"PED-2026-085", cliente:"Maestranza Norte",     detalle:"Rodillos x10, Pintura látex x5",              total:113350, estado:"pendiente", fecha:"2026-07-05" },
+  { id:"PED-2026-084", cliente:"Proyecto Quilicura",   detalle:"Sierra caladora x2, Martillos x5",            total:152380, estado:"enviado",   fecha:"2026-07-04" },
+];
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+const HOY = '2026-07-05';
+const SEMANA = ['2026-07-05','2026-07-04','2026-07-03','2026-07-02','2026-07-01'];
+
+function fmt(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+function fmtK(n) { return n >= 1e6 ? `$${(n/1e6).toFixed(1)}M` : fmt(n); }
+
+function stockMin(p) {
+  const cat = TENANT_CONFIG.alertas?.stock_minimo_por_categoria;
+  return (cat && cat[p.categoria]) ?? TENANT_CONFIG.stock_minimo_default;
+}
+function estadoStock(p) {
+  const m = stockMin(p);
+  if (p.stock === 0)        return 'r';
+  if (p.stock <= m * 0.5)  return 'r';
+  if (p.stock <= m)        return 'a';
+  return 'v';
+}
+function barEstado(p) {
+  const e = estadoStock(p);
+  const m = stockMin(p);
+  const pct = m > 0 ? Math.round(Math.min(p.stock / m, 1) * 100) : (p.stock > 0 ? 100 : 0);
+  const lbl = { r:'Crítico', a:'Bajo', v:'OK' };
+  return `<div class="ratio-wrap">
+    <div class="ratio-track"><div class="ratio-fill ${e}" style="width:${pct}%"></div></div>
+    <span class="ratio-lbl ${e}">${lbl[e]}</span>
+  </div>`;
+}
+
+// ─── BRANDING ─────────────────────────────────────────────────────────────────
+function aplicarBranding() {
+  const cfg = TENANT_CONFIG;
+  document.documentElement.style.setProperty('--cp', cfg.color_primario || '#e74c3c');
+  const ini = (cfg.nombre_corto || 'F')[0].toUpperCase();
+  document.getElementById('nav-inicial').textContent = ini;
+  document.getElementById('nav-nombre').textContent  = cfg.nombre_corto || 'FerreSystem';
+  document.getElementById('nav-sync').textContent    = cfg.sync?.ultima_sync || '—';
+  document.title = 'Panel Admin — ' + (cfg.nombre_corto || 'FerreSystem');
+}
+
+// ─── NAVEGACIÓN ───────────────────────────────────────────────────────────────
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function renderDashboard() {
+  const ventasHoy  = VENTAS_DATA.filter(v => v.fecha.startsWith(HOY));
+  const totalHoy   = ventasHoy.reduce((s, v) => s + v.precio * v.qty, 0);
+  const ticket     = ventasHoy.length > 0 ? totalHoy / ventasHoy.length : 0;
+  const noCriticos = STOCK_DATA.filter(p => estadoStock(p) !== 'v').length;
+  const pendientes = DESPACHOS_DATA.filter(d => d.estado === 'pendiente').length;
+
+  document.getElementById('dash-sub').textContent =
+    `Resumen del día — última sync: ${TENANT_CONFIG.sync.ultima_sync}`;
+
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi-card ${totalHoy > 0 ? 'ok' : ''}">
+      <div class="kpi-label">Ventas hoy</div>
+      <div class="kpi-val">${fmtK(totalHoy)}</div>
+      <div class="kpi-trend up">↑ ${ventasHoy.length} transacciones</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Ticket promedio</div>
+      <div class="kpi-val">${fmtK(ticket)}</div>
+      <div class="kpi-trend flat">por transacción hoy</div>
+    </div>
+    <div class="kpi-card ${noCriticos > 0 ? 'err' : 'ok'}">
+      <div class="kpi-label">Stock bajo mínimo</div>
+      <div class="kpi-val">${noCriticos}</div>
+      <div class="kpi-trend ${noCriticos > 0 ? 'down' : 'up'}">
+        ${noCriticos > 0 ? '↓ requieren reposición' : '↑ todo en orden'}
+      </div>
+    </div>
+    <div class="kpi-card ${pendientes > 0 ? 'warn' : 'ok'}">
+      <div class="kpi-label">Despachos pendientes</div>
+      <div class="kpi-val">${pendientes}</div>
+      <div class="kpi-trend ${pendientes > 0 ? 'down' : 'flat'}">
+        ${pendientes > 0 ? '↓ por despachar' : 'sin pendientes'}
+      </div>
+    </div>
+  `;
+
+  // Feed
+  const feed = [
+    { t:'ok',   msg:`Pipeline ${TENANT_CONFIG.erp} completado OK`,       ts: TENANT_CONFIG.sync.ultima_sync },
+    { t:'ok',   msg:`Stock actualizado — ${STOCK_DATA.length} productos`,  ts: TENANT_CONFIG.sync.ultima_sync },
+    { t:'warn', msg:`${noCriticos} productos bajo el stock mínimo`,       ts: TENANT_CONFIG.sync.ultima_sync },
+    { t:'info', msg:`${ventasHoy.length} ventas registradas hoy`,         ts: HOY + ' 08:00' },
+    { t:'info', msg:`Próxima sincronización: ${TENANT_CONFIG.sync.siguiente_sync}`, ts: '' },
+  ];
+  document.getElementById('feed-count').textContent = `${feed.length} eventos`;
+  document.getElementById('feed-lista').innerHTML = feed.map(f => `
+    <div class="feed-item">
+      <div class="feed-dot ${f.t}"></div>
+      <div>
+        <div class="feed-text">${f.msg}</div>
+        ${f.ts ? `<div class="feed-meta">${f.ts}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  // Top productos
+  const agg = {};
+  ventasHoy.forEach(v => {
+    if (!agg[v.sku]) agg[v.sku] = { nombre: v.nombre, qty: 0, total: 0 };
+    agg[v.sku].qty   += v.qty;
+    agg[v.sku].total += v.precio * v.qty;
+  });
+  const top = Object.values(agg).sort((a,b) => b.total - a.total).slice(0, 5);
+  document.getElementById('top-prod').innerHTML = top.length
+    ? top.map(p => `
+        <tr>
+          <td style="font-size:0.82rem">${p.nombre}</td>
+          <td class="r" style="font-variant-numeric:tabular-nums">${p.qty}</td>
+          <td class="r" style="font-weight:700;font-variant-numeric:tabular-nums">${fmt(p.total)}</td>
+        </tr>`)
+      .join('')
+    : `<tr><td colspan="3"><div class="empty"><div class="icon">📋</div><p>Sin ventas hoy aún</p></div></td></tr>`;
+}
+
+// ─── STOCK ────────────────────────────────────────────────────────────────────
+let bodegaActual = 'Todas';
+let stockQ = '';
+
+function renderBodegaPills() {
+  const bodegas = ['Todas', ...TENANT_CONFIG.bodegas];
+  document.getElementById('bodega-pills').innerHTML = bodegas.map(b => `
+    <button class="bodega-pill ${b === 'Todas' ? 'active' : ''}"
+      onclick="setBodega('${b}',this)">${b}</button>
+  `).join('');
+}
+
+function setBodega(b, el) {
+  bodegaActual = b;
+  document.querySelectorAll('.bodega-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderTablaStock();
+}
+
+function filtrarStock(q) { stockQ = q.toLowerCase(); renderTablaStock(); }
+
+function getStockFiltrado() {
+  return STOCK_DATA.filter(p => {
+    if (bodegaActual !== 'Todas' && p.bodega !== bodegaActual) return false;
+    if (stockQ && !p.nombre.toLowerCase().includes(stockQ) && !p.sku.toLowerCase().includes(stockQ)) return false;
+    return true;
+  });
+}
+
+function renderTablaStock() {
+  const datos = getStockFiltrado();
+  const cr = datos.filter(p => estadoStock(p) === 'r').length;
+  const ba = datos.filter(p => estadoStock(p) === 'a').length;
+  const ok = datos.filter(p => estadoStock(p) === 'v').length;
+
+  document.getElementById('stock-count').textContent = `(${datos.length})`;
+  document.getElementById('stats-stock').innerHTML = `
+    <div class="stat-card ${cr > 0 ? 'err' : ''}">
+      <div class="stat-label">Críticos / sin stock</div>
+      <div class="stat-val">${cr}</div>
+      <div class="stat-sub">reposición urgente</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Stock bajo</div>
+      <div class="stat-val" style="color:var(--warn)">${ba}</div>
+      <div class="stat-sub">pedir pronto</div>
+    </div>
+    <div class="stat-card ok">
+      <div class="stat-label">Sin alertas</div>
+      <div class="stat-val">${ok}</div>
+      <div class="stat-sub">de ${datos.length} mostrados</div>
+    </div>
+  `;
+
+  document.getElementById('tabla-stock').innerHTML = datos.length
+    ? datos.map(p => `
+        <tr class="rl-${estadoStock(p)}">
+          <td class="mono">${p.sku}</td>
+          <td>${p.nombre}</td>
+          <td style="color:var(--muted);font-size:0.8rem">${p.categoria}</td>
+          <td style="color:var(--muted);font-size:0.8rem">${p.bodega}</td>
+          <td class="r"><strong style="font-variant-numeric:tabular-nums">${p.stock}</strong> <span style="font-size:0.7rem;color:var(--muted)">un</span></td>
+          <td class="r" style="color:var(--muted);font-variant-numeric:tabular-nums">${stockMin(p)}</td>
+          <td>${barEstado(p)}</td>
+        </tr>`)
+      .join('')
+    : `<tr><td colspan="7"><div class="empty"><div class="icon">📦</div><p>Sin resultados</p></div></td></tr>`;
+}
+
+// ─── ALERTAS ──────────────────────────────────────────────────────────────────
+function renderAlertas() {
+  const alertas = STOCK_DATA.filter(p => estadoStock(p) !== 'v')
+                            .sort((a, b) => a.stock - b.stock);
+  const dot = document.getElementById('dot-alertas');
+  dot.textContent  = alertas.length;
+  dot.className    = 'nav-dot' + (alertas.length > 0 ? ' on' : '');
+
+  const cr = alertas.filter(p => estadoStock(p) === 'r').length;
+  const ba = alertas.filter(p => estadoStock(p) === 'a').length;
+  document.getElementById('stats-alertas').innerHTML = `
+    <div class="stat-card err">
+      <div class="stat-label">Críticos / sin stock</div>
+      <div class="stat-val">${cr}</div>
+      <div class="stat-sub">acción urgente</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Stock bajo</div>
+      <div class="stat-val" style="color:var(--warn)">${ba}</div>
+      <div class="stat-sub">pedir pronto</div>
+    </div>
+  `;
+
+  document.getElementById('lista-alertas').innerHTML = alertas.length
+    ? alertas.map(p => {
+        const e = estadoStock(p);
+        const m = stockMin(p);
+        return `<div class="alerta-item">
+          <div class="alerta-icon">${e === 'r' ? '🔴' : '🟡'}</div>
+          <div class="alerta-info">
+            <div class="alerta-nombre">${p.nombre}</div>
+            <div class="alerta-detalle">SKU: ${p.sku} · ${p.categoria} · ${p.bodega}</div>
+          </div>
+          <div class="alerta-nums">
+            <div class="alerta-num">${p.stock}</div>
+            <div class="alerta-min">mín: ${m} un</div>
+          </div>
+        </div>`;
+      }).join('')
+    : `<div class="empty"><div class="icon">✅</div><p>Todo el stock sobre el mínimo</p></div>`;
+}
+
+// ─── VENTAS ───────────────────────────────────────────────────────────────────
+let periodoActual = 'hoy';
+let ventasQ = '';
+
+function setPeriodo(p, el) {
+  periodoActual = p;
+  document.querySelectorAll('.period-tab').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderVentas();
+}
+function filtrarVentas(q) { ventasQ = q.toLowerCase(); renderVentas(); }
+
+function getVentasFiltradas() {
+  return VENTAS_DATA.filter(v => {
+    const d = v.fecha.slice(0, 10);
+    if (periodoActual === 'hoy'    && d !== HOY)             return false;
+    if (periodoActual === 'semana' && !SEMANA.includes(d))   return false;
+    if (ventasQ && !v.nombre.toLowerCase().includes(ventasQ)) return false;
+    return true;
+  });
+}
+
+function renderVentas() {
+  const datos   = getVentasFiltradas();
+  const total   = datos.reduce((s, v) => s + v.precio * v.qty, 0);
+  const items   = datos.reduce((s, v) => s + v.qty, 0);
+  const ticket  = datos.length > 0 ? total / datos.length : 0;
+
+  document.getElementById('ventas-count').textContent = `(${datos.length})`;
+  document.getElementById('stats-ventas').innerHTML = `
+    <div class="stat-card ok">
+      <div class="stat-label">Total ventas</div>
+      <div class="stat-val">${fmtK(total)}</div>
+      <div class="stat-sub">${datos.length} transacciones</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Ticket promedio</div>
+      <div class="stat-val">${fmtK(ticket)}</div>
+      <div class="stat-sub">por transacción</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Ítems vendidos</div>
+      <div class="stat-val">${items}</div>
+      <div class="stat-sub">unidades totales</div>
+    </div>
+  `;
+
+  document.getElementById('tabla-ventas').innerHTML = datos.length
+    ? datos.map(v => `
+        <tr>
+          <td class="mono" style="white-space:nowrap">${v.fecha}</td>
+          <td style="font-size:0.83rem">${v.nombre}</td>
+          <td style="color:var(--muted);font-size:0.78rem">${v.categoria}</td>
+          <td class="r" style="font-variant-numeric:tabular-nums">${v.qty}</td>
+          <td class="r" style="color:var(--muted);font-variant-numeric:tabular-nums">${fmt(v.precio)}</td>
+          <td class="r" style="font-weight:700;font-variant-numeric:tabular-nums">${fmt(v.precio * v.qty)}</td>
+          <td style="color:var(--muted);font-size:0.8rem">${v.vendedor}</td>
+        </tr>`)
+      .join('')
+    : `<tr><td colspan="7"><div class="empty"><div class="icon">💰</div><p>Sin ventas en este período</p></div></td></tr>`;
+}
+
+// ─── DESPACHOS ────────────────────────────────────────────────────────────────
+let filtroDesp = 'todos';
+
+function setFiltroDesp(f, el) {
+  filtroDesp = f;
+  document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderDespachos();
+}
+
+function renderDespachos() {
+  const datos = filtroDesp === 'todos'
+    ? DESPACHOS_DATA
+    : DESPACHOS_DATA.filter(d => d.estado === filtroDesp);
+
+  const pend = DESPACHOS_DATA.filter(d => d.estado === 'pendiente').length;
+  const envi = DESPACHOS_DATA.filter(d => d.estado === 'enviado').length;
+  const entr = DESPACHOS_DATA.filter(d => d.estado === 'entregado').length;
+
+  document.getElementById('despachos-count').textContent = `(${datos.length})`;
+  document.getElementById('stats-despachos').innerHTML = `
+    <div class="stat-card ${pend > 0 ? 'err' : ''}">
+      <div class="stat-label">Pendientes</div>
+      <div class="stat-val">${pend}</div>
+      <div class="stat-sub">por despachar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">En camino</div>
+      <div class="stat-val" style="color:var(--info)">${envi}</div>
+      <div class="stat-sub">en tránsito</div>
+    </div>
+    <div class="stat-card ok">
+      <div class="stat-label">Entregados</div>
+      <div class="stat-val">${entr}</div>
+      <div class="stat-sub">completados</div>
+    </div>
+  `;
+
+  const badgeMap = {
+    pendiente: '<span class="badge badge-pend">Pendiente</span>',
+    enviado:   '<span class="badge badge-env">En camino</span>',
+    entregado: '<span class="badge badge-ok">Entregado</span>',
+    cancelado: '<span class="badge badge-off">Cancelado</span>',
+  };
+
+  document.getElementById('tabla-despachos').innerHTML = datos.length
+    ? datos.map(d => `
+        <tr>
+          <td class="mono">${d.id}</td>
+          <td style="font-weight:600;font-size:0.875rem">${d.cliente}</td>
+          <td style="font-size:0.78rem;color:var(--muted);max-width:220px;
+                     white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.detalle}</td>
+          <td class="r" style="font-weight:700;font-variant-numeric:tabular-nums">${fmt(d.total)}</td>
+          <td>${badgeMap[d.estado] || ''}</td>
+          <td style="color:var(--muted);font-size:0.8rem;white-space:nowrap">${d.fecha}</td>
+        </tr>`)
+      .join('')
+    : `<tr><td colspan="6"><div class="empty"><div class="icon">🚚</div><p>Sin pedidos en este filtro</p></div></td></tr>`;
+}
+
+// ─── CONFIGURACIÓN ────────────────────────────────────────────────────────────
+function renderConfig() {
+  const mods = TENANT_CONFIG.modulos_activos || {};
+  const labels = {
+    dashboard:     { name:'Dashboard',     desc:'KPIs y actividad reciente' },
+    stock:         { name:'Stock',         desc:'Consulta de inventario'    },
+    ventas:        { name:'Ventas',        desc:'Historial transacciones'   },
+    despachos:     { name:'Despachos',     desc:'Gestión de pedidos'        },
+    alertas:       { name:'Alertas',       desc:'Stock crítico'             },
+    configuracion: { name:'Configuración', desc:'Parámetros del tenant'     },
+  };
+
+  document.getElementById('module-grid').innerHTML = Object.entries(mods).map(([k, v]) => {
+    const info = labels[k] || { name: k, desc: '' };
+    return `<div class="module-card">
+      <div>
+        <div class="module-name">${info.name}</div>
+        <div class="module-desc">${info.desc}</div>
+      </div>
+      <span class="${v ? 'mod-on' : 'mod-off'}">${v ? '● ON' : '○ OFF'}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('cfg-erp').innerHTML = `
+    <div class="cfg-row"><span class="cfg-key">ERP</span><span class="cfg-val">${TENANT_CONFIG.erp}</span></div>
+    <div class="cfg-row"><span class="cfg-key">Tenant ID</span><span class="cfg-val">demo</span></div>
+    <div class="cfg-row"><span class="cfg-key">Bodegas</span><span class="cfg-val">${TENANT_CONFIG.bodegas.join(', ')}</span></div>
+    <div class="cfg-row"><span class="cfg-key">Stock mínimo default</span><span class="cfg-val">${TENANT_CONFIG.stock_minimo_default} un</span></div>
+  `;
+
+  document.getElementById('cfg-sync').innerHTML = `
+    <div class="cfg-row"><span class="cfg-key">Última sync</span><span class="cfg-val">${TENANT_CONFIG.sync.ultima_sync}</span></div>
+    <div class="cfg-row"><span class="cfg-key">Próxima sync</span><span class="cfg-val">${TENANT_CONFIG.sync.siguiente_sync}</span></div>
+    <div class="cfg-row"><span class="cfg-key">Stock cada</span><span class="cfg-val">${TENANT_CONFIG.sync.stock_cada_horas} horas</span></div>
+    <div class="cfg-row"><span class="cfg-key">Ventas cada</span><span class="cfg-val">${TENANT_CONFIG.sync.ventas_cada_horas} hora</span></div>
+  `;
+}
+
+// ─── FEATURE FLAGS ────────────────────────────────────────────────────────────
+function aplicarFeatureFlags() {
+  const mods = TENANT_CONFIG.modulos_activos || {};
+  const map = {
+    stock:         ['menu-stock',     'page-stock'],
+    ventas:        ['menu-ventas',    'page-ventas'],
+    despachos:     ['menu-despachos', 'page-despachos'],
+    alertas:       ['menu-alertas',   'page-alertas'],
+    configuracion: ['menu-config',    'page-config'],
+  };
+  Object.entries(map).forEach(([mod, [navId, pageId]]) => {
+    if (mods[mod] === false) {
+      const navEl  = document.getElementById(navId);
+      const pageEl = document.getElementById(pageId);
+      if (navEl)  navEl.style.display  = 'none';
+      if (pageEl) pageEl.style.display = 'none';
+    }
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+aplicarBranding();
+aplicarFeatureFlags();
+renderDashboard();
+renderBodegaPills();
+renderTablaStock();
+renderAlertas();
+renderVentas();
+renderDespachos();
+renderConfig();
+</script>
 </body>
 </html>
