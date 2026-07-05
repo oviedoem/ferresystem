@@ -41,6 +41,52 @@
     .nav-item { transition: none; }
   }
 
+  /* ── TOUR ────────────────────────────────────────────────────────────── */
+  .tour-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(14,19,24,.72);
+    z-index: 9000;
+  }
+  .tour-box {
+    position: fixed; z-index: 9001;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px 18px;
+    width: 300px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.28);
+    animation: pageIn .2s ease both;
+  }
+  .tour-step-label {
+    font-size: .66rem; text-transform: uppercase; letter-spacing: .12em;
+    color: var(--cp); font-weight: 700; margin-bottom: 5px;
+  }
+  .tour-title { font-size: .98rem; font-weight: 700; margin-bottom: 7px; line-height: 1.3; }
+  .tour-text  { font-size: .83rem; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
+  .tour-actions { display: flex; align-items: center; gap: 7px; }
+  .tour-btn {
+    padding: 6px 14px; border-radius: 6px; font-size: .8rem; font-weight: 600;
+    border: none; cursor: pointer; font-family: var(--font); transition: opacity .1s;
+  }
+  .tour-btn:hover { opacity: .85; }
+  .tour-btn.primary { background: var(--cp); color: #fff; }
+  .tour-btn.ghost   { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .tour-skip { margin-left: auto; font-size: .73rem; color: var(--muted); cursor: pointer; }
+  .tour-skip:hover { color: var(--text); }
+  .tour-ring {
+    position: fixed; z-index: 8999; pointer-events: none;
+    border: 2px solid var(--cp); border-radius: 8px;
+    box-shadow: 0 0 0 4px rgba(231,76,60,.15);
+    transition: left .25s ease, top .25s ease, width .25s ease, height .25s ease;
+  }
+  .tour-trigger {
+    display: flex; align-items: center; gap: 5px;
+    font-size: .75rem; color: var(--muted); cursor: pointer;
+    background: none; border: 1px solid var(--border); border-radius: 5px;
+    padding: 4px 9px; font-family: var(--font); transition: color .12s, border-color .12s;
+  }
+  .tour-trigger:hover { color: var(--cp); border-color: var(--cp); }
+
   /* ── NAV ─────────────────────────────────────────────────────────────── */
   nav {
     display: flex; align-items: center; justify-content: space-between;
@@ -353,6 +399,14 @@
   </div>
   <div class="nav-right">
     <span class="nav-sync">Sync: <strong id="nav-sync">—</strong></span>
+    <button class="tour-trigger" onclick="Tour.start()" title="Tour de bienvenida">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none"/>
+      </svg>
+      Tour
+    </button>
     <span class="nav-user" id="nav-user">Administrador</span>
   </div>
 </nav>
@@ -1084,6 +1138,136 @@ renderAlertas();
 renderVentas();
 renderDespachos();
 renderConfig();
+
+// ─── TOUR ─────────────────────────────────────────────────────────────────────
+const TOUR_STEPS = [
+  {
+    target: '.nav-logo', pos: 'bottom',
+    title: 'Bienvenido al Panel Admin',
+    text:  'Este es tu centro de control. Desde aquí gestionas inventario, ventas, alertas y despachos en tiempo real.',
+  },
+  {
+    target: 'aside', pos: 'right',
+    title: 'Menú de módulos',
+    text:  'Accede a Stock, Ventas, Alertas, Despachos y Configuración. Solo se muestran los módulos habilitados en tu plan.',
+  },
+  {
+    target: '#kpi-row', pos: 'bottom',
+    title: 'KPIs en tiempo real',
+    text:  'Stock crítico, ventas del día y despachos pendientes. Se actualizan con cada sincronización del ERP.',
+  },
+  {
+    target: '.nav-sync', pos: 'bottom',
+    title: 'Sincronización automática',
+    text:  'Los datos se sincronizan desde tu ERP según el horario configurado. Sin intervención manual.',
+  },
+  {
+    target: null, pos: 'center',
+    title: '¡Todo listo!',
+    text:  'Ya conoces lo esencial del Panel Admin. Explora cada sección desde el menú lateral. Puedes repetir este tour cuando quieras.',
+  },
+];
+
+const Tour = (() => {
+  let step = 0, backdrop, box, ring;
+
+  function createDOM() {
+    if (backdrop) return;
+    backdrop = Object.assign(document.createElement('div'), { className: 'tour-backdrop' });
+    backdrop.addEventListener('click', e => { if (e.target === backdrop) end(); });
+    box  = Object.assign(document.createElement('div'), { className: 'tour-box' });
+    ring = Object.assign(document.createElement('div'), { className: 'tour-ring' });
+    document.body.append(backdrop, box, ring);
+  }
+
+  function positionBox(s) {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const bw = 300;
+    if (!s.target || s.pos === 'center') {
+      box.style.left = Math.max(16, (vw - bw) / 2) + 'px';
+      box.style.top  = Math.max(16, (vh - 220) / 2) + 'px';
+      return;
+    }
+    const el = document.querySelector(s.target);
+    if (!el) { positionBox({ pos: 'center' }); return; }
+    const r = el.getBoundingClientRect();
+    let left, top;
+    if (s.pos === 'bottom') {
+      left = Math.min(Math.max(16, r.left), vw - bw - 16);
+      top  = Math.min(r.bottom + 14, vh - 220);
+    } else if (s.pos === 'right') {
+      left = Math.min(r.right + 14, vw - bw - 16);
+      top  = Math.min(Math.max(16, r.top), vh - 220);
+    } else {
+      left = (vw - bw) / 2; top = (vh - 220) / 2;
+    }
+    box.style.left = Math.max(16, left) + 'px';
+    box.style.top  = Math.max(16, top)  + 'px';
+  }
+
+  function positionRing(s) {
+    if (!s.target) { ring.style.display = 'none'; return; }
+    const el = document.querySelector(s.target);
+    if (!el) { ring.style.display = 'none'; return; }
+    const r = el.getBoundingClientRect();
+    Object.assign(ring.style, {
+      display: 'block',
+      left:    (r.left - 6)  + 'px',
+      top:     (r.top  - 6)  + 'px',
+      width:   (r.width + 12) + 'px',
+      height:  (r.height + 12) + 'px',
+    });
+  }
+
+  function render() {
+    const s = TOUR_STEPS[step];
+    const isLast  = step === TOUR_STEPS.length - 1;
+    const isFirst = step === 0;
+    positionRing(s);
+    positionBox(s);
+    box.innerHTML = `
+      <div class="tour-step-label">Paso ${step + 1} de ${TOUR_STEPS.length}</div>
+      <div class="tour-title">${s.title}</div>
+      <div class="tour-text">${s.text}</div>
+      <div class="tour-actions">
+        ${!isFirst ? `<button class="tour-btn ghost" id="t-prev">Anterior</button>` : ''}
+        <button class="tour-btn primary" id="t-next">${isLast ? 'Finalizar' : 'Siguiente'}</button>
+        ${!isLast ? `<span class="tour-skip" id="t-skip">Saltar tour</span>` : ''}
+      </div>`;
+    document.getElementById('t-next')?.addEventListener('click', () => isLast ? end() : next());
+    document.getElementById('t-prev')?.addEventListener('click', prev);
+    document.getElementById('t-skip')?.addEventListener('click', end);
+  }
+
+  function start() {
+    step = 0;
+    createDOM();
+    backdrop.style.display = ring.style.display = '';
+    box.style.display = 'block';
+    render();
+  }
+
+  function next() { step++; render(); }
+  function prev() { step--; render(); }
+
+  function end() {
+    localStorage.setItem('fs_admin_tour', '1');
+    [backdrop, box, ring].forEach(el => el?.remove());
+    backdrop = box = ring = null;
+  }
+
+  // Auto-launch en primera visita
+  if (!localStorage.getItem('fs_admin_tour')) {
+    setTimeout(start, 700);
+  }
+
+  return { start };
+})();
+
+// ─── SERVICE WORKER ───────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
