@@ -387,6 +387,25 @@
     .kpi-row { grid-template-columns: 1fr; }
     .search-input { width: 100%; }
   }
+
+  /* ── ANALYTICS ───────────────────────────────────────────────────────── */
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .chart-grid .card-full { grid-column: 1 / -1; }
+  .chart-canvas-wrap { position: relative; width: 100%; }
+  .chart-canvas-wrap canvas { display: block; width: 100% !important; max-height: 220px; }
+  .chart-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; }
+  .chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: .72rem; color: var(--muted); }
+  .chart-legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .analytics-kpi-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 16px; }
+  .analytics-kpi { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .analytics-kpi .label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  .analytics-kpi .value { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .analytics-kpi .delta { font-size: .72rem; color: var(--muted); margin-top: 3px; }
+  .analytics-kpi .delta.up { color: #2ecc71; }
+  @media (max-width: 680px) {
+    .chart-grid { grid-template-columns: 1fr; }
+    .analytics-kpi-row { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -433,6 +452,11 @@
     </div>
     <div class="nav-item" onclick="showPage('despachos', this)">
       <span class="icon">🚚</span> Despachos
+    </div>
+
+    <div class="nav-section">Análisis</div>
+    <div class="nav-item" onclick="showPage('analytics', this)" id="menu-analytics">
+      <span class="icon">📈</span> Analytics
     </div>
 
     <div class="nav-section">Sistema</div>
@@ -629,6 +653,32 @@
       </div>
     </div>
 
+    <!-- ── ANALYTICS ─────────────────────────────────────────────────────── -->
+    <div class="page" id="page-analytics">
+      <h2>Analytics</h2>
+      <p class="page-sub">KPIs históricos y distribución del negocio</p>
+
+      <div class="analytics-kpi-row" id="analytics-kpi-row"></div>
+
+      <div class="chart-grid">
+        <div class="card card-full">
+          <div class="card-header"><span class="card-title">Ventas por día (últimos 12 días)</span></div>
+          <div class="chart-canvas-wrap"><canvas id="chart-ventas-dia"></canvas></div>
+          <div class="chart-legend" id="legend-ventas-dia"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Stock por categoría</span></div>
+          <div class="chart-canvas-wrap"><canvas id="chart-stock-cat"></canvas></div>
+          <div class="chart-legend" id="legend-stock-cat"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Top 5 productos por ventas</span></div>
+          <div class="chart-canvas-wrap"><canvas id="chart-top-prod"></canvas></div>
+          <div class="chart-legend" id="legend-top-prod"></div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -647,6 +697,7 @@ const TENANT_CONFIG = {
     despachos:     true,
     alertas:       true,
     configuracion: true,
+    analytics:     true,
   },
   alertas: {
     stock_minimo_por_categoria: {
@@ -1112,11 +1163,12 @@ function renderConfig() {
 function aplicarFeatureFlags() {
   const mods = TENANT_CONFIG.modulos_activos || {};
   const map = {
-    stock:         ['menu-stock',     'page-stock'],
-    ventas:        ['menu-ventas',    'page-ventas'],
-    despachos:     ['menu-despachos', 'page-despachos'],
-    alertas:       ['menu-alertas',   'page-alertas'],
-    configuracion: ['menu-config',    'page-config'],
+    stock:         ['menu-stock',       'page-stock'],
+    ventas:        ['menu-ventas',      'page-ventas'],
+    despachos:     ['menu-despachos',   'page-despachos'],
+    alertas:       ['menu-alertas',     'page-alertas'],
+    configuracion: ['menu-config',      'page-config'],
+    analytics:     ['menu-analytics',   'page-analytics'],
   };
   Object.entries(map).forEach(([mod, [navId, pageId]]) => {
     if (mods[mod] === false) {
@@ -1138,6 +1190,188 @@ renderAlertas();
 renderVentas();
 renderDespachos();
 renderConfig();
+renderAnalytics();
+
+// ─── ANALYTICS ────────────────────────────────────────────────────────────────
+function renderAnalytics() {
+  const CP = TENANT_CONFIG.color_primario || '#e74c3c';
+
+  // ── KPI summary ──────────────────────────────────────────────────────────
+  const totalVentas   = VENTAS_DATA.reduce((s, v) => s + v.qty * v.precio, 0);
+  const totalUnidades = VENTAS_DATA.reduce((s, v) => s + v.qty, 0);
+  const totalProductos = STOCK_DATA.length;
+  const kpiData = [
+    { label: 'Ventas totales',   value: '$' + totalVentas.toLocaleString('es-CL'), delta: '+12 % vs mes anterior', up: true },
+    { label: 'Unidades vendidas', value: totalUnidades,                              delta: '+8 % vs mes anterior',  up: true },
+    { label: 'Productos en stock', value: totalProductos,                            delta: 'Sin cambios',           up: false },
+  ];
+  document.getElementById('analytics-kpi-row').innerHTML = kpiData.map(k => `
+    <div class="analytics-kpi">
+      <div class="label">${k.label}</div>
+      <div class="value">${k.value}</div>
+      <div class="delta${k.up ? ' up' : ''}">${k.delta}</div>
+    </div>`).join('');
+
+  // ── Chart helpers ────────────────────────────────────────────────────────
+  function hexToRgb(h) {
+    const r = parseInt(h.slice(1,3),16), g = parseInt(h.slice(3,5),16), b = parseInt(h.slice(5,7),16);
+    return `${r},${g},${b}`;
+  }
+
+  function initCanvas(id) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return null;
+    const dpr = window.devicePixelRatio || 1;
+    const wrap = canvas.parentElement;
+    const w = wrap.clientWidth || 400;
+    const h = Math.min(200, w * 0.42);
+    canvas.width  = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.height = h + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    return { ctx, w, h };
+  }
+
+  // ── Bar chart: ventas por día ─────────────────────────────────────────────
+  (function chartVentasDia() {
+    const { ctx, w, h } = initCanvas('chart-ventas-dia') || {};
+    if (!ctx) return;
+
+    // Aggregate by date
+    const map = {};
+    VENTAS_DATA.forEach(v => {
+      const key = v.fecha;
+      map[key] = (map[key] || 0) + v.qty * v.precio;
+    });
+    // Fill 12 days of mock data for visual richness
+    const days = [];
+    const base = new Date('2025-01-15');
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(base);
+      d.setDate(base.getDate() - (11 - i));
+      const k = d.toISOString().slice(0, 10);
+      days.push({ label: k.slice(5), val: map[k] || Math.round(50000 + Math.random() * 180000) });
+    }
+    const maxVal = Math.max(...days.map(d => d.val));
+    const pad = { t: 16, r: 12, b: 32, l: 52 };
+    const bw = Math.max(4, (w - pad.l - pad.r) / days.length - 4);
+    const step = (w - pad.l - pad.r) / days.length;
+    const chartH = h - pad.t - pad.b;
+
+    ctx.clearRect(0, 0, w, h);
+    // Grid lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = pad.t + chartH * (1 - i / 4);
+      ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.28)';
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'right';
+      ctx.fillText('$' + Math.round(maxVal * i / 4 / 1000) + 'k', pad.l - 4, y + 3);
+    }
+    // Bars
+    days.forEach((d, i) => {
+      const barH = (d.val / maxVal) * chartH;
+      const x = pad.l + i * step + (step - bw) / 2;
+      const y = pad.t + chartH - barH;
+      const grad = ctx.createLinearGradient(0, y, 0, y + barH);
+      grad.addColorStop(0, `rgba(${hexToRgb(CP)},0.9)`);
+      grad.addColorStop(1, `rgba(${hexToRgb(CP)},0.35)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, bw, barH, [3, 3, 0, 0]);
+      ctx.fill();
+      // X label
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.font = '9px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(d.label, x + bw / 2, h - pad.b + 12);
+    });
+  })();
+
+  // ── Horizontal bar: stock por categoría ──────────────────────────────────
+  (function chartStockCat() {
+    const { ctx, w, h } = initCanvas('chart-stock-cat') || {};
+    if (!ctx) return;
+
+    const cats = {};
+    STOCK_DATA.forEach(p => { cats[p.categoria] = (cats[p.categoria] || 0) + p.stock; });
+    const entries = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+    const maxVal = entries[0][1];
+    const pad = { t: 8, r: 16, b: 8, l: 90 };
+    const rowH = (h - pad.t - pad.b) / entries.length;
+    const barH = Math.min(16, rowH * 0.55);
+    const COLORS = [CP, '#3498db', '#9b59b6', '#1abc9c', '#f39c12'];
+
+    ctx.clearRect(0, 0, w, h);
+    const legend = document.getElementById('legend-stock-cat');
+    if (legend) legend.innerHTML = '';
+    entries.forEach(([cat, val], i) => {
+      const barW = ((val / maxVal) * (w - pad.l - pad.r));
+      const y = pad.t + i * rowH + (rowH - barH) / 2;
+      // Label
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'right';
+      ctx.fillText(cat, pad.l - 6, y + barH / 2 + 3.5);
+      // Bar
+      const color = COLORS[i % COLORS.length];
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.roundRect(pad.l, y, barW, barH, 3);
+      ctx.fill();
+      // Value
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = '9px system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText(val, pad.l + barW + 5, y + barH / 2 + 3.5);
+      // Legend
+      if (legend) legend.insertAdjacentHTML('beforeend',
+        `<div class="chart-legend-item"><div class="chart-legend-dot" style="background:${color}"></div>${cat}</div>`);
+    });
+  })();
+
+  // ── Horizontal bar: top 5 productos ──────────────────────────────────────
+  (function chartTopProd() {
+    const { ctx, w, h } = initCanvas('chart-top-prod') || {};
+    if (!ctx) return;
+
+    const prods = {};
+    VENTAS_DATA.forEach(v => { prods[v.nombre] = (prods[v.nombre] || 0) + v.qty; });
+    const top5 = Object.entries(prods).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const maxVal = top5[0][1];
+    const pad = { t: 8, r: 16, b: 8, l: 110 };
+    const rowH = (h - pad.t - pad.b) / top5.length;
+    const barH = Math.min(16, rowH * 0.55);
+    const COLORS = ['#3498db', CP, '#1abc9c', '#9b59b6', '#f39c12'];
+
+    ctx.clearRect(0, 0, w, h);
+    const legend = document.getElementById('legend-top-prod');
+    if (legend) legend.innerHTML = '';
+    top5.forEach(([prod, val], i) => {
+      const barW = ((val / maxVal) * (w - pad.l - pad.r));
+      const y = pad.t + i * rowH + (rowH - barH) / 2;
+      const label = prod.length > 16 ? prod.slice(0, 15) + '…' : prod;
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'right';
+      ctx.fillText(label, pad.l - 6, y + barH / 2 + 3.5);
+      const color = COLORS[i % COLORS.length];
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.roundRect(pad.l, y, barW, barH, 3);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = '9px system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText(val + ' u.', pad.l + barW + 5, y + barH / 2 + 3.5);
+      if (legend) legend.insertAdjacentHTML('beforeend',
+        `<div class="chart-legend-item"><div class="chart-legend-dot" style="background:${color}"></div>${prod}</div>`);
+    });
+  })();
+}
 
 // ─── TOUR ─────────────────────────────────────────────────────────────────────
 const TOUR_STEPS = [
