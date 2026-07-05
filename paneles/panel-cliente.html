@@ -178,6 +178,33 @@
     .cotiz-panel { width: 100%; right: -100%; }
     .nav-search { width: 130px; }
   }
+
+  /* ANIMATIONS */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .prod-card {
+    animation: rise .5s cubic-bezier(.22,1,.36,1) both;
+  }
+  /* Stagger first 12 cards; beyond that instant */
+  .grid .prod-card:nth-child(1)  { animation-delay: .02s; }
+  .grid .prod-card:nth-child(2)  { animation-delay: .06s; }
+  .grid .prod-card:nth-child(3)  { animation-delay: .10s; }
+  .grid .prod-card:nth-child(4)  { animation-delay: .14s; }
+  .grid .prod-card:nth-child(5)  { animation-delay: .18s; }
+  .grid .prod-card:nth-child(6)  { animation-delay: .22s; }
+  .grid .prod-card:nth-child(7)  { animation-delay: .26s; }
+  .grid .prod-card:nth-child(8)  { animation-delay: .30s; }
+  .grid .prod-card:nth-child(9)  { animation-delay: .34s; }
+  .grid .prod-card:nth-child(10) { animation-delay: .38s; }
+  .grid .prod-card:nth-child(11) { animation-delay: .42s; }
+  .grid .prod-card:nth-child(12) { animation-delay: .46s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .prod-card { animation: none; opacity: 1; transform: none; }
+  }
 </style>
 </head>
 <body>
