@@ -521,6 +521,62 @@
     /* Separador footer en modo claro permanece, footer sigue oscuro */
     footer { background: #0F172A; color: #94A3B8; }
 
+  /* ── CONTACT FORM (item 8) ───────────────────────────────────────────── */
+  .contact-split { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; max-width: 960px; margin: 0 auto; }
+  .contact-copy .sec-overline { margin-bottom: 0.75rem; }
+  .contact-copy h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 900; line-height: 1.1; letter-spacing: -0.01em; text-transform: uppercase; margin-bottom: 1rem; }
+  .contact-copy p { color: var(--muted); font-size: 1rem; margin-bottom: 2rem; line-height: 1.6; }
+  .contact-form { background: var(--navy3); border: 1px solid var(--borde); border-radius: 16px; padding: 2rem; display: flex; flex-direction: column; gap: 1rem; position: relative; overflow: hidden; }
+  .contact-form::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(231,76,60,0.1) 0%, transparent 70%); pointer-events: none; }
+  .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .cf-field { display: flex; flex-direction: column; gap: 0.35rem; }
+  .cf-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .cf-input, .cf-select, .cf-textarea {
+    background: var(--navy2); border: 1px solid var(--borde); border-radius: 8px;
+    color: inherit; font-family: inherit; font-size: 0.88rem; padding: 0.6rem 0.85rem;
+    transition: border-color 0.2s; outline: none; width: 100%;
+  }
+  .cf-input:focus, .cf-select:focus, .cf-textarea:focus { border-color: var(--rojo); }
+  .cf-textarea { resize: vertical; min-height: 90px; }
+  .cf-select option { background: #111827; }
+  .cf-submit { background: var(--rojo); color: #fff; border: none; border-radius: 8px; font-family: inherit; font-size: 0.9rem; font-weight: 700; padding: 0.75rem; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+  .cf-submit:hover { background: var(--rojo-h); transform: translateY(-1px); }
+  .cf-success { position: absolute; inset: 0; background: var(--navy3); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; text-align: center; padding: 2rem; opacity: 0; pointer-events: none; transition: opacity 0.35s; border-radius: 16px; }
+  .cf-success.show { opacity: 1; pointer-events: auto; }
+  .cf-success-icon { width: 52px; height: 52px; border-radius: 50%; background: rgba(46,204,113,0.15); border: 1px solid rgba(46,204,113,0.4); display: flex; align-items: center; justify-content: center; }
+  .cf-success h3 { font-size: 1.1rem; font-weight: 800; }
+  .cf-success p { color: var(--muted); font-size: 0.88rem; max-width: 280px; }
+  @media (max-width: 720px) {
+    .contact-split { grid-template-columns: 1fr; gap: 2rem; }
+    .cf-row { grid-template-columns: 1fr; }
+  }
+  /* light overrides for form */
+  .cta-section .cf-input, .cta-section .cf-select, .cta-section .cf-textarea { background: #F8FAFC; }
+  .cta-section .cf-select option { background: #F8FAFC; color: #0F172A; }
+
+  /* ── PRICING TOGGLE + COMPARISON TABLE (item 9) ─────────────────────── */
+  .billing-toggle { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 2.5rem; }
+  .billing-toggle .bt-label { font-size: 0.85rem; font-weight: 600; color: var(--muted); transition: color 0.2s; }
+  .billing-toggle .bt-label.active { color: inherit; }
+  .bt-switch { position: relative; width: 44px; height: 24px; }
+  .bt-switch input { opacity: 0; width: 0; height: 0; }
+  .bt-track { position: absolute; inset: 0; background: rgba(231,76,60,0.25); border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+  .bt-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+  .bt-switch input:checked + .bt-track { background: var(--rojo); }
+  .bt-switch input:checked + .bt-track::after { transform: translateX(20px); }
+  .bt-badge { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.3); border-radius: 100px; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; }
+  .compare-wrap { margin-top: 3rem; overflow-x: auto; }
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; min-width: 560px; }
+  .compare-table th, .compare-table td { padding: 10px 16px; border-bottom: 1px solid var(--borde); text-align: center; }
+  .compare-table th:first-child, .compare-table td:first-child { text-align: left; font-weight: 600; }
+  .compare-table thead th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800; color: var(--muted); border-bottom: 2px solid var(--borde); }
+  .compare-table thead th.col-featured { color: var(--rojo); }
+  .compare-table .check { color: var(--rojo); font-size: 1rem; font-weight: 700; }
+  .compare-table .dash { color: var(--muted); }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: rgba(231,76,60,0.04); }
+  @media (max-width: 600px) { .compare-table { font-size: 0.75rem; } .compare-table th, .compare-table td { padding: 8px 10px; } }
+
   </style>
 </head>
 <body>
@@ -1099,12 +1155,23 @@
   <div class="container">
     <p class="sec-overline anim" style="text-align:center">Precios</p>
     <h2 class="sec-title anim d1" style="text-align:center;max-width:540px;margin:0 auto 0.75rem">Planes simples, sin letra chica</h2>
-    <p class="sec-sub anim d2" style="text-align:center;margin:0 auto 3.5rem">Todas las actualizaciones del motor incluidas en tu plan.</p>
+    <p class="sec-sub anim d2" style="text-align:center;margin:0 auto 2rem">Todas las actualizaciones del motor incluidas en tu plan.</p>
+
+    <div class="billing-toggle anim d2">
+      <span class="bt-label active" id="lbl-mensual">Mensual</span>
+      <label class="bt-switch" aria-label="Facturación anual">
+        <input type="checkbox" id="billing-toggle" onchange="toggleBilling(this)">
+        <span class="bt-track"></span>
+      </label>
+      <span class="bt-label" id="lbl-anual">Anual</span>
+      <span class="bt-badge" id="lbl-descuento" style="display:none">15% dto.</span>
+    </div>
+
     <div class="pricing-grid">
 
       <div class="price-card anim d1">
         <div class="price-tier">Arranque</div>
-        <div class="price-amount"><span class="price-num">UF 2</span><span class="price-period">/ mes</span></div>
+        <div class="price-amount"><span class="price-num" id="price-arranque" data-monthly="UF 2" data-annual="UF 1.7">UF 2</span><span class="price-period" id="period-arranque">/ mes</span></div>
         <p class="price-desc">Para negocios que dan el primer paso hacia la digitalización de su stock.</p>
         <ul class="price-list">
           <li class="yes"><span class="pi">✓</span> 1 tenant (cliente)</li>
@@ -1120,7 +1187,7 @@
 
       <div class="price-card price-featured anim d2">
         <div class="price-tier">Crecimiento</div>
-        <div class="price-amount"><span class="price-num">UF 6</span><span class="price-period">/ mes</span></div>
+        <div class="price-amount"><span class="price-num" id="price-crecimiento" data-monthly="UF 6" data-annual="UF 5.1">UF 6</span><span class="price-period" id="period-crecimiento">/ mes</span></div>
         <p class="price-desc">Para negocios con varios locales que necesitan visibilidad completa del negocio.</p>
         <ul class="price-list">
           <li class="yes"><span class="pi">✓</span> Hasta 3 tenants</li>
@@ -1151,19 +1218,92 @@
       </div>
 
     </div>
+
+    <div class="compare-wrap anim d3">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Módulo / Característica</th>
+            <th>Arranque</th>
+            <th class="col-featured">Crecimiento</th>
+            <th>Empresa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Panel Vendedor</td>            <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Panel Cliente</td>             <td><span class="check">✓</span></td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Panel Administrador</td>       <td><span class="dash">–</span></td> <td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Panel Operador</td>            <td><span class="dash">–</span></td> <td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Múltiples bodegas</td>         <td><span class="dash">–</span></td> <td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Branding white-label</td>      <td><span class="dash">–</span></td> <td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+          <tr><td>Nº de tenants</td>             <td>1</td>                           <td>Hasta 3</td>                     <td>Ilimitados</td></tr>
+          <tr><td>Frecuencia sincronización</td> <td>Cada 2 h</td>                    <td>Cada 30 min</td>                 <td>Tiempo real</td></tr>
+          <tr><td>Adaptadores ERP</td>           <td>1 incluido</td>                  <td>Ilimitados</td>                  <td>Personalizado</td></tr>
+          <tr><td>Soporte</td>                   <td>Email</td>                        <td>WhatsApp</td>                    <td>24/7 dedicado</td></tr>
+          <tr><td>SLA garantizado</td>           <td><span class="dash">–</span></td> <td><span class="dash">–</span></td> <td><span class="check">✓</span></td></tr>
+          <tr><td>Integración Firestore / CF</td><td><span class="dash">–</span></td> <td><span class="dash">–</span></td> <td><span class="check">✓</span></td></tr>
+          <tr><td>Onboarding dedicado</td>       <td><span class="dash">–</span></td> <td><span class="dash">–</span></td> <td><span class="check">✓</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </section>
 
-<!-- CTA -->
-<section id="contacto" class="cta-section">
+<!-- CONTACTO -->
+<section id="contacto" class="cta-section" style="padding:6rem 1.5rem">
   <div class="container">
-    <div class="cta-box anim">
-      <p class="sec-overline" style="text-align:center;margin-bottom:0.75rem">¿Listo para empezar?</p>
-      <h2>Centraliza y visualiza<br>tu información hoy</h2>
-      <p>Sin reemplazar tu ERP. Sin infraestructura compleja. Listo en días con tu branding.</p>
-      <div class="cta-actions">
-        <a href="https://wa.me/56900000000?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem" target="_blank" rel="noopener" class="btn-pill btn-rojo">Hablar con el equipo</a>
-        <a href="#servicios" class="btn-pill btn-ghost">Ver servicios</a>
+    <div class="contact-split anim">
+      <div class="contact-copy">
+        <p class="sec-overline">Contacto</p>
+        <h2>Cuéntanos sobre tu negocio</h2>
+        <p>Sin reemplazar tu ERP. Sin infraestructura compleja. Respondemos en menos de 24 h y agendamos una demo con datos reales de tu sistema.</p>
+        <a href="https://wa.me/56900000000?text=Hola%2C%20quiero%20una%20demo%20de%20FerreSystem" target="_blank" rel="noopener" class="btn-pill btn-rojo" style="font-size:.88rem;padding:.7rem 1.5rem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp directo
+        </a>
+      </div>
+
+      <div class="contact-form" id="contact-form">
+        <div class="cf-row">
+          <div class="cf-field">
+            <label class="cf-label" for="cf-nombre">Nombre</label>
+            <input class="cf-input" id="cf-nombre" type="text" placeholder="Tu nombre" autocomplete="name" required>
+          </div>
+          <div class="cf-field">
+            <label class="cf-label" for="cf-empresa">Empresa</label>
+            <input class="cf-input" id="cf-empresa" type="text" placeholder="Nombre del negocio" autocomplete="organization">
+          </div>
+        </div>
+        <div class="cf-field">
+          <label class="cf-label" for="cf-erp">ERP actual</label>
+          <select class="cf-select" id="cf-erp">
+            <option value="">Selecciona tu ERP…</option>
+            <option>JustWeb</option>
+            <option>Soft Landini</option>
+            <option>Defontana</option>
+            <option>Bsale</option>
+            <option>SAP Business One</option>
+            <option>Otro / Sin ERP</option>
+          </select>
+        </div>
+        <div class="cf-field">
+          <label class="cf-label" for="cf-email">Email de contacto</label>
+          <input class="cf-input" id="cf-email" type="email" placeholder="tu@empresa.cl" autocomplete="email" required>
+        </div>
+        <div class="cf-field">
+          <label class="cf-label" for="cf-mensaje">Mensaje</label>
+          <textarea class="cf-textarea" id="cf-mensaje" placeholder="Cuéntanos cuántas sucursales tienes, qué información necesitas visualizar…"></textarea>
+        </div>
+        <button class="cf-submit" type="button" onclick="submitContactForm()">Enviar mensaje →</button>
+
+        <div class="cf-success" id="cf-success">
+          <div class="cf-success-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h3>¡Mensaje enviado!</h3>
+          <p>Nos pondremos en contacto en menos de 24 horas hábiles.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -1348,6 +1488,34 @@ function toggleMenu(){
 function closeMenu(){
   document.getElementById('mobile-menu').classList.remove('open');
   document.getElementById('hamburger').classList.remove('active');
+}
+
+// ── BILLING TOGGLE (item 9) ──────────────────────────────────────────────────
+function toggleBilling(chk) {
+  const annual = chk.checked;
+  const key = annual ? 'annual' : 'monthly';
+  const period = annual ? '/ mes (facturado anual)' : '/ mes';
+  ['arranque', 'crecimiento'].forEach(id => {
+    const el = document.getElementById('price-' + id);
+    if (el) el.textContent = el.dataset[key];
+    const p = document.getElementById('period-' + id);
+    if (p) p.textContent = period;
+  });
+  document.getElementById('lbl-mensual').classList.toggle('active', !annual);
+  document.getElementById('lbl-anual').classList.toggle('active', annual);
+  document.getElementById('lbl-descuento').style.display = annual ? '' : 'none';
+}
+
+// ── CONTACT FORM (item 8) ────────────────────────────────────────────────────
+function submitContactForm() {
+  const nombre = document.getElementById('cf-nombre');
+  const email  = document.getElementById('cf-email');
+  if (!nombre.value.trim() || !email.value.trim()) {
+    nombre.style.borderColor = nombre.value.trim() ? '' : 'var(--rojo)';
+    email.style.borderColor  = email.value.trim()  ? '' : 'var(--rojo)';
+    return;
+  }
+  document.getElementById('cf-success').classList.add('show');
 }
 </script>
 </body>
