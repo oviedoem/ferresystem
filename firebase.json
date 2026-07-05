@@ -49,6 +49,10 @@
     ],
     "rewrites": [
       {
+        "source": "/docs",
+        "destination": "/docs-site/index.html"
+      },
+      {
         "source": "/",
         "destination": "/index.html"
       }
