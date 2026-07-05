@@ -1,0 +1,10 @@
+# FerreSystem — dependencias Python
+# Python 3.10+ requerido (se usan type hints nativos: list[str], dict, etc.)
+#
+# Core + pipeline usan solo stdlib (json, os, sys, time, datetime, smtplib, urllib).
+# La unica dependencia externa es para la rotacion de token (paso 3.5 del pipeline):
+
+firebase-admin>=6.2
+
+# Para desarrollo y tests:
+# pytest>=7.0
