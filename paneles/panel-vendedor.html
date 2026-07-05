@@ -237,6 +237,53 @@
     .stat-card { animation: none; opacity: 1; transform: none; }
     .page.active { animation: none; opacity: 1; transform: none; }
   }
+
+  /* COTIZADOR — extensiones */
+  .cotiz-meta { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+  .cotiz-num-box { font-size: .75rem; color: var(--text-muted); line-height: 1.5; }
+  .cotiz-num-box strong { display: block; font-size: 1rem; color: var(--text); font-variant-numeric: tabular-nums; }
+  .cotiz-cliente-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .cotiz-field label { display: block; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: 4px; }
+  .cotiz-cliente-input {
+    width: 100%; background: var(--bg-card2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px; padding: 7px 10px;
+    font-size: .85rem; outline: none; font-family: inherit;
+  }
+  .cotiz-cliente-input:focus { border-color: var(--color-primario); }
+  .descuento-row { display: flex; align-items: center; gap: 8px; margin: 6px 0 10px; }
+  .descuento-row label { font-size: .8rem; color: var(--text-muted); flex: 1; }
+  .descuento-input {
+    width: 68px; background: var(--bg-card2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px; padding: 5px 8px;
+    font-size: .85rem; text-align: center; outline: none;
+  }
+  .descuento-input:focus { border-color: var(--color-primario); }
+  .resumen-row.descuento-line { color: #2ecc71; }
+  .btn-whatsapp { background: #25D366; color: #fff; }
+  .btn-whatsapp:hover { opacity: .9; }
+  .cotiz-prod-precio-unit { font-size: .7rem; color: var(--text-muted); }
+  @media (max-width: 520px) { .cotiz-cliente-grid { grid-template-columns: 1fr; } }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; color: #000; font-size: 12pt; }
+    .topbar, aside, .buscar-prod, #resultados-busqueda,
+    .btn, .btn-remove, .cotiz-qty, .cotiz-cliente-input { display: none !important; }
+    .cotiz-qty-print { display: block !important; }
+    .layout { display: block; }
+    main { padding: 0; }
+    .page { display: block !important; animation: none !important; }
+    #page-stock, #page-alertas { display: none !important; }
+    .cotiz-grid { display: block; }
+    .resumen-card { border: 1px solid #ccc; padding: 14px; margin-top: 16px; box-shadow: none; }
+    .cotiz-row { border-bottom: 1px solid #eee; }
+    .card { border: 1px solid #ddd; box-shadow: none; }
+    .card-header { background: #f5f5f5 !important; border-radius: 0; }
+    .cotiz-meta { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 14px; }
+    .print-footer { display: block !important; margin-top: 28px; font-size: 9pt; color: #888; text-align: center; border-top: 1px solid #eee; padding-top: 10px; }
+  }
+  .print-footer { display: none; }
+  .cotiz-qty-print { display: none; }
 </style>
 </head>
 <body>
@@ -296,6 +343,28 @@
       <h2>Cotizador rápido</h2>
       <p class="page-subtitle">Arma una cotización en segundos</p>
 
+      <!-- Número y fecha -->
+      <div class="cotiz-meta">
+        <div class="cotiz-num-box">
+          Cotización N°<strong id="cotiz-num">—</strong>
+          <span id="cotiz-fecha" style="font-size:.72rem;color:var(--text-muted)"></span>
+        </div>
+      </div>
+
+      <!-- Datos del cliente -->
+      <div class="card" style="margin-bottom:16px;padding:16px">
+        <div class="cotiz-cliente-grid">
+          <div class="cotiz-field">
+            <label for="cf-nombre">Nombre / Razón social</label>
+            <input class="cotiz-cliente-input" id="cf-nombre" type="text" placeholder="Cliente o empresa…">
+          </div>
+          <div class="cotiz-field">
+            <label for="cf-rut">RUT</label>
+            <input class="cotiz-cliente-input" id="cf-rut" type="text" placeholder="12.345.678-9">
+          </div>
+        </div>
+      </div>
+
       <div class="cotiz-grid">
         <div>
           <div class="buscar-prod">
@@ -317,13 +386,23 @@
             <div id="resumen-items"></div>
             <hr style="border-color:var(--border);margin:12px 0">
             <div class="resumen-row"><span>Subtotal</span><span id="res-subtotal">$0</span></div>
+            <div class="descuento-row">
+              <label for="input-descuento">Descuento (%)</label>
+              <input class="descuento-input" id="input-descuento" type="number" min="0" max="100" value="0" oninput="renderCotiz()">
+            </div>
+            <div class="resumen-row descuento-line" id="row-descuento" style="display:none">
+              <span>Descuento</span><span id="res-descuento">$0</span>
+            </div>
             <div class="resumen-row"><span>IVA (19%)</span><span id="res-iva">$0</span></div>
             <div class="resumen-row resumen-total"><span>Total</span><span id="res-total">$0</span></div>
-            <button class="btn btn-primary" onclick="imprimirCotiz()">Imprimir / PDF</button>
+            <button class="btn btn-primary" onclick="imprimirCotiz()">🖨 Imprimir / PDF</button>
+            <button class="btn btn-whatsapp" onclick="compartirWhatsApp()">📱 Compartir por WhatsApp</button>
             <button class="btn btn-secondary" onclick="limpiarCotiz()">Limpiar cotización</button>
           </div>
         </div>
       </div>
+
+      <div class="print-footer">Cotización generada por FerreSystem · ferresystem.cl</div>
     </div>
 
     <!-- PÁGINA: ALERTAS -->
@@ -554,6 +633,16 @@ function renderAlertas() {
 
 // ─── COTIZADOR ──────────────────────────────────────────────────────────────
 let cotizItems = [];
+let cotizNumActual = 0;
+
+function initCotizNum() {
+  const stored = parseInt(localStorage.getItem('fs_cotiz_seq') || '0');
+  cotizNumActual = stored + 1;
+  localStorage.setItem('fs_cotiz_seq', cotizNumActual);
+  document.getElementById('cotiz-num').textContent = String(cotizNumActual).padStart(4, '0');
+  const hoy = new Date().toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  document.getElementById('cotiz-fecha').textContent = ' · ' + hoy;
+}
 
 function buscarProducto(q) {
   const box = document.getElementById('resultados-busqueda');
@@ -595,7 +684,8 @@ function renderCotiz() {
   if (!cotizItems.length) {
     cont.innerHTML = '<div class="empty-cotiz">Sin productos — busca arriba para agregar</div>';
     document.getElementById('resumen-items').innerHTML = '';
-    ['res-subtotal','res-iva','res-total'].forEach(id => document.getElementById(id).textContent = '$0');
+    ['res-subtotal','res-descuento','res-iva','res-total'].forEach(id => document.getElementById(id).textContent = '$0');
+    document.getElementById('row-descuento').style.display = 'none';
     return;
   }
 
@@ -603,21 +693,33 @@ function renderCotiz() {
     <div class="cotiz-row" style="padding:10px 16px">
       <div class="cotiz-prod">
         <div class="cotiz-prod-nombre">${p.nombre}</div>
-        <div class="cotiz-prod-sku">${p.sku}</div>
+        <div class="cotiz-prod-sku">${p.sku} · <span class="cotiz-prod-precio-unit">${fmt(p.precio)} c/u</span></div>
       </div>
       <input class="cotiz-qty" type="number" min="1" value="${p.qty}"
         onchange="cambiarQty(${i}, this.value)">
+      <span class="cotiz-qty-print">${p.qty}</span>
       <div class="cotiz-precio">${fmt(p.precio * p.qty)}</div>
       <button class="btn-remove" onclick="quitarItem(${i})">✕</button>
     </div>
   `).join('');
 
   const subtotal = cotizItems.reduce((s, p) => s + p.precio * p.qty, 0);
-  const iva = subtotal * 0.19;
-  const total = subtotal + iva;
+  const pctDto   = Math.min(100, Math.max(0, parseFloat(document.getElementById('input-descuento')?.value) || 0));
+  const descuento = subtotal * pctDto / 100;
+  const base      = subtotal - descuento;
+  const iva       = base * 0.19;
+  const total     = base + iva;
+
+  const rowDto = document.getElementById('row-descuento');
+  if (pctDto > 0) {
+    rowDto.style.display = 'flex';
+    document.getElementById('res-descuento').textContent = '−' + fmt(descuento);
+  } else {
+    rowDto.style.display = 'none';
+  }
 
   document.getElementById('resumen-items').innerHTML = cotizItems.map(p =>
-    `<div class="resumen-row"><span style="font-size:0.8rem">${p.nombre.slice(0,26)}… x${p.qty}</span><span>${fmt(p.precio*p.qty)}</span></div>`
+    `<div class="resumen-row"><span style="font-size:0.8rem">${p.nombre.length > 24 ? p.nombre.slice(0,23)+'…' : p.nombre} ×${p.qty}</span><span>${fmt(p.precio*p.qty)}</span></div>`
   ).join('');
   document.getElementById('res-subtotal').textContent = fmt(subtotal);
   document.getElementById('res-iva').textContent = fmt(iva);
@@ -636,11 +738,49 @@ function quitarItem(i) {
 
 function limpiarCotiz() {
   cotizItems = [];
+  document.getElementById('input-descuento').value = '0';
+  document.getElementById('cf-nombre').value = '';
+  document.getElementById('cf-rut').value = '';
+  initCotizNum();
   renderCotiz();
 }
 
 function imprimirCotiz() {
+  if (!cotizItems.length) return;
   window.print();
+}
+
+function compartirWhatsApp() {
+  if (!cotizItems.length) return;
+  const nombre  = document.getElementById('cf-nombre').value.trim();
+  const rut     = document.getElementById('cf-rut').value.trim();
+  const tenant  = TENANT_CONFIG.nombre_corto || 'Ferretería';
+  const numCotiz = document.getElementById('cotiz-num').textContent;
+  const fecha   = document.getElementById('cotiz-fecha').textContent.replace(' · ', '');
+  const pct     = parseFloat(document.getElementById('input-descuento')?.value) || 0;
+
+  let msg = `*Cotización N° ${numCotiz}* — ${tenant}\n`;
+  if (fecha) msg += `Fecha: ${fecha}\n`;
+  if (nombre) msg += `Cliente: ${nombre}`;
+  if (rut)    msg += rut ? ` (${rut})` : '';
+  msg += '\n\n';
+
+  cotizItems.forEach(p => {
+    msg += `▸ ${p.nombre}\n  ${p.qty} u × ${fmt(p.precio)} = ${fmt(p.precio * p.qty)}\n`;
+  });
+
+  const subtotal = cotizItems.reduce((s, p) => s + p.precio * p.qty, 0);
+  const descuento = subtotal * pct / 100;
+  const base = subtotal - descuento;
+  const iva = base * 0.19;
+  const total = base + iva;
+
+  msg += `\n_Subtotal: ${fmt(subtotal)}_`;
+  if (pct > 0) msg += `\n_Descuento (${pct}%): −${fmt(descuento)}_`;
+  msg += `\n_IVA (19%): ${fmt(iva)}_`;
+  msg += `\n*TOTAL: ${fmt(total)}*`;
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
@@ -661,6 +801,7 @@ if (!MOD_ALERTAS) {
 renderStatsStock();
 renderTablaStock(STOCK_DATA);
 renderAlertas();
+initCotizNum();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
