@@ -1,0 +1,57 @@
+{
+  "_comentario": "Configuracion de Firebase Hosting — generica, sin datos de cliente. Usar con: firebase deploy --project <tenant_id>",
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      ".firebaserc",
+      "CLAUDE.md",
+      "AGENTS.md",
+      "README.md",
+      "pytest.ini",
+      "requirements.txt",
+      "**/.*",
+      "**/node_modules/**",
+      "core/**",
+      "adapters/**",
+      "pipeline/**",
+      "setup/**",
+      "tenants/**",
+      "tests/**",
+      "docs/**",
+      "**/__pycache__/**",
+      "**/*.py",
+      "**/*.bat"
+    ],
+    "headers": [
+      {
+        "source": "data/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
