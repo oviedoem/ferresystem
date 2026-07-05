@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FerreSystem Docs — Referencia técnica de la plataforma</title>
+<style>
+/* ── TOKENS ── */
+:root {
+  --bg:      #0B0F1A;
+  --bg2:     #131929;
+  --bg3:     #1A2236;
+  --border:  rgba(255,255,255,0.08);
+  --text:    #E2DDD6;
+  --muted:   #647A90;
+  --accent:  #e74c3c;
+  --accent2: rgba(231,76,60,0.12);
+  --green:   #2ecc71;
+  --code-bg: #0d1117;
+  --code-border: rgba(255,255,255,0.06);
+  --nav-w:   240px;
+  --font:    system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:    'Cascadia Code', 'Cascadia Mono', Consolas, 'Courier New', monospace;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:      #F8FAFC;
+    --bg2:     #FFFFFF;
+    --bg3:     #F1F5F9;
+    --border:  rgba(15,23,42,0.09);
+    --text:    #0F172A;
+    --muted:   #64748B;
+    --code-bg: #1E293B;
+    --code-border: rgba(15,23,42,0.12);
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#0B0F1A;--bg2:#131929;--bg3:#1A2236;--border:rgba(255,255,255,0.08);
+  --text:#E2DDD6;--muted:#647A90;--code-bg:#0d1117;--code-border:rgba(255,255,255,0.06);
+}
+:root[data-theme="light"] {
+  --bg:#F8FAFC;--bg2:#FFFFFF;--bg3:#F1F5F9;--border:rgba(15,23,42,0.09);
+  --text:#0F172A;--muted:#64748B;--code-bg:#1E293B;--code-border:rgba(15,23,42,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.65; min-height: 100vh; }
+
+/* ── TOP BAR ── */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 52px; background: var(--bg2); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0; padding: 0 20px;
+}
+.topbar-brand { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: .9rem; text-decoration: none; color: var(--text); flex-shrink: 0; }
+.topbar-icon  { width: 28px; height: 28px; border-radius: 7px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: .88rem; color: #fff; }
+.topbar-divider { width: 1px; height: 20px; background: var(--border); margin: 0 16px; flex-shrink: 0; }
+.topbar-label { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.topbar-version { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--accent2); color: var(--accent); border: 1px solid rgba(231,76,60,.25); }
+.theme-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: .72rem; color: var(--muted); font-family: var(--font); transition: color .15s, border-color .15s; }
+.theme-btn:hover { color: var(--text); border-color: var(--accent); }
+
+/* ── LAYOUT ── */
+.layout { display: flex; padding-top: 52px; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--nav-w); flex-shrink: 0;
+  position: fixed; top: 52px; left: 0; bottom: 0;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 24px 0;
+}
+.nav-section-label {
+  font-size: .62rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); padding: 12px 20px 5px; display: block;
+}
+.nav-link {
+  display: block; padding: 6px 20px; font-size: .82rem; text-decoration: none;
+  color: var(--muted); border-left: 2px solid transparent;
+  transition: color .12s, border-color .12s, background .12s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.nav-link:hover { color: var(--text); background: var(--bg3); }
+.nav-link.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent2); font-weight: 600; }
+
+/* ── CONTENT ── */
+.content { margin-left: var(--nav-w); flex: 1; min-width: 0; }
+.doc-section {
+  max-width: 760px; margin: 0 auto; padding: 56px 40px;
+  border-bottom: 1px solid var(--border);
+}
+.doc-section:last-child { border-bottom: none; }
+
+h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -.01em; }
+h1 { font-size: 2rem; font-weight: 900; margin-bottom: .5rem; text-wrap: balance; }
+h2 { font-size: 1.35rem; font-weight: 800; margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1rem; font-weight: 700; margin-bottom: .6rem; margin-top: 1.5rem; }
+h4 { font-size: .88rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin: 1.2rem 0 .4rem; }
+
+.doc-section > p, .doc-section > ul, .doc-section > ol { margin-bottom: 1rem; }
+p { color: var(--text); }
+.lead { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.7; }
+ul, ol { padding-left: 1.4rem; }
+li { margin-bottom: .3rem; }
+li::marker { color: var(--accent); }
+
+/* ── CODE BLOCKS ── */
+pre {
+  background: var(--code-bg); border: 1px solid var(--code-border);
+  border-radius: 10px; padding: 18px 20px; overflow-x: auto;
+  font-family: var(--mono); font-size: .8rem; line-height: 1.6;
+  margin: 1rem 0;
+}
+code { font-family: var(--mono); font-size: .82em; }
+p code, li code, td code {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
+  padding: 1px 6px; font-size: .8em; color: var(--accent);
+}
+
+/* ── TABLES ── */
+.table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 10px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+th { background: var(--bg3); padding: 9px 14px; text-align: left; font-weight: 700; font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); border-bottom: 1px solid var(--border); }
+td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,.02); }
+
+/* ── CALLOUTS ── */
+.callout {
+  display: flex; gap: 12px; padding: 14px 16px;
+  border-radius: 8px; border: 1px solid; margin: 1rem 0;
+  font-size: .85rem; line-height: 1.55;
+}
+.callout-info    { background: rgba(52,152,219,.08); border-color: rgba(52,152,219,.25); }
+.callout-warning { background: rgba(241,196,15,.08); border-color: rgba(241,196,15,.25); }
+.callout-danger  { background: rgba(231,76,60,.08);  border-color: rgba(231,76,60,.25); }
+.callout-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+/* ── LAYER DIAGRAM ── */
+.arch-diagram {
+  background: var(--code-bg); border: 1px solid var(--code-border); border-radius: 10px;
+  padding: 24px 28px; font-family: var(--mono); font-size: .8rem; line-height: 2;
+  margin: 1.2rem 0; overflow-x: auto;
+}
+.arch-layer { display: flex; align-items: baseline; gap: 16px; }
+.arch-file  { color: #79b8ff; }
+.arch-arrow { color: var(--muted); flex-shrink: 0; }
+.arch-desc  { color: var(--muted); font-size: .72rem; }
+
+/* ── STEP LIST ── */
+.step-list { display: flex; flex-direction: column; gap: 12px; margin: 1rem 0; }
+.step-item { display: flex; gap: 14px; align-items: flex-start; }
+.step-num  { width: 26px; height: 26px; border-radius: 50%; background: var(--accent2); border: 1px solid rgba(231,76,60,.3); display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 800; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+.step-text { font-size: .88rem; line-height: 1.55; }
+.step-text strong { color: var(--text); display: block; margin-bottom: .15rem; }
+.step-text span { color: var(--muted); }
+
+/* ── ADAPTER CARDS ── */
+.adapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; margin: 1rem 0; }
+.adapter-card {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 14px 16px; transition: border-color .15s;
+}
+.adapter-card:hover { border-color: rgba(231,76,60,.3); }
+.adapter-key  { font-family: var(--mono); font-size: .78rem; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+.adapter-name { font-size: .82rem; font-weight: 600; margin-bottom: 2px; }
+.adapter-method { font-size: .72rem; color: var(--muted); }
+
+/* ── JSON FILE CARDS ── */
+.json-file-header { display: flex; align-items: center; gap: 10px; margin: 1.5rem 0 .5rem; }
+.json-badge { font-family: var(--mono); font-size: .72rem; padding: 3px 9px; border-radius: 5px; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); }
+.json-badge.has-env { border-color: rgba(46,204,113,.3); color: var(--green); background: rgba(46,204,113,.08); }
+
+/* ── HERO ── */
+.doc-hero { padding: 56px 40px 36px; max-width: 760px; margin: 0 auto; }
+.hero-overline { font-size: .68rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: .75rem; }
+.hero-title { font-size: 2.1rem; font-weight: 900; letter-spacing: -.02em; line-height: 1.1; margin-bottom: .75rem; text-wrap: balance; }
+.hero-sub { font-size: 1.05rem; color: var(--muted); max-width: 540px; line-height: 1.65; margin-bottom: 1.5rem; }
+.hero-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: .72rem; font-weight: 700; padding: 4px 10px; border-radius: 100px; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); }
+.chip svg { flex-shrink: 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 820px) {
+  :root { --nav-w: 0px; }
+  .sidebar { display: none; }
+  .doc-section, .doc-hero { padding: 36px 20px; }
+  h1 { font-size: 1.6rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <a class="topbar-brand" href="#">
+    <div class="topbar-icon">F</div>
+    <span>FerreSystem</span>
+  </a>
+  <div class="topbar-divider"></div>
+  <span class="topbar-label">Documentación</span>
+  <div class="topbar-right">
+    <span class="topbar-version">v0.2</span>
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">☀ Claro</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR NAV -->
+  <nav class="sidebar" id="sidebar">
+    <span class="nav-section-label">Introducción</span>
+    <a class="nav-link active" href="#intro"        onclick="setActive(this)">¿Qué es FerreSystem?</a>
+    <a class="nav-link"        href="#quickstart"   onclick="setActive(this)">Inicio rápido</a>
+
+    <span class="nav-section-label">Arquitectura</span>
+    <a class="nav-link" href="#architecture"  onclick="setActive(this)">Capas del sistema</a>
+    <a class="nav-link" href="#multitenant"   onclick="setActive(this)">Multi-tenant</a>
+    <a class="nav-link" href="#security"      onclick="setActive(this)">Seguridad</a>
+
+    <span class="nav-section-label">Adapters ERP</span>
+    <a class="nav-link" href="#adapters"      onclick="setActive(this)">Adapters disponibles</a>
+    <a class="nav-link" href="#add-erp"       onclick="setActive(this)">Agregar un ERP nuevo</a>
+
+    <span class="nav-section-label">Contrato JSON</span>
+    <a class="nav-link" href="#json-overview" onclick="setActive(this)">Estructura general</a>
+    <a class="nav-link" href="#json-files"    onclick="setActive(this)">Archivos de salida</a>
+    <a class="nav-link" href="#json-rules"    onclick="setActive(this)">Reglas para consumidores</a>
+
+    <span class="nav-section-label">Tenants</span>
+    <a class="nav-link" href="#modules"       onclick="setActive(this)">Módulos y feature flags</a>
+    <a class="nav-link" href="#add-client"    onclick="setActive(this)">Agregar un cliente</a>
+
+    <span class="nav-section-label">Referencia</span>
+    <a class="nav-link" href="#erp-adapter-api" onclick="setActive(this)">ERPAdapter API</a>
+    <a class="nav-link" href="#pipeline-api"    onclick="setActive(this)">Pipeline runner</a>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- HERO -->
+    <div class="doc-hero" id="intro">
+      <p class="hero-overline">Documentación técnica</p>
+      <h1 class="hero-title">FerreSystem — Plataforma ERP-agnóstica multi-tenant</h1>
+      <p class="hero-sub">
+        Motor genérico que conecta cualquier ERP con paneles web white-label sin reemplazar el sistema
+        existente del cliente. Un adaptador por ERP, un JSON por entidad, N clientes sobre un mismo código.
+      </p>
+      <div class="hero-chips">
+        <span class="chip"><svg width="10" height="10" viewBox="0 0 12 12" fill="var(--green)"><circle cx="6" cy="6" r="5"/></svg> Python 3.10+</span>
+        <span class="chip">HTML/CSS/JS Vanilla</span>
+        <span class="chip">Firebase Hosting</span>
+        <span class="chip">6 adapters ERP</span>
+        <span class="chip">4 paneles white-label</span>
+        <span class="chip">pytest · CI/CD</span>
+      </div>
+    </div>
+
+    <!-- QUICKSTART -->
+    <section class="doc-section" id="quickstart">
+      <h2>Inicio rápido</h2>
+      <p class="lead">Desde cero hasta el primer despliegue de un cliente en 7 pasos.</p>
+
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <strong>Clonar el repositorio y crear el tenant</strong>
+            <span>Copiar <code>tenants/ejemplo_tenant.json</code> a <code>tenants/{id}.json</code> y completar todos los campos.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <strong>Configurar branding</strong>
+            <span>Crear <code>branding/{id}/branding.json</code> con <code>color_primario</code>, <code>nombre_corto</code> y logo.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <strong>Elegir o crear el adapter ERP</strong>
+            <span>Si el ERP ya tiene adapter (<code>adapters/</code>), apuntar con <code>erp.tipo</code> en el tenant. Si es nuevo, ver <a href="#add-erp">Agregar un ERP nuevo</a>.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-text">
+            <strong>Crear proyecto Firebase</strong>
+            <span>Completar el bloque <code>firebase</code> en el tenant JSON con el <code>project_id</code> y la URL de hosting.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-text">
+            <strong>Ejecutar el setup</strong>
+            <span><code>python setup/setup_tenant.py {tenant_id}</code> — valida la configuración y crea la estructura de carpetas en <code>data/{id}/</code>.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-text">
+            <strong>Correr el pipeline y validar</strong>
+            <span><code>pipeline/ACTUALIZAR_TODO.bat {tenant_id}</code> descarga datos del ERP, genera los JSON y los valida contra el contrato.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">7</div>
+          <div class="step-text">
+            <strong>Desplegar en Firebase</strong>
+            <span><code>firebase deploy --project {project_id}</code> publica los paneles y los JSON en Firebase Hosting.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section class="doc-section" id="architecture">
+      <h2>Capas del sistema</h2>
+      <p class="lead">El principio rector es separar lo genérico (motor, paneles, validación) de lo específico de cada cliente. Lo específico vive siempre en datos, nunca en código.</p>
+
+      <div class="arch-diagram">
+        <div class="arch-layer">
+          <span class="arch-file">tenants/{id}.json</span>
+          <span class="arch-desc">config del cliente — ERP, bodegas, branding, Firebase</span>
+        </div>
+        <div class="arch-layer" style="padding-left:1.5rem;color:var(--muted)">│</div>
+        <div class="arch-layer" style="padding-left:1.5rem;color:var(--muted)">▼</div>
+        <div class="arch-layer">
+          <span class="arch-file">adapters/{erp}_adapter.py</span>
+          <span class="arch-desc">traduce el ERP a 4 entidades genéricas</span>
+        </div>
+        <div class="arch-layer" style="padding-left:1.5rem;color:var(--muted)">│</div>
+        <div class="arch-layer" style="padding-left:1.5rem;color:var(--muted)">▼</div>
+        <div class="arch-layer">
+          <span class="arch-file">core/pipeline_runner.py</span>
+          <span class="arch-desc">orquesta: descarga → genera JSON → valida → rota token</span>
+        </div>
+        <div class="arch-layer" style="padding-left:1.5rem;color:var(--muted)">│</div>
+        <div class="arch-layer" style="padding-left:1.5rem;color:var(--muted)">▼</div>
+        <div class="arch-layer">
+          <span class="arch-file">data/{id}/*.json</span>
+          <span class="arch-desc">salida estándar — misma forma para cualquier cliente</span>
+        </div>
+        <div class="arch-layer" style="padding-left:1.5rem;color:var(--muted)">│</div>
+        <div class="arch-layer" style="padding-left:1.5rem;color:var(--muted)">▼</div>
+        <div class="arch-layer">
+          <span class="arch-file">paneles/*.html</span>
+          <span class="arch-desc">UI white-label — lee branding + datos, sin lógica de cliente</span>
+        </div>
+      </div>
+
+      <h3>Entidades genéricas</h3>
+      <p>El adapter debe traducir los datos del ERP a estas 4 dataclasses de <code>core/erp_adapter.py</code>. El resto del sistema nunca conoce la estructura interna del ERP.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Clase</th><th>Campos principales</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>Producto</code></td><td><code>codigo, descripcion, marca, precio, activo</code></td><td>Catálogo de productos/variantes</td></tr>
+            <tr><td><code>Stock</code></td><td><code>codigo, bodega, cantidad</code></td><td>Inventario por bodega/sucursal</td></tr>
+            <tr><td><code>Venta</code></td><td><code>fecha, codigo, descripcion, cantidad, precio, vendedor, cliente</code></td><td>Historial de transacciones</td></tr>
+            <tr><td><code>Pedido</code></td><td><code>numero, fecha, proveedor, lineas[]</code></td><td>Órdenes de compra a proveedores</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MULTI-TENANT -->
+    <section class="doc-section" id="multitenant">
+      <h2>Multi-tenant</h2>
+      <p>Un mismo despliegue del código sirve a N clientes. Lo que diferencia a cada cliente es exclusivamente:</p>
+      <ul>
+        <li><code>tenants/{id}.json</code> — configuración del cliente</li>
+        <li><code>branding/{id}/branding.json</code> — colores y logo</li>
+        <li>El proyecto Firebase de destino (cada cliente tiene el suyo)</li>
+      </ul>
+
+      <h3>Estructura mínima de un tenant</h3>
+      <pre>{
+  "tenant_id":     "ferreteria_ejemplo",
+  "nombre_corto":  "Ferretería Demo",
+  "color_primario": "#e74c3c",
+  "bodegas":        ["Principal", "Bodega Norte"],
+  "erp": {
+    "tipo":         "bsale",
+    "access_token": "ENC:...",
+    "office_ids":   [1, 2]
+  },
+  "firebase": {
+    "project_id":   "ferreteria-demo-firebase",
+    "hosting_url":  "https://ferreteria-demo.web.app"
+  },
+  "modulos_activos": {
+    "stock":         true,
+    "ventas":        true,
+    "despachos":     true,
+    "alertas":       true,
+    "configuracion": true,
+    "analytics":     true
+  },
+  "sync": {
+    "stock_cada_horas":  2,
+    "ventas_cada_horas": 1
+  }
+}</pre>
+
+      <div class="callout callout-danger">
+        <span class="callout-icon">⚠️</span>
+        <span>Los archivos reales de tenants <strong>nunca se commitean</strong>. Solo el template <code>tenants/ejemplo_tenant.json</code> vive en el repositorio. Las credenciales del ERP se almacenan cifradas con DPAPI.</span>
+      </div>
+    </section>
+
+    <!-- SECURITY -->
+    <section class="doc-section" id="security">
+      <h2>Seguridad</h2>
+
+      <h3>Credenciales del ERP</h3>
+      <p>Nunca se guardan en texto plano. El campo <code>password_enc</code> (y equivalentes) almacena el valor cifrado con DPAPI del sistema operativo. Solo el proceso corriendo con las credenciales del usuario que cifró puede descifrarlas.</p>
+
+      <h3>Rotación de token de acceso a datos</h3>
+      <p><code>pipeline/rotar_token.py</code> genera un subdirectorio de nombre aleatorio dentro de <code>data/{id}/</code> y registra el token vigente en Firestore con reglas de seguridad. Los paneles construyen la URL de datos en tiempo de ejecución usando el token — URLs antiguas dejan de funcionar.</p>
+
+      <h3>Aislamiento por tenant</h3>
+      <p>Cada cliente tiene su propio proyecto Firebase. Nunca hay datos de un cliente en el espacio de almacenamiento de otro.</p>
+
+      <h3>Qué nunca va en el repo</h3>
+      <ul>
+        <li><code>tenants/*.json</code> reales (excluidos por <code>.gitignore</code>)</li>
+        <li>Claves de servicio Firebase (<code>*.serviceAccount.json</code>)</li>
+        <li>Tokens de acceso API de ERPs</li>
+        <li>Contraseñas cifradas con DPAPI</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <span>La regla #0 del proyecto: <code>core/</code> y <code>paneles/</code> nunca conocen el nombre, bodegas, ERP ni credenciales de ningún cliente. Si una función necesita ese dato, debe llegar por parámetro, nunca hardcodeado.</span>
+      </div>
+    </section>
+
+    <!-- ADAPTERS -->
+    <section class="doc-section" id="adapters">
+      <h2>Adapters disponibles</h2>
+      <p class="lead">Cada adapter traduce un ERP concreto a las 4 entidades genéricas. Agregar soporte para un ERP nuevo no requiere tocar <code>core/</code> ni los paneles.</p>
+
+      <div class="adapter-grid">
+        <div class="adapter-card">
+          <div class="adapter-key">justweb</div>
+          <div class="adapter-name">JustWeb</div>
+          <div class="adapter-method">SSRS / HTTP CSV</div>
+        </div>
+        <div class="adapter-card">
+          <div class="adapter-key">bsale</div>
+          <div class="adapter-name">Bsale</div>
+          <div class="adapter-method">REST API v1</div>
+        </div>
+        <div class="adapter-card">
+          <div class="adapter-key">transtecnia</div>
+          <div class="adapter-name">Transtecnia</div>
+          <div class="adapter-method">SQL directo</div>
+        </div>
+        <div class="adapter-card">
+          <div class="adapter-key">rexplus</div>
+          <div class="adapter-name">Rex Plus</div>
+          <div class="adapter-method">SQL directo</div>
+        </div>
+        <div class="adapter-card">
+          <div class="adapter-key">excel</div>
+          <div class="adapter-name">Excel / CSV</div>
+          <div class="adapter-method">Archivo local</div>
+        </div>
+        <div class="adapter-card">
+          <div class="adapter-key">buk <span style="color:var(--muted);font-size:.65rem">RRHH</span></div>
+          <div class="adapter-name">Buk</div>
+          <div class="adapter-method">REST API (empleados)</div>
+        </div>
+      </div>
+
+      <h3>Campos requeridos por adapter</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Clave <code>erp.tipo</code></th><th>Clase Python</th><th>Campos requeridos en <code>erp{}</code></th></tr></thead>
+          <tbody>
+            <tr><td><code>justweb</code></td><td><code>JustWebAdapter</code></td><td><code>host, puerto, usuario, password_enc</code></td></tr>
+            <tr><td><code>bsale</code></td><td><code>BsaleAdapter</code></td><td><code>access_token, office_ids</code></td></tr>
+            <tr><td><code>transtecnia</code></td><td><code>TranstecniaAdapter</code></td><td><code>host, puerto, usuario, password_enc, db</code></td></tr>
+            <tr><td><code>rexplus</code></td><td><code>RexPlusAdapter</code></td><td><code>host, puerto, usuario, password_enc, db</code></td></tr>
+            <tr><td><code>excel</code></td><td><code>ExcelAdapter</code></td><td><code>archivo_path</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ADD ERP -->
+    <section class="doc-section" id="add-erp">
+      <h2>Agregar un ERP nuevo</h2>
+
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <strong>Crear el archivo del adapter</strong>
+            <span>Nuevo archivo en <code>adapters/{nombre}_adapter.py</code>, clase que hereda de <code>core.erp_adapter.ERPAdapter</code>.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <strong>Implementar los 5 métodos abstractos</strong>
+            <span><code>get_productos()</code>, <code>get_stock()</code>, <code>get_ventas(desde, hasta)</code>, <code>get_pedidos()</code>, <code>test_conexion()</code>. Devolver siempre instancias de las dataclasses genéricas.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <strong>Registrar en pipeline_runner</strong>
+            <span>Agregar la clase a <code>ADAPTERS_DISPONIBLES</code> en <code>core/pipeline_runner.py</code> con la misma clave que usará <code>tenants/{id}.json → erp.tipo</code>.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-text">
+            <strong>Escribir tests</strong>
+            <span>Agregar <code>TestNombreAdapter</code> en <code>tests/test_adapters.py</code> con al menos <code>test_productos_estructura</code>, <code>test_stock_estructura</code>, <code>test_conexion_ok</code>.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-text">
+            <strong>Validar conexión</strong>
+            <span>Antes del pipeline completo, confirmar que <code>test_conexion()</code> retorna <code>True</code> contra el ERP real del cliente piloto.</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Plantilla mínima</h3>
+      <pre>from core.erp_adapter import ERPAdapter, Producto, Stock, Venta, Pedido
+
+class MiERPAdapter(ERPAdapter):
+
+    def __init__(self, config: dict):
+        self._host = config["host"]
+        self._user = config["usuario"]
+        # descifrar password_enc aquí si aplica
+
+    def test_conexion(self) -> bool:
+        try:
+            # intento mínimo contra el ERP
+            return True
+        except Exception:
+            return False
+
+    def get_productos(self) -> list[Producto]:
+        raw = self._llamar_erp()
+        return [
+            Producto(codigo=r["id"], descripcion=r["nombre"],
+                     marca=r.get("marca"), precio=float(r["precio"]),
+                     activo=r.get("activo", True))
+            for r in raw
+        ]
+
+    def get_stock(self) -> list[Stock]: ...
+    def get_ventas(self, desde: str, hasta: str) -> list[Venta]: ...
+    def get_pedidos(self) -> list[Pedido]: ...</pre>
+
+      <div class="callout callout-warning">
+        <span class="callout-icon">⚡</span>
+        <span>Un adapter nuevo nunca debe tocar <code>core/</code> ni los paneles. Si necesita lógica compartida, agregarla a <code>core/erp_adapter.py</code> como método de clase base — nunca inline en el adapter.</span>
+      </div>
+    </section>
+
+    <!-- JSON OVERVIEW -->
+    <section class="doc-section" id="json-overview">
+      <h2>Contrato JSON — Estructura general</h2>
+      <p class="lead">Los paneles y cualquier consumidor externo leen exclusivamente estos archivos. Nunca consultan el ERP directamente.</p>
+
+      <h3>Envelope estándar ("wrapped")</h3>
+      <p>Todos los archivos salvo <code>stock_por_codigo.json</code> usan este wrapper:</p>
+      <pre>{
+  "generado":  "2026-07-05T14:30:00+00:00",  // ISO 8601 UTC
+  "fuente":    "bsale",                        // clave del ERP origen
+  "total":     1240,                           // cantidad de registros
+  "registros": [ ... ]                         // array de entidades
+}</pre>
+
+      <h3>Directorio de salida</h3>
+      <pre>data/
+└── {tenant_id}/
+    ├── productos.json
+    ├── stock.json
+    ├── stock_por_codigo.json   ← raw dict, sin envelope
+    ├── ventas.json
+    ├── pedidos.json
+    └── rrhh_resumen.json       ← solo si el tenant usa BukAdapter</pre>
+    </section>
+
+    <!-- JSON FILES -->
+    <section class="doc-section" id="json-files">
+      <h2>Archivos de salida</h2>
+
+      <div class="json-file-header">
+        <span class="json-badge has-env">wrapped</span>
+        <h3 style="margin:0">productos.json</h3>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th><th>Nullable</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>codigo</code></td><td>string</td><td>No</td><td>Código único de la variante/SKU</td></tr>
+            <tr><td><code>descripcion</code></td><td>string</td><td>No</td><td>Nombre y descripción del producto</td></tr>
+            <tr><td><code>marca</code></td><td>string</td><td>Sí</td><td>Marca o fabricante</td></tr>
+            <tr><td><code>precio</code></td><td>float</td><td>Sí</td><td>Precio neto (sin IVA) en CLP</td></tr>
+            <tr><td><code>activo</code></td><td>bool</td><td>No</td><td><code>false</code> si el producto está dado de baja</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="json-file-header">
+        <span class="json-badge has-env">wrapped</span>
+        <h3 style="margin:0">stock.json</h3>
+      </div>
+      <p>Un mismo <code>codigo</code> puede aparecer en múltiples filas (una por bodega).</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>codigo</code></td><td>string</td><td>Código de variante (mismo que en productos)</td></tr>
+            <tr><td><code>bodega</code></td><td>string</td><td>Nombre de la bodega/sucursal</td></tr>
+            <tr><td><code>cantidad</code></td><td>float</td><td>Unidades disponibles</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="json-file-header">
+        <span class="json-badge">raw dict</span>
+        <h3 style="margin:0">stock_por_codigo.json</h3>
+      </div>
+      <p>Formato <strong>raw dict</strong> (sin envelope) para lookups O(1) desde el panel. Usar <code>stock.json</code> para stock multi-bodega.</p>
+      <pre>{ "TOR-001": { "bodega": "Sucursal Central", "cantidad": 150.0 } }</pre>
+
+      <div class="json-file-header">
+        <span class="json-badge has-env">wrapped</span>
+        <h3 style="margin:0">ventas.json</h3>
+      </div>
+      <p>Incluye dos campos extra en el wrapper: <code>fecha_desde</code> y <code>fecha_hasta</code>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th><th>Nullable</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>fecha</code></td><td>YYYY-MM-DD</td><td>No</td><td>Fecha de emisión del documento</td></tr>
+            <tr><td><code>codigo</code></td><td>string</td><td>No</td><td>Código de variante vendida</td></tr>
+            <tr><td><code>descripcion</code></td><td>string</td><td>No</td><td>Descripción de la línea</td></tr>
+            <tr><td><code>cantidad</code></td><td>float</td><td>No</td><td>Unidades vendidas</td></tr>
+            <tr><td><code>precio</code></td><td>float</td><td>No</td><td>Precio neto unitario en CLP</td></tr>
+            <tr><td><code>vendedor</code></td><td>string</td><td>Sí</td><td>Nombre o ID del vendedor</td></tr>
+            <tr><td><code>cliente</code></td><td>string</td><td>Sí</td><td>RUT u otro identificador del cliente</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="json-file-header">
+        <span class="json-badge has-env">wrapped</span>
+        <h3 style="margin:0">pedidos.json</h3>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>numero</code></td><td>string</td><td>Número o ID del pedido de compra</td></tr>
+            <tr><td><code>fecha</code></td><td>YYYY-MM-DD</td><td>Fecha de creación</td></tr>
+            <tr><td><code>proveedor</code></td><td>string</td><td>Nombre del proveedor</td></tr>
+            <tr><td><code>lineas</code></td><td>array</td><td><code>[{codigo, descripcion, cantidad}]</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="json-file-header">
+        <span class="json-badge has-env">wrapped · Buk only</span>
+        <h3 style="margin:0">rrhh_resumen.json</h3>
+      </div>
+      <p>Solo se genera si el tenant tiene bloque <code>rrhh</code> y usa <code>BukAdapter</code>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>empleado_id</code></td><td>int</td><td>ID interno en Buk</td></tr>
+            <tr><td><code>nombre</code></td><td>string</td><td>Nombre completo</td></tr>
+            <tr><td><code>cargo</code></td><td>string</td><td>Título del cargo</td></tr>
+            <tr><td><code>departamento</code></td><td>string</td><td>Área o departamento</td></tr>
+            <tr><td><code>estado</code></td><td>string</td><td><code>"activo"</code> u otro estado según Buk</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- JSON RULES -->
+    <section class="doc-section" id="json-rules">
+      <h2>Reglas para consumidores</h2>
+      <ol>
+        <li><strong>Nunca asumir campos adicionales</strong> — leer solo los documentados en el contrato.</li>
+        <li><strong>Verificar <code>total > 0</code></strong> antes de renderizar cualquier lista.</li>
+        <li><strong>Usar <code>generado</code></strong> para mostrar cuándo fue la última sincronización.</li>
+        <li><strong><code>stock_por_codigo.json</code></strong> es el archivo correcto para buscar stock de un código específico; <code>stock.json</code> para listados y stock multi-bodega.</li>
+        <li><strong><code>ventas.json</code> tiene rango acotado</strong> — verificar <code>fecha_desde</code> y <code>fecha_hasta</code> antes de mostrar totales históricos.</li>
+      </ol>
+    </section>
+
+    <!-- MODULES -->
+    <section class="doc-section" id="modules">
+      <h2>Módulos y feature flags</h2>
+      <p>En <code>tenants/{id}.json → modulos_activos</code> se declara qué módulos tiene habilitados el cliente. Los paneles leen este campo y ocultan lo que no está contratado — sin enforcement de backend en v0.2.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Clave</th><th>Panel</th><th>Qué controla</th></tr></thead>
+          <tbody>
+            <tr><td><code>dashboard</code></td><td>Admin</td><td>Página principal con KPIs</td></tr>
+            <tr><td><code>stock</code></td><td>Admin · Vendedor</td><td>Sección consulta de stock</td></tr>
+            <tr><td><code>ventas</code></td><td>Admin</td><td>Pestaña de ventas</td></tr>
+            <tr><td><code>despachos</code></td><td>Admin · Operador</td><td>Pestaña de despachos</td></tr>
+            <tr><td><code>alertas</code></td><td>Admin · Vendedor</td><td>Badge de stock crítico y sección alertas</td></tr>
+            <tr><td><code>analytics</code></td><td>Admin</td><td>KPIs históricos con gráficos Canvas</td></tr>
+            <tr><td><code>configuracion</code></td><td>Admin</td><td>Vista de parámetros del tenant</td></tr>
+            <tr><td><code>cotizador</code></td><td>Vendedor · Cliente</td><td>Carrito / cotizador rápido</td></tr>
+            <tr><td><code>panel_cliente</code></td><td>—</td><td>Habilita el panel público de catálogo</td></tr>
+            <tr><td><code>panel_admin</code></td><td>—</td><td>Habilita el panel de administración</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <span>La función <code>aplicarFeatureFlags()</code> en cada panel lee <code>TENANT_CONFIG.modulos_activos</code> e inyecta <code>display:none</code> en los elementos correspondientes. En producción, <code>TENANT_CONFIG</code> se inyecta desde el tenant JSON real antes de servir el HTML.</span>
+      </div>
+    </section>
+
+    <!-- ADD CLIENT -->
+    <section class="doc-section" id="add-client">
+      <h2>Agregar un cliente</h2>
+      <p>Ningún paso debe requerir tocar <code>core/</code>, <code>adapters/</code> (salvo ERP nuevo) ni los paneles HTML.</p>
+
+      <div class="step-list">
+        <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>Copiar el template del tenant</strong><span><code>cp tenants/ejemplo_tenant.json tenants/{tenant_id}.json</code> y completar todos los campos. Nunca dejar placeholders en producción.</span></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Crear el branding</strong><span><code>branding/{tenant_id}/branding.json</code> con <code>color_primario</code>, <code>nombre_corto</code> y logo. Definir qué módulos tiene contratados en <code>modulos_activos</code>.</span></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Configurar el adapter ERP</strong><span>Apuntar <code>erp.tipo</code> al adapter correcto y completar las credenciales requeridas (cifradas). Ver <a href="#adapters">tabla de adapters</a>.</span></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-text"><strong>Crear proyecto Firebase</strong><span>Completar el bloque <code>firebase</code> con <code>project_id</code> y <code>hosting_url</code>.</span></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-text"><strong>Ejecutar setup</strong><span><code>python setup/setup_tenant.py {tenant_id}</code></span></div></div>
+        <div class="step-item"><div class="step-num">6</div><div class="step-text"><strong>Sincronizar y validar</strong><span><code>pipeline/ACTUALIZAR_TODO.bat {tenant_id}</code> — valida que los JSON generados cumplan el contrato.</span></div></div>
+        <div class="step-item"><div class="step-num">7</div><div class="step-text"><strong>Desplegar</strong><span><code>firebase deploy --project {project_id}</code></span></div></div>
+      </div>
+    </section>
+
+    <!-- ERP ADAPTER API -->
+    <section class="doc-section" id="erp-adapter-api">
+      <h2>ERPAdapter API</h2>
+      <p>Clase abstracta base en <code>core/erp_adapter.py</code>. Todos los adapters deben heredar de ella e implementar los 5 métodos.</p>
+
+      <pre>class ERPAdapter(ABC):
+
+    @abstractmethod
+    def test_conexion(self) -> bool:
+        """Verifica acceso al ERP. True = OK, False o excepción = fallo."""
+
+    @abstractmethod
+    def get_productos(self) -> list[Producto]:
+        """Catálogo completo de productos/variantes activos."""
+
+    @abstractmethod
+    def get_stock(self) -> list[Stock]:
+        """Stock actual por variante y bodega."""
+
+    @abstractmethod
+    def get_ventas(self, desde: str, hasta: str) -> list[Venta]:
+        """Ventas en el rango [desde, hasta] en formato YYYY-MM-DD."""
+
+    @abstractmethod
+    def get_pedidos(self) -> list[Pedido]:
+        """Pedidos de compra pendientes o recientes."""</pre>
+
+      <h3>Dataclasses</h3>
+      <pre>@dataclass
+class Producto:
+    codigo:      str
+    descripcion: str
+    marca:       str | None
+    precio:      float | None
+    activo:      bool
+
+@dataclass
+class Stock:
+    codigo:   str
+    bodega:   str
+    cantidad: float
+
+@dataclass
+class Venta:
+    fecha:       str        # YYYY-MM-DD
+    codigo:      str
+    descripcion: str
+    cantidad:    float
+    precio:      float
+    vendedor:    str | None
+    cliente:     str | None
+
+@dataclass
+class Pedido:
+    numero:    str
+    fecha:     str          # YYYY-MM-DD
+    proveedor: str
+    lineas:    list[dict]   # [{codigo, descripcion, cantidad}]</pre>
+    </section>
+
+    <!-- PIPELINE API -->
+    <section class="doc-section" id="pipeline-api">
+      <h2>Pipeline runner</h2>
+      <p><code>core/pipeline_runner.py</code> orquesta el ciclo completo para un tenant.</p>
+
+      <h3>Salida por ejecución</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Archivo generado</th><th>Función escritora</th><th>Condición</th></tr></thead>
+          <tbody>
+            <tr><td><code>productos.json</code></td><td><code>escribir_wrapped()</code></td><td>Siempre</td></tr>
+            <tr><td><code>stock.json</code></td><td><code>escribir_wrapped()</code></td><td>Siempre</td></tr>
+            <tr><td><code>stock_por_codigo.json</code></td><td><code>escribir_raw_dict()</code></td><td>Siempre</td></tr>
+            <tr><td><code>ventas.json</code></td><td><code>escribir_wrapped()</code></td><td>Siempre</td></tr>
+            <tr><td><code>pedidos.json</code></td><td><code>escribir_wrapped()</code></td><td>Siempre</td></tr>
+            <tr><td><code>rrhh_resumen.json</code></td><td><code>escribir_wrapped()</code></td><td>Solo si tenant tiene bloque <code>rrhh</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>json_writer helpers</h3>
+      <pre>from core.json_writer import escribir_wrapped, escribir_raw_dict
+
+# Escribe el envelope estándar
+escribir_wrapped(
+    ruta    = "data/tenant_x/productos.json",
+    registros = [dataclasses.asdict(p) for p in productos],
+    fuente  = "bsale",
+    extra   = {}          # campos adicionales al wrapper (ej. fecha_desde)
+)
+
+# Escribe un dict plano, sin envelope
+escribir_raw_dict(
+    ruta  = "data/tenant_x/stock_por_codigo.json",
+    datos = { s.codigo: {"bodega": s.bodega, "cantidad": s.cantidad} for s in stock }
+)</pre>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <span>El validator integrado (<code>core/validator.py</code>) corre automáticamente después de cada escritura y lanza <code>ValueError</code> si el JSON no cumple el contrato. El pipeline lo captura y registra en el log de errores del tenant.</span>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// ── THEME TOGGLE ─────────────────────────────────────────────────────────────
+const btn = document.getElementById('theme-btn');
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  btn.textContent = t === 'dark' ? '☀ Claro' : '☾ Oscuro';
+  localStorage.setItem('docs-theme', t);
+}
+(function() {
+  const saved = localStorage.getItem('docs-theme');
+  const sys   = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  applyTheme(saved || sys);
+})();
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+
+// ── ACTIVE NAV ───────────────────────────────────────────────────────────────
+function setActive(link) {
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  link.classList.add('active');
+}
+
+// ── SCROLL SPY ───────────────────────────────────────────────────────────────
+const sections = document.querySelectorAll('[id]');
+const links    = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => {
+        l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-52px 0px -60% 0px', threshold: 0 });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
