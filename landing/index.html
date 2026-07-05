@@ -447,6 +447,74 @@
       .panel-card{padding:1.25rem}
     }
 
+
+    /* ===== SECCIONES CLARAS (ninox/biwiser style) ===== */
+    /* Cascade CSS vars into content sections — hero stays dark */
+    .logos-section,
+    .servicios-section, .steps-section, .features-section,
+    .compat-section, .paneles-section, .testimonial-section,
+    .noticias-section, .pricing-section, .cta-section, .faq-section {
+      --navy:  #F8FAFC;
+      --navy2: #FFFFFF;
+      --navy3: #FFFFFF;
+      --navy4: #F1F5F9;
+      --muted: #475569;
+      --texto: #0F172A;
+      --borde: rgba(15,23,42,0.10);
+      color: #0F172A;
+    }
+    .servicios-section  { background: #F8FAFC; }
+    .steps-section      { background: #FFFFFF; }
+    .features-section   { background: #F8FAFC; }
+    .compat-section     { background: #FFFFFF; }
+    .paneles-section    { background: #F8FAFC; }
+    .testimonial-section{ background: #FFFFFF; }
+    .noticias-section   { background: #F8FAFC; }
+    .pricing-section    { background: #FFFFFF !important; }
+    .cta-section        { background: #F8FAFC; }
+    .faq-section        { background: #FFFFFF; }
+    .logos-section      { background: #FFFFFF; border-color: rgba(15,23,42,0.08); }
+
+    /* Logo pills: icono sobre fondo claro */
+    .logo-pill-icon { background: #F1F5F9; border-color: rgba(15,23,42,0.1); }
+
+    /* Cards: sombra ligera en vez de dark glow */
+    .serv-card, .step-card, .feat-card,
+    .compat-card-v2, .panel-card, .testi-card,
+    .noticia-card, .price-card, .faq-item {
+      box-shadow: 0 1px 4px rgba(15,23,42,0.06), 0 4px 16px rgba(15,23,42,0.04);
+    }
+    .serv-card:hover, .feat-card:hover, .panel-card:hover,
+    .testi-card:hover, .noticia-card:hover, .price-card:hover {
+      box-shadow: 0 8px 32px rgba(15,23,42,0.12);
+    }
+    .compat-card-v2:hover { box-shadow: 0 8px 32px rgba(15,23,42,0.12); }
+
+    /* FAQ hover: visible en fondo claro */
+    .faq-section .faq-btn:hover { background: rgba(15,23,42,0.03); }
+
+    /* CTA box: sombra y borde sobre fondo claro */
+    .cta-box { box-shadow: 0 4px 24px rgba(15,23,42,0.08); }
+
+    /* Precio featured: mantiene contraste */
+    .price-card.price-featured {
+      background: #0F172A !important;
+      color: #F8FAFC;
+      border-color: rgba(231,76,60,0.55);
+    }
+    .price-card.price-featured .price-tier,
+    .price-card.price-featured .price-period,
+    .price-card.price-featured .price-desc,
+    .price-card.price-featured .price-list li { color: #94A3B8; }
+    .price-card.price-featured .price-list li.yes { color: #CBD5E1; }
+    .price-card.price-featured .price-list li.no  { color: #475569; }
+
+    /* Bordes de sección (logos) en modo claro */
+    .logos-section { border-top-color: rgba(15,23,42,0.08); border-bottom-color: rgba(15,23,42,0.08); }
+
+    /* Separador footer en modo claro permanece, footer sigue oscuro */
+    footer { background: #0F172A; color: #94A3B8; }
+
   </style>
 </head>
 <body>
