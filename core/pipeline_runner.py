@@ -13,6 +13,7 @@ import sys
 from datetime import date
 
 from core.erp_adapter import ERPAdapter
+from core.health_monitor import PipelineHealth
 from core.json_writer import escribir_wrapped, escribir_raw_dict
 from core.logger import get_logger
 
@@ -106,85 +107,102 @@ def correr_pipeline(tenant_id: str, fecha_desde: str = None, fecha_hasta: str = 
 
     log.info(f"=== Iniciando pipeline para tenant: {tenant_id} ===")
 
-    # 1. Config
-    tenant = cargar_tenant(tenant_id)
-    nombre = tenant.get("nombre_comercial", tenant_id)
-    log.info(f"Tenant cargado: {nombre}")
-
-    # 2. Adapter ERP
-    adapter = construir_adapter(tenant)
-    log.info(f"Adapter ERP: {type(adapter).__name__}")
-
-    # 3. Test de conexión
-    if not adapter.test_conexion():
-        log.error("Fallo el test de conexion con el ERP. Pipeline abortado.")
-        sys.exit(1)
-    log.info("Conexion ERP: OK")
-
-    # Directorio de salida por tenant
+    # Directorio de salida — determinado solo por tenant_id, antes de cualquier fallo
     out_dir = os.path.normpath(os.path.join(OUTPUT_DIR, tenant_id))
     os.makedirs(out_dir, exist_ok=True)
-    fuente = tenant["erp"]["tipo"]
 
-    # 4a. Productos
-    log.info("Descargando productos...")
-    productos = adapter.get_productos()
-    escribir_wrapped(
-        os.path.join(out_dir, "productos.json"),
-        productos, fuente
-    )
-    log.info(f"Productos escritos: {len(productos)}")
+    health = PipelineHealth(tenant_id, out_dir)
+    health.iniciar()
 
-    # 4b. Stock
-    log.info("Descargando stock...")
-    stock = adapter.get_stock()
-    # Además del wrapped, un dict keyed por código para lookups O(1)
-    stock_dict = {s.codigo: {"bodega": s.bodega, "cantidad": s.cantidad} for s in stock}
-    escribir_wrapped(
-        os.path.join(out_dir, "stock.json"),
-        stock, fuente
-    )
-    escribir_raw_dict(
-        os.path.join(out_dir, "stock_por_codigo.json"),
-        stock_dict
-    )
-    log.info(f"Stock escrito: {len(stock)} líneas")
+    _error = None
+    try:
+        # 1. Config
+        tenant = cargar_tenant(tenant_id)
+        nombre = tenant.get("nombre_comercial", tenant_id)
+        log.info(f"Tenant cargado: {nombre}")
 
-    # 4c. Ventas
-    log.info(f"Descargando ventas {fecha_desde} → {fecha_hasta}...")
-    ventas = adapter.get_ventas(fecha_desde, fecha_hasta)
-    escribir_wrapped(
-        os.path.join(out_dir, "ventas.json"),
-        ventas, fuente,
-        extra={"fecha_desde": fecha_desde, "fecha_hasta": fecha_hasta}
-    )
-    log.info(f"Ventas escritas: {len(ventas)}")
+        # 2. Adapter ERP
+        adapter = construir_adapter(tenant)
+        log.info(f"Adapter ERP: {type(adapter).__name__}")
 
-    # 4d. Pedidos
-    log.info("Descargando pedidos...")
-    pedidos = adapter.get_pedidos()
-    escribir_wrapped(
-        os.path.join(out_dir, "pedidos.json"),
-        pedidos, fuente
-    )
-    log.info(f"Pedidos escritos: {len(pedidos)}")
+        # 3. Test de conexión
+        if not adapter.test_conexion():
+            raise RuntimeError("Fallo el test de conexion con el ERP")
+        log.info("Conexion ERP: OK")
 
-    # 5. RR.HH. (Buk) — opcional
-    rrhh_cfg = tenant.get("rrhh")
-    if rrhh_cfg and BukAdapter:
-        log.info("Procesando datos RR.HH. (Buk)...")
-        try:
-            buk = BukAdapter(rrhh_cfg)
-            resumen_rrhh = buk.get_resumen_dotacion()
-            escribir_wrapped(
-                os.path.join(out_dir, "rrhh_resumen.json"),
-                resumen_rrhh, "buk"
-            )
-            log.info(f"RR.HH. escrito: {len(resumen_rrhh)} registros")
-        except Exception as exc:
-            log.warning(f"Error al obtener datos RR.HH.: {exc} (se continúa)")
+        fuente = tenant["erp"]["tipo"]
 
-    log.info(f"=== Pipeline {tenant_id} completado OK ===")
+        # 4a. Productos
+        log.info("Descargando productos...")
+        productos = adapter.get_productos()
+        health.registrar("productos", len(productos))
+        escribir_wrapped(
+            os.path.join(out_dir, "productos.json"),
+            productos, fuente
+        )
+        log.info(f"Productos escritos: {len(productos)}")
+
+        # 4b. Stock
+        log.info("Descargando stock...")
+        stock = adapter.get_stock()
+        health.registrar("stock", len(stock))
+        # Además del wrapped, un dict keyed por código para lookups O(1)
+        stock_dict = {s.codigo: {"bodega": s.bodega, "cantidad": s.cantidad} for s in stock}
+        escribir_wrapped(
+            os.path.join(out_dir, "stock.json"),
+            stock, fuente
+        )
+        escribir_raw_dict(
+            os.path.join(out_dir, "stock_por_codigo.json"),
+            stock_dict
+        )
+        log.info(f"Stock escrito: {len(stock)} líneas")
+
+        # 4c. Ventas
+        log.info(f"Descargando ventas {fecha_desde} → {fecha_hasta}...")
+        ventas = adapter.get_ventas(fecha_desde, fecha_hasta)
+        health.registrar("ventas", len(ventas))
+        escribir_wrapped(
+            os.path.join(out_dir, "ventas.json"),
+            ventas, fuente,
+            extra={"fecha_desde": fecha_desde, "fecha_hasta": fecha_hasta}
+        )
+        log.info(f"Ventas escritas: {len(ventas)}")
+
+        # 4d. Pedidos
+        log.info("Descargando pedidos...")
+        pedidos = adapter.get_pedidos()
+        health.registrar("pedidos", len(pedidos))
+        escribir_wrapped(
+            os.path.join(out_dir, "pedidos.json"),
+            pedidos, fuente
+        )
+        log.info(f"Pedidos escritos: {len(pedidos)}")
+
+        # 5. RR.HH. (Buk) — opcional
+        rrhh_cfg = tenant.get("rrhh")
+        if rrhh_cfg and BukAdapter:
+            log.info("Procesando datos RR.HH. (Buk)...")
+            try:
+                buk = BukAdapter(rrhh_cfg)
+                resumen_rrhh = buk.get_resumen_dotacion()
+                health.registrar("rrhh", len(resumen_rrhh))
+                escribir_wrapped(
+                    os.path.join(out_dir, "rrhh_resumen.json"),
+                    resumen_rrhh, "buk"
+                )
+                log.info(f"RR.HH. escrito: {len(resumen_rrhh)} registros")
+            except Exception as exc:
+                log.warning(f"Error al obtener datos RR.HH.: {exc} (se continúa)")
+
+        log.info(f"=== Pipeline {tenant_id} completado OK ===")
+
+    except Exception as exc:
+        _error = str(exc)
+        log.error(f"Pipeline abortado: {exc}")
+        sys.exit(1)
+    finally:
+        health.finalizar(error=_error)
 
 
 # ---------------------------------------------------------------------------
