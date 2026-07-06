@@ -3,7 +3,7 @@
   "tenant_id": "nombre-unico-cliente",
   "nombre_comercial": "Ferretería Ejemplo",
   "erp": {
-    "tipo": "justweb|transtecnia|rexplus|excel|bsale",
+    "tipo": "justweb|transtecnia|rexplus|excel|bsale|defontana|sheets",
     "host": "IP o URL del ERP (no aplica para bsale)",
     "puerto": 80,
     "usuario": "usuario_erp (no aplica para bsale)",
@@ -14,7 +14,19 @@
     "precio_tipo_id": null,
     "api_version": "1",
     "timeout": 30,
-    "max_paginas": 50
+    "max_paginas": 50,
+    "_defontana": "Campos específicos de Defontana (solo si erp.tipo = defontana):",
+    "client_id": "app_client_id_del_tenant",
+    "client_secret": "app_client_secret_cifrado",
+    "company_id": "76000000-0",
+    "api_base": "https://api.defontana.com",
+    "warehouse_ids": [],
+    "_sheets": "Campos específicos de Google Sheets (solo si erp.tipo = sheets):",
+    "spreadsheet_id": "ID_de_la_google_sheet",
+    "credentials_json": "ruta/a/service_account.json",
+    "sheet_stock": "Stock",
+    "sheet_ventas": "Ventas",
+    "sheet_productos": "Productos"
   },
   "bodegas": {
     "comerciales": ["BOD1", "BOD2"],

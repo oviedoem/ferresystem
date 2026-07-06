@@ -44,6 +44,11 @@ try:
 except ImportError:
     BukAdapter = None
 
+try:
+    from adapters.defontana_adapter import DefontanaAdapter
+except ImportError:
+    DefontanaAdapter = None
+
 ADAPTERS_DISPONIBLES: dict = {
     "justweb": JustWebAdapter,
     "excel": ExcelAdapter,
@@ -54,6 +59,8 @@ if RexPlusAdapter:
     ADAPTERS_DISPONIBLES["rexplus"] = RexPlusAdapter
 if BsaleAdapter:
     ADAPTERS_DISPONIBLES["bsale"] = BsaleAdapter
+if DefontanaAdapter:
+    ADAPTERS_DISPONIBLES["defontana"] = DefontanaAdapter
 
 log = get_logger("pipeline_runner")
 
