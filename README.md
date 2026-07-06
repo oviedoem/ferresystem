@@ -101,13 +101,16 @@ ferresystem/
 
 ## Adaptadores disponibles
 
-| Adaptador | Sistema | Tipo | Estado |
-|---|---|---|---|
-| `justweb_adapter.py` | JustWeb | ERP comercial (ventas, stock) | 🟡 Esqueleto |
-| `buk_adapter.py` | Buk | RR.HH., remuneraciones, asistencia | 🟡 Esqueleto |
-| `transtecnia_adapter.py` | Transtecnia | Contabilidad, facturación electrónica | 🟡 Esqueleto |
-| `rexplus_adapter.py` | Rex+ | Remuneraciones alternativo | 🟡 Esqueleto |
-| `excel_adapter.py` | Excel / CSV | Fallback universal | 🟡 Esqueleto |
+| Clave `erp.tipo` | Adaptador | Sistema | Acceso | Estado |
+|---|---|---|---|---|
+| `justweb` | `justweb_adapter.py` | JustWeb | SSRS/HTTP CSV | 🟡 Esqueleto |
+| `transtecnia` | `transtecnia_adapter.py` | Transtecnia | SQL directo | 🟡 Esqueleto |
+| `rexplus` | `rexplus_adapter.py` | Rex+ | SQL directo | 🟡 Esqueleto |
+| `bsale` | `bsale_adapter.py` | Bsale | API REST v1 | 🟡 Esqueleto |
+| `defontana` | `defontana_adapter.py` | Defontana | API REST + OAuth2 | ✅ Implementado |
+| `sheets` | `sheets_adapter.py` | Google Sheets | CSV público / API v4 | ✅ Implementado |
+| `excel` | `excel_adapter.py` | Excel / CSV | Archivo local | 🟡 Esqueleto |
+| `buk` | `buk_adapter.py` | Buk | API REST (RR.HH.) | 🟡 Esqueleto |
 
 Para agregar un nuevo adaptador, ver `docs/como_agregar_erp.md`.
 
