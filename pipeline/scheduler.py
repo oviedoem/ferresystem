@@ -1,241 +1,166 @@
 """
-scheduler.py — Scheduler genérico del pipeline FerreSystem.
+scheduler.py — Scheduler nativo de FerreSystem.
 
-Ejecuta correr_pipeline() para uno o todos los tenants activos, respetando
-el intervalo de sync configurado en cada tenants/{id}.json → pipeline.
-Reintenta automáticamente ante fallos transitorios (ERP caído, timeout de red)
-con backoff exponencial. Notifica por email si un tenant falla N veces seguidas.
+Reemplaza al .bat manual y permite ejecutar el pipeline:
+- Una vez (--once)
+- En loop con intervalo (--intervalo-minutos)
+- A una hora fija diaria (--hora HH:MM)
 
-Diseñado para correr como proceso permanente (python scheduler.py) o ser
-llamado desde una tarea programada (Windows Task Scheduler / cron) para
-ejecuciones únicas (python scheduler.py <tenant_id> --once).
+Incluye lock por tenant, logging estructurado y manejo de errores.
 
-Nada aquí hardcodea datos de ningún cliente — todo viene de tenants/{id}.json.
-
-Campos leídos de tenants/{id}.json → "pipeline":
-    hora_sync_sql          : str  — hora fija de sync "HH:MM" (modo hora fija)
-    intervalo_minutos      : int  — intervalo en minutos (modo continuo); si
-                                    se define, tiene precedencia sobre hora_sync_sql
-    max_reintentos         : int  — veces que se reintenta antes de escalar (default 3)
-    backoff_base_segundos  : int  — base del backoff exponencial (default 60)
-    notificar_email        : str  — email al que notificar fallos repetidos (opcional)
-    activo                 : bool — si False, el tenant se omite en el loop (default True)
+Uso:
+  python pipeline/scheduler.py <tenant_id> --once
+  python pipeline/scheduler.py <tenant_id> --intervalo-minutos 30
+  python pipeline/scheduler.py <tenant_id> --hora 22:00
+  python pipeline/scheduler.py <tenant_id> --hora 22:00 --fecha-desde 2026-07-01 --fecha-hasta 2026-07-31
 """
-import json
+import argparse
 import os
 import sys
 import time
-import smtplib
-import traceback
-from email.message import EmailMessage
 from datetime import datetime, timedelta
 
-# Añadimos el directorio raíz al path para importar core/
 _ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
-from core.pipeline_runner import correr_pipeline, cargar_tenant
+from core.pipeline_runner import correr_pipeline
+from core.exceptions import (
+    FerreSystemError,
+    TenantNotFoundError,
+    ERPTypeNotSupportedError,
+    ERPConnectionError,
+    PipelineLockedError,
+)
 from core.logger import get_logger
 
 log = get_logger("scheduler")
 
-TENANTS_DIR = os.path.join(_ROOT, "tenants")
-_OMITIR_PREFIJOS = ("ejemplo_",)  # archivos template que nunca se ejecutan
 
-
-# ---------------------------------------------------------------------------
-# Config SMTP para notificaciones (variables de entorno — nunca hardcodeado)
-# ---------------------------------------------------------------------------
-SMTP_HOST = os.environ.get("FERRESYSTEM_SMTP_HOST", "")
-SMTP_PORT = int(os.environ.get("FERRESYSTEM_SMTP_PORT", 587))
-SMTP_USER = os.environ.get("FERRESYSTEM_SMTP_USER", "")
-SMTP_PASS = os.environ.get("FERRESYSTEM_SMTP_PASS", "")
-SMTP_FROM = os.environ.get("FERRESYSTEM_SMTP_FROM", SMTP_USER)
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _listar_tenants_activos() -> list[str]:
-    """Devuelve IDs de todos los tenants activos en tenants/."""
-    ids = []
-    for fname in os.listdir(TENANTS_DIR):
-        if not fname.endswith(".json"):
-            continue
-        if any(fname.startswith(p) for p in _OMITIR_PREFIJOS):
-            continue
-        tenant_id = fname[:-5]
-        try:
-            cfg = cargar_tenant(tenant_id)
-            if cfg.get("pipeline", {}).get("activo", True):
-                ids.append(tenant_id)
-        except Exception as e:
-            log.warning(f"No se pudo cargar tenant '{tenant_id}': {e}")
-    return ids
-
-
-def _pipeline_cfg(tenant_id: str) -> dict:
-    """Devuelve el bloque pipeline del tenant o {} si no existe."""
+def _parse_hora(hora_str: str) -> tuple[int, int]:
+    """Parsea 'HH:MM' a (hora, minuto)."""
     try:
-        return cargar_tenant(tenant_id).get("pipeline", {})
-    except Exception:
-        return {}
+        h, m = hora_str.split(":")
+        return int(h), int(m)
+    except ValueError:
+        raise ValueError(f"Formato de hora inválido: '{hora_str}'. Use HH:MM (ej. 22:00)")
 
 
-def _proximo_run(tenant_id: str, ultimo_run: datetime) -> datetime:
-    """Calcula cuándo debe correr el próximo sync para este tenant."""
-    cfg = _pipeline_cfg(tenant_id)
-
-    if "intervalo_minutos" in cfg:
-        minutos = int(cfg["intervalo_minutos"])
-        return ultimo_run + timedelta(minutes=minutos)
-
-    if "hora_sync_sql" in cfg:
-        hm = cfg["hora_sync_sql"]  # "HH:MM"
-        hora, minuto = (int(x) for x in hm.split(":"))
-        proximo = ultimo_run.replace(hour=hora, minute=minuto, second=0, microsecond=0)
-        if proximo <= ultimo_run:
-            proximo += timedelta(days=1)
-        return proximo
-
-    # Default: cada 60 minutos
-    return ultimo_run + timedelta(minutes=60)
-
-
-def _notificar_fallo(tenant_id: str, error: str, intentos: int, email: str) -> None:
-    """Envía un email de alerta si SMTP está configurado."""
-    if not SMTP_HOST or not email:
-        log.warning(f"[{tenant_id}] Notificación omitida — SMTP no configurado o email no definido")
-        return
-    try:
-        msg = EmailMessage()
-        msg["Subject"] = f"[FerreSystem] Pipeline FALLIDO: {tenant_id} ({intentos} intentos)"
-        msg["From"] = SMTP_FROM
-        msg["To"] = email
-        msg.set_content(
-            f"El pipeline del tenant '{tenant_id}' falló {intentos} veces consecutivas.\n\n"
-            f"Último error:\n{error}\n\n"
-            f"Timestamp: {datetime.now().isoformat()}\n"
-        )
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
-            s.starttls()
-            if SMTP_USER:
-                s.login(SMTP_USER, SMTP_PASS)
-            s.send_message(msg)
-        log.info(f"[{tenant_id}] Notificación enviada a {email}")
-    except Exception as e:
-        log.error(f"[{tenant_id}] No se pudo enviar notificación: {e}")
-
-
-# ---------------------------------------------------------------------------
-# Lógica de ejecución con reintentos
-# ---------------------------------------------------------------------------
-
-def ejecutar_con_reintentos(tenant_id: str) -> bool:
-    """Corre el pipeline para un tenant con backoff exponencial.
-
-    Devuelve True si tuvo éxito, False si agotó los reintentos.
-    """
-    cfg = _pipeline_cfg(tenant_id)
-    max_r = int(cfg.get("max_reintentos", 3))
-    backoff = int(cfg.get("backoff_base_segundos", 60))
-    email_alerta = cfg.get("notificar_email", "")
-
-    ultimo_error = ""
-    for intento in range(1, max_r + 2):  # +1 intento inicial
-        try:
-            log.info(f"[{tenant_id}] Iniciando pipeline (intento {intento}/{max_r + 1})")
-            correr_pipeline(tenant_id)
-            log.info(f"[{tenant_id}] Pipeline completado OK")
-            return True
-        except SystemExit as e:
-            ultimo_error = f"Pipeline abortó con sys.exit({e.code})"
-            log.error(f"[{tenant_id}] {ultimo_error}")
-        except Exception:
-            ultimo_error = traceback.format_exc()
-            log.error(f"[{tenant_id}] Error en intento {intento}:\n{ultimo_error}")
-
-        if intento <= max_r:
-            espera = backoff * (2 ** (intento - 1))  # backoff exponencial
-            log.info(f"[{tenant_id}] Reintentando en {espera}s...")
-            time.sleep(espera)
-
-    log.error(f"[{tenant_id}] Agotó {max_r + 1} intentos. Escalando.")
-    _notificar_fallo(tenant_id, ultimo_error, max_r + 1, email_alerta)
-    return False
-
-
-# ---------------------------------------------------------------------------
-# Modos de ejecución
-# ---------------------------------------------------------------------------
-
-def modo_once(tenant_id: str) -> None:
-    """Corre el pipeline una sola vez y sale."""
-    log.info(f"=== Modo --once: {tenant_id} ===")
-    ok = ejecutar_con_reintentos(tenant_id)
-    sys.exit(0 if ok else 1)
-
-
-def modo_loop(tenant_ids: list[str]) -> None:
-    """Loop permanente: ejecuta cada tenant según su configuración de intervalo."""
-    log.info(f"=== Modo loop activo para {len(tenant_ids)} tenants: {tenant_ids} ===")
-
-    # Inicializar próximo run para cada tenant
+def _proxima_ejecucion(hora: int, minuto: int) -> datetime:
+    """Calcula el próximo datetime a la hora indicada."""
     ahora = datetime.now()
-    proximos: dict = {}
-    for tid in tenant_ids:
-        cfg = _pipeline_cfg(tid)
-        if "intervalo_minutos" in cfg:
-            # Correr de inmediato en el primer ciclo
-            proximos[tid] = ahora
-        elif "hora_sync_sql" in cfg:
-            proximos[tid] = _proximo_run(tid, ahora)
-            log.info(f"[{tid}] Primer sync programado: {proximos[tid].strftime('%H:%M')}")
-        else:
-            proximos[tid] = ahora  # default: correr ahora
+    prox = ahora.replace(hour=hora, minute=minuto, second=0, microsecond=0)
+    if prox <= ahora:
+        prox += timedelta(days=1)
+    return prox
 
+
+def _esperar_hasta(prox: datetime) -> None:
+    """Espera activa con logging cada minuto hasta la hora indicada."""
     while True:
         ahora = datetime.now()
+        if ahora >= prox:
+            break
+        restante = (prox - ahora).total_seconds()
+        if restante > 60:
+            log.info("Próxima ejecución a las %s (faltan %d minutos)", prox.strftime("%H:%M"), int(restante / 60))
+            time.sleep(60)
+        else:
+            time.sleep(1)
 
-        for tid in list(proximos.keys()):
-            if ahora >= proximos[tid]:
-                ejecutar_con_reintentos(tid)
-                proximos[tid] = _proximo_run(tid, ahora)
-                log.info(f"[{tid}] Próximo sync: {proximos[tid].strftime('%Y-%m-%d %H:%M')}")
 
-        time.sleep(30)  # revisar cada 30s si algún tenant debe correr
+def _run_once(tenant_id: str, fecha_desde: str | None, fecha_hasta: str | None) -> bool:
+    """Ejecuta el pipeline una vez y devuelve True si fue exitoso."""
+    log.info("=" * 60)
+    log.info("Ejecutando pipeline para tenant: %s", tenant_id)
+    if fecha_desde:
+        log.info("Rango de ventas: %s → %s", fecha_desde, fecha_hasta)
 
+    try:
+        res = correr_pipeline(tenant_id, fecha_desde, fecha_hasta)
+        if res["estado"] == "ok":
+            log.info("Pipeline completado OK. Registros: %s", res["registros"])
+            return True
+        else:
+            log.error("Pipeline falló: %s", res["error"])
+            return False
+    except PipelineLockedError as e:
+        log.warning("Pipeline bloqueado (otra instancia corriendo): %s", e)
+        return False
+    except (TenantNotFoundError, ERPTypeNotSupportedError, ERPConnectionError) as e:
+        log.error("Error de configuración o conexión: %s", e)
+        return False
+    except Exception as e:
+        log.exception("Error inesperado en pipeline: %s", e)
+        return False
 
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 def main():
-    """
-    Uso:
-        python scheduler.py                        — loop todos los tenants activos
-        python scheduler.py <tenant_id>            — loop solo ese tenant
-        python scheduler.py <tenant_id> --once     — ejecutar una vez y salir
-    """
-    args = sys.argv[1:]
+    parser = argparse.ArgumentParser(
+        description="Scheduler nativo de FerreSystem",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Ejemplos:
+  %(prog)s mi-tenant --once
+  %(prog)s mi-tenant --intervalo-minutos 30
+  %(prog)s mi-tenant --hora 22:00
+  %(prog)s mi-tenant --hora 22:00 --fecha-desde 2026-07-01 --fecha-hasta 2026-07-31
+        """,
+    )
+    parser.add_argument("tenant_id", help="ID del tenant (archivo tenants/{id}.json)")
+    parser.add_argument("--once", action="store_true", help="Ejecutar una sola vez y salir")
+    parser.add_argument("--intervalo-minutos", type=int, metavar="N", help="Ejecutar cada N minutos")
+    parser.add_argument("--hora", type=str, metavar="HH:MM", help="Ejecutar diariamente a esta hora (ej. 22:00)")
+    parser.add_argument("--fecha-desde", type=str, metavar="YYYY-MM-DD", help="Fecha inicio para ventas")
+    parser.add_argument("--fecha-hasta", type=str, metavar="YYYY-MM-DD", help="Fecha fin para ventas")
 
-    if "--once" in args:
-        args = [a for a in args if a != "--once"]
-        if not args:
-            print("Uso: python scheduler.py <tenant_id> --once")
-            sys.exit(1)
-        modo_once(args[0])
-    elif args:
-        tenant_id = args[0]
-        modo_loop([tenant_id])
-    else:
-        tenants = _listar_tenants_activos()
-        if not tenants:
-            log.warning("No hay tenants activos en tenants/. Saliendo.")
-            sys.exit(0)
-        modo_loop(tenants)
+    args = parser.parse_args()
+
+    modos = sum([bool(args.once), bool(args.intervalo_minutos), bool(args.hora)])
+    if modos == 0:
+        parser.error("Debes especificar --once, --intervalo-minutos o --hora")
+    if modos > 1:
+        parser.error("Solo puedes usar uno de: --once, --intervalo-minutos, --hora")
+
+    if args.fecha_desde and args.fecha_hasta:
+        try:
+            datetime.strptime(args.fecha_desde, "%Y-%m-%d")
+            datetime.strptime(args.fecha_hasta, "%Y-%m-%d")
+        except ValueError:
+            parser.error("Las fechas deben estar en formato YYYY-MM-DD")
+    elif args.fecha_desde or args.fecha_hasta:
+        parser.error("Debes especificar ambas fechas: --fecha-desde y --fecha-hasta")
+
+    log.info("Scheduler iniciado para tenant: %s", args.tenant_id)
+
+    if args.once:
+        ok = _run_once(args.tenant_id, args.fecha_desde, args.fecha_hasta)
+        sys.exit(0 if ok else 1)
+
+    if args.intervalo_minutos:
+        if args.intervalo_minutos < 1:
+            parser.error("El intervalo debe ser al menos 1 minuto")
+        intervalo_seg = args.intervalo_minutos * 60
+        log.info("Modo intervalo: cada %d minutos", args.intervalo_minutos)
+
+        while True:
+            inicio = time.monotonic()
+            _run_once(args.tenant_id, args.fecha_desde, args.fecha_hasta)
+            transcurrido = time.monotonic() - inicio
+            espera = max(0, intervalo_seg - transcurrido)
+            if espera > 0:
+                log.info("Esperando %d segundos hasta próxima ejecución...", int(espera))
+                time.sleep(espera)
+
+    if args.hora:
+        hora, minuto = _parse_hora(args.hora)
+        log.info("Modo hora fija: todos los días a las %02d:%02d", hora, minuto)
+
+        while True:
+            prox = _proxima_ejecucion(hora, minuto)
+            _esperar_hasta(prox)
+            _run_once(args.tenant_id, args.fecha_desde, args.fecha_hasta)
+            time.sleep(5)
 
 
 if __name__ == "__main__":

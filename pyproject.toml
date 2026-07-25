@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ferresystem"
+version = "0.2.0"
+description = "Plataforma SaaS multi-tenant ERP-agnóstica para el comercio en Chile"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Proprietary"}
+authors = [{name = "FerreSystem Team"}]
+keywords = ["erp", "saas", "multi-tenant", "chile", "ferreteria"]
+
+dependencies = [
+    "openpyxl>=3.1.0",
+    "firebase-admin>=6.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["core*", "adapters*", "pipeline*", "setup*"]
+exclude = ["tests*", "data*", "tenants*", "landing*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-v --tb=short"
