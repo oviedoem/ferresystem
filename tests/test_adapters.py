@@ -163,7 +163,7 @@ class TestBsaleAdapter:
 
     def _mock_get(self, adapter, responses: dict):
         """
-        Parchea adapter._get para devolver respuestas según el path.
+        Parchea adapter._client.get para devolver respuestas según el path.
         responses: { path_substring: dict_respuesta }
         """
         def fake_get(path, params=None):
@@ -171,7 +171,7 @@ class TestBsaleAdapter:
                 if key in path:
                     return val
             return {"items": []}
-        return patch.object(adapter, "_get", side_effect=fake_get)
+        return patch.object(adapter._client, "get", side_effect=fake_get)
 
     # --- get_productos ---
 
@@ -244,7 +244,7 @@ class TestBsaleAdapter:
             ],
             "count": 2,
         }
-        with patch.object(adapter_sin, "_get", return_value=resp):
+        with patch.object(adapter_sin._client, "get", return_value=resp):
             stock = adapter_sin.get_stock()
         assert len(stock) == 2
 
@@ -259,16 +259,16 @@ class TestBsaleAdapter:
     # --- test_conexion ---
 
     def test_test_conexion_ok(self, adapter):
-        with patch.object(adapter, "_get", return_value={"items": [{"id": 1}]}):
+        with patch.object(adapter._client, "get", return_value={"items": [{"id": 1}]}):
             assert adapter.test_conexion() is True
 
     def test_test_conexion_sin_key_items_false(self, adapter):
-        with patch.object(adapter, "_get", return_value={"error": "bad token"}):
+        with patch.object(adapter._client, "get", return_value={"error": "bad token"}):
             assert adapter.test_conexion() is False
 
     def test_test_conexion_excepcion_false(self, adapter):
         import urllib.error
-        with patch.object(adapter, "_get", side_effect=urllib.error.URLError("401")):
+        with patch.object(adapter._client, "get", side_effect=urllib.error.URLError("401")):
             assert adapter.test_conexion() is False
 
     # --- _fecha helper ---
@@ -299,7 +299,7 @@ class TestBsaleAdapter:
         assert a._token == "otro_token"
         assert a._office_ids == [99]
         assert "v2" in a._base
-        assert a._timeout == 10
+        assert a._client._timeout == 10
 
 
 # ─── ERPAdapter (contrato base) ───────────────────────────────────────────────
