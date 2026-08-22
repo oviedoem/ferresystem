@@ -1,6 +1,6 @@
 # AGENTS.md — FerreSystem
 # Instrucciones del agente — plataforma SaaS multi-tenant ERP-agnóstica
-# Versión activa: v0.1 (esqueleto inicial)
+# Versión activa: v0.3
 
 ---
 
@@ -118,8 +118,13 @@ Ver `README.md` y `docs/arquitectura.md` para el detalle de capas
 - v0.1 — Esqueleto inicial: estructura de carpetas, contrato `ERPAdapter`,
   validador y rotación de token genéricos (adaptados de Ferretería
   Oviedo), landing page, sin lógica de negocio de ningún cliente real.
-- v0.2 — **VERSIÓN ACTIVA**: Motor completo: excepciones custom
-  (`core/exceptions.py`), cliente HTTP centralizado (`core/http_client.py`),
-  staging en `json_writer`, pipeline sin `sys.exit()` con lock file,
-  `ExcelAdapter` implementado, `BsaleAdapter` refactorizado con HTTPClient,
-  scheduler CLI con argparse, suite pytest ampliada, `pyproject.toml`.
+- v0.2 — Motor completo: excepciones custom (`core/exceptions.py`), cliente HTTP
+  centralizado (`core/http_client.py`), staging en `json_writer`, pipeline sin
+  `sys.exit()` con lock file, `ExcelAdapter` implementado, `BsaleAdapter`
+  refactorizado con HTTPClient, scheduler CLI con argparse, suite pytest ampliada,
+  `pyproject.toml`.
+- v0.3 — **VERSIÓN ACTIVA**: `with_retry` decorador backoff exponencial,
+  `DefontanaAdapter` OAuth2, `HealthMonitor` (registra estado de cada run),
+  CSV export client-side en panel-admin, `BukAdapter`, `SheetsAdapter`,
+  panel-ops dashboard multi-tenant, setup wizard + trial self-service,
+  docs-site público, CI/CD GitHub Actions, 120 tests pasando.
