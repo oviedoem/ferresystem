@@ -58,3 +58,21 @@ Actualizar también `docs/como_agregar_cliente.md` — siempre juntos.
 ## REFERENCIA CLAVE FERRETERÍA OVIEDO (solo lectura)
 El código de referencia real del primer tenant vive en `E:\ferreteria-oviedo\`.
 Solo leer para inspiración — nunca copiar credenciales, IPs ni tokens.
+
+---
+
+## HISTORIAL DE SESIONES
+
+### Sesión 2026-08-22 (Claude Code) — validar_tenant_config + fix test flaky scheduler
+
+**Resumen:** Loop sesión Pasos 0–5. Añadida validación de configuración de tenant antes del pipeline. Fix del test `test_proxima_hoy_si_falta` que fallaba en CI por depender de la hora real.
+
+**Hecho:**
+- `core/validator.py`: `validar_tenant_config(config: dict) -> bool` — valida campos raíz y `erp.tipo`; CLI `--tenant`
+- `tenants/ejemplo_tenant.json`: `erp.tipo` corregido a `"bsale"` + campo `_tipo_opciones`
+- `tests/test_scheduler.py`: mock `datetime.now()` con tiempo fijo en `test_proxima_hoy_si_falta`
+- PR #25 mergeado · CI verde Python 3.10/3.11/3.12
+
+**Pendiente:** ninguno
+
+**Próxima sesión:** ver backlog en AGENTS.md (adapter funcional, panel datos reales)
