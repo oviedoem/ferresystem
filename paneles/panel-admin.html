@@ -325,6 +325,13 @@
   }
   .btn-filter:hover { border-color: var(--muted); color: var(--text); }
   .btn-filter.active { background: var(--bg-card); color: var(--text); border-color: rgba(255,255,255,0.2); font-weight: 600; }
+  .btn-export {
+    padding: 4px 11px; border-radius: 6px; font-size: 0.75rem; font-weight: 500;
+    cursor: pointer; border: 1px solid var(--border); background: transparent;
+    color: var(--muted); transition: all 0.18s; display: inline-flex; align-items: center; gap: 4px;
+  }
+  .btn-export:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-export:active { opacity: 0.7; }
 
   /* ── MODULE GRID ─────────────────────────────────────────────────────── */
   .module-grid {
@@ -523,6 +530,7 @@
             <input class="search-input" type="text"
               placeholder="Buscar producto o SKU…"
               oninput="filtrarStock(this.value)">
+            <button class="btn-export" onclick="exportarCSV('stock')" title="Descargar CSV">↓ CSV</button>
           </div>
         </div>
         <table>
@@ -575,9 +583,12 @@
             Transacciones
             <span class="card-count" id="ventas-count"></span>
           </span>
-          <input class="search-input" type="text"
-            placeholder="Buscar producto…"
-            oninput="filtrarVentas(this.value)">
+          <div class="card-actions">
+            <input class="search-input" type="text"
+              placeholder="Buscar producto…"
+              oninput="filtrarVentas(this.value)">
+            <button class="btn-export" onclick="exportarCSV('ventas')" title="Descargar CSV">↓ CSV</button>
+          </div>
         </div>
         <table>
           <thead>
@@ -614,6 +625,7 @@
             <button class="btn-filter" onclick="setFiltroDesp('pendiente',this)">Pendientes</button>
             <button class="btn-filter" onclick="setFiltroDesp('enviado',this)">En camino</button>
             <button class="btn-filter" onclick="setFiltroDesp('entregado',this)">Entregados</button>
+            <button class="btn-export" onclick="exportarCSV('despachos')" title="Descargar CSV">↓ CSV</button>
           </div>
         </div>
         <table>
@@ -1178,6 +1190,37 @@ function aplicarFeatureFlags() {
       if (pageEl) pageEl.style.display = 'none';
     }
   });
+}
+
+// ─── EXPORTAR CSV ─────────────────────────────────────────────────────────────
+function exportarCSV(tipo) {
+  const esc = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  let cabecera, filas, nombre;
+
+  if (tipo === 'stock') {
+    cabecera = ['SKU','Producto','Categoría','Bodega','Stock','Mínimo'];
+    filas    = getStockFiltrado().map(p => [p.sku, p.nombre, p.categoria, p.bodega, p.stock, stockMin(p)]);
+    nombre   = 'stock';
+  } else if (tipo === 'ventas') {
+    cabecera = ['Fecha','Producto','Categoría','Qty','P.Unit','Total','Vendedor'];
+    filas    = getVentasFiltradas().map(v => [v.fecha, v.nombre, v.categoria, v.qty, v.precio, v.precio * v.qty, v.vendedor]);
+    nombre   = 'ventas';
+  } else if (tipo === 'despachos') {
+    const datos = filtroDesp === 'todos' ? DESPACHOS_DATA : DESPACHOS_DATA.filter(d => d.estado === filtroDesp);
+    cabecera = ['N°Pedido','Cliente','Detalle','Total','Estado','Fecha'];
+    filas    = datos.map(d => [d.id, d.cliente, d.detalle, d.total, d.estado, d.fecha]);
+    nombre   = 'despachos';
+  } else return;
+
+  const csv  = [cabecera, ...filas].map(r => r.map(esc).join(',')).join('\r\n');
+  // BOM UTF-8 para que Excel lo abra correctamente sin configuración extra
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), { href: url, download: `${nombre}_${new Date().toISOString().slice(0,10)}.csv` });
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────

@@ -118,6 +118,8 @@ Ver `README.md` y `docs/arquitectura.md` para el detalle de capas
 - v0.1 — Esqueleto inicial: estructura de carpetas, contrato `ERPAdapter`,
   validador y rotación de token genéricos (adaptados de Ferretería
   Oviedo), landing page, sin lógica de negocio de ningún cliente real.
-- v0.2 — Motor completo: BsaleAdapter, scheduler con retry, wizard
-  onboarding, panel-vendedor, panel-cliente, panel-operador, feature
-  flags por módulo, suite pytest 51 tests, Superpowers integrado.
+- v0.2 — **VERSIÓN ACTIVA**: Motor completo: excepciones custom
+  (`core/exceptions.py`), cliente HTTP centralizado (`core/http_client.py`),
+  staging en `json_writer`, pipeline sin `sys.exit()` con lock file,
+  `ExcelAdapter` implementado, `BsaleAdapter` refactorizado con HTTPClient,
+  scheduler CLI con argparse, suite pytest ampliada, `pyproject.toml`.

@@ -1,8 +1,9 @@
 """
 health_monitor.py — Registra el estado de cada run del pipeline por tenant.
 
-Escribe data/{tenant_id}/health.json con el resultado del último run
-y un historial de los últimos HISTORIAL_MAX runs.
+Escribe dos archivos en data/{tenant_id}/:
+  health.json — último run + historial de los últimos HISTORIAL_MAX runs
+  usage.json  — métricas acumuladas por mes para billing
 
 Sin lógica de negocio — solo observabilidad genérica.
 """
@@ -33,7 +34,8 @@ class PipelineHealth:
 
     def __init__(self, tenant_id: str, out_dir: str) -> None:
         self._tenant_id = tenant_id
-        self._ruta = os.path.join(out_dir, "health.json")
+        self._ruta        = os.path.join(out_dir, "health.json")
+        self._ruta_usage  = os.path.join(out_dir, "usage.json")
         self._inicio: float = 0.0
         self._inicio_iso: str = ""
         self._registros: dict = {}
@@ -81,6 +83,49 @@ class PipelineHealth:
         except OSError:
             pass
 
+        self._actualizar_usage(entrada)
+
+    def _actualizar_usage(self, entrada: dict) -> None:
+        """Acumula métricas del run en usage.json (por mes, para billing).
+
+        Formato:
+        {
+          "tenant_id": "...",
+          "updated_at": "...",
+          "meses": {
+            "2025-01": {
+              "runs_ok": 28, "runs_error": 2,
+              "records": { "productos": 45000, ... }
+            }
+          }
+        }
+        """
+        mes = (entrada.get("inicio") or _now_iso())[:7]  # YYYY-MM
+
+        usage = _leer_usage(self._ruta_usage, self._tenant_id)
+
+        bucket = usage["meses"].setdefault(mes, {
+            "runs_ok": 0,
+            "runs_error": 0,
+            "records": {},
+        })
+
+        if entrada.get("estado") == "ok":
+            bucket["runs_ok"] = bucket.get("runs_ok", 0) + 1
+        else:
+            bucket["runs_error"] = bucket.get("runs_error", 0) + 1
+
+        for tipo, count in (entrada.get("registros") or {}).items():
+            bucket["records"][tipo] = bucket["records"].get(tipo, 0) + count
+
+        usage["updated_at"] = _now_iso()
+
+        try:
+            with open(self._ruta_usage, "w", encoding="utf-8") as f:
+                json.dump(usage, f, ensure_ascii=False, indent=2)
+        except OSError:
+            pass
+
 
 # ---------------------------------------------------------------------------
 # Helpers internos
@@ -100,3 +145,16 @@ def _leer_historial(ruta: str) -> list:
         return data.get("historial", [])
     except (json.JSONDecodeError, OSError):
         return []
+
+
+def _leer_usage(ruta: str, tenant_id: str) -> dict:
+    """Lee usage.json existente o devuelve un esqueleto vacío."""
+    if os.path.isfile(ruta):
+        try:
+            with open(ruta, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data.get("meses"), dict):
+                return data
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {"tenant_id": tenant_id, "updated_at": "", "meses": {}}

@@ -5,9 +5,14 @@ Todo adaptador en adapters/ debe heredar de ERPAdapter e implementar los
 5 métodos abstractos. El resto del pipeline (core/pipeline_runner.py) solo
 conoce esta interfaz, nunca el ERP concreto.
 """
+import functools
+import logging as _logging
+import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Optional
+
+_log = _logging.getLogger("ferresystem.retry")
 
 
 @dataclass
@@ -73,3 +78,55 @@ class ERPAdapter(ABC):
     @abstractmethod
     def test_conexion(self) -> bool:
         ...
+
+
+# ---------------------------------------------------------------------------
+# Decorador de reintento
+# ---------------------------------------------------------------------------
+
+def with_retry(
+    max_intentos: int = 3,
+    backoff_base: float = 2.0,
+    excepciones: tuple = (Exception,),
+):
+    """Decorador de reintento con backoff exponencial para métodos de ERPAdapter.
+
+    Parámetros:
+        max_intentos:  Número máximo de intentos (default 3).
+        backoff_base:  Base del backoff en segundos — espera backoff_base^intento
+                       entre reintentos: 2s → 4s → 8s con base=2 (default).
+        excepciones:   Tupla de tipos de excepción que activan el reintento.
+                       Por defecto captura cualquier Exception.
+
+    Uso:
+        class MiAdapter(ERPAdapter):
+            @with_retry()
+            def get_productos(self):
+                ...
+
+            @with_retry(max_intentos=5, backoff_base=1.5, excepciones=(IOError,))
+            def get_ventas(self, desde, hasta):
+                ...
+    """
+    def decorator(fn):
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            ultimo_exc = None
+            for intento in range(1, max_intentos + 1):
+                try:
+                    return fn(*args, **kwargs)
+                except excepciones as exc:
+                    ultimo_exc = exc
+                    if intento == max_intentos:
+                        break
+                    espera = backoff_base ** intento
+                    _log.warning(
+                        "with_retry: %s() intento %d/%d falló (%s). "
+                        "Reintentando en %.1fs.",
+                        getattr(fn, "__name__", repr(fn)),
+                        intento, max_intentos, exc, espera,
+                    )
+                    time.sleep(espera)
+            raise ultimo_exc
+        return wrapper
+    return decorator
