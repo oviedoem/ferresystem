@@ -205,6 +205,41 @@
   @media (prefers-reduced-motion: reduce) {
     .prod-card { animation: none; opacity: 1; transform: none; }
   }
+
+  /* ── MODO KIOSCO ─────────────────────────────────────────────────────────── */
+  .kiosco-bar {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+    background: var(--color-secundario); color: #fff;
+    padding: 0 32px; height: 52px;
+    align-items: center; justify-content: space-between;
+    font-size: 0.9rem; gap: 16px;
+  }
+  .kiosco-bar-prog {
+    flex: 1; height: 4px; background: rgba(255,255,255,0.25);
+    border-radius: 2px; overflow: hidden;
+  }
+  .kiosco-bar-prog-fill {
+    height: 100%; background: var(--color-primario);
+    transition: width 1s linear;
+  }
+  .kiosco-bar-cat { font-weight: 700; letter-spacing: 0.3px; white-space: nowrap; }
+  .kiosco-bar-hint { opacity: 0.55; font-size: 0.78rem; white-space: nowrap; }
+
+  body.kiosco nav              { display: none; }
+  body.kiosco .filtros         { display: none; }
+  body.kiosco .cotiz-panel     { display: none; }
+  body.kiosco .btn-agregar     { display: none; }
+  body.kiosco .catalogo        { padding-bottom: 72px; }
+  body.kiosco .hero            { padding: 28px 32px; }
+  body.kiosco .kiosco-bar      { display: flex; }
+  body.kiosco .grid {
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 20px;
+  }
+  body.kiosco .prod-img        { height: 150px; font-size: 3.6rem; }
+  body.kiosco .prod-nombre     { font-size: 0.95rem; }
+  body.kiosco .prod-precio     { font-size: 1.2rem; }
 </style>
 </head>
 <body>
@@ -241,6 +276,15 @@
     <span class="catalogo-count" id="catalogo-count"></span>
   </div>
   <div class="grid" id="grid-productos"></div>
+</div>
+
+<!-- Barra inferior modo kiosco -->
+<div class="kiosco-bar" id="kiosco-bar">
+  <span class="kiosco-bar-cat" id="kiosco-cat-label">Todos los productos</span>
+  <div class="kiosco-bar-prog">
+    <div class="kiosco-bar-prog-fill" id="kiosco-prog" style="width:100%"></div>
+  </div>
+  <span class="kiosco-bar-hint">Cambia automáticamente</span>
 </div>
 
 <!-- Cotizador lateral (módulo opcional) -->
@@ -457,11 +501,77 @@ function solicitarCotiz() {
   window.open(`https://wa.me/${TENANT_CONFIG.whatsapp}?text=${msg}`, '_blank');
 }
 
+// ─── MODO KIOSCO ──────────────────────────────────────────────────────────────
+const KIOSCO_INTERVALO_SEG = 8;
+const KIOSCO_REFRESH_MS    = 5 * 60 * 1000; // recarga página cada 5 min
+
+let _kioscoTimer      = null;
+let _kioscoProgTimer  = null;
+let _kioscoCats       = [];
+let _kioscoIdx        = 0;
+let _kioscoSeg        = 0;
+
+function iniciarKiosco() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('kiosco') !== '1') return;
+
+  document.body.classList.add('kiosco');
+
+  // Desactivar cotizador y precios ocultos en kiosco
+  if (!MOSTRAR_PRECIO) {
+    // ya manejado por renderGrid
+  }
+
+  // Construir lista de categorías: "todos" + cada categoría
+  _kioscoCats = ['', ...new Set(PRODUCTOS.map(p => p.cat))];
+  _kioscoIdx  = 0;
+
+  _avanzarKiosco();
+
+  // Rotación automática
+  _kioscoTimer = setInterval(() => {
+    _kioscoIdx = (_kioscoIdx + 1) % _kioscoCats.length;
+    _avanzarKiosco();
+  }, KIOSCO_INTERVALO_SEG * 1000);
+
+  // Barra de progreso (tick cada segundo)
+  _kioscoProgTimer = setInterval(_tickProgreso, 1000);
+
+  // Auto-refresh para datos frescos
+  setTimeout(() => location.reload(), KIOSCO_REFRESH_MS);
+}
+
+function _avanzarKiosco() {
+  const cat = _kioscoCats[_kioscoIdx];
+  categoriaActual = cat;
+  filtrar();
+
+  const label = document.getElementById('kiosco-cat-label');
+  if (label) label.textContent = cat || 'Todos los productos';
+
+  // Reiniciar barra
+  _kioscoSeg = 0;
+  _actualizarProg();
+}
+
+function _tickProgreso() {
+  _kioscoSeg = Math.min(_kioscoSeg + 1, KIOSCO_INTERVALO_SEG);
+  _actualizarProg();
+}
+
+function _actualizarProg() {
+  const fill = document.getElementById('kiosco-prog');
+  if (!fill) return;
+  const pct = Math.round((1 - _kioscoSeg / KIOSCO_INTERVALO_SEG) * 100);
+  fill.style.width = pct + '%';
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 aplicarBranding();
 renderFiltrosCat();
 filtrar();
 renderCarrito();
+iniciarKiosco();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});

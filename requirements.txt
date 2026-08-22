@@ -1,10 +1,12 @@
-# FerreSystem — dependencias Python
-# Python 3.10+ requerido (se usan type hints nativos: list[str], dict, etc.)
-#
-# Core + pipeline usan solo stdlib (json, os, sys, time, datetime, smtplib, urllib).
-# La unica dependencia externa es para la rotacion de token (paso 3.5 del pipeline):
+# FerreSystem — Dependencias Python
+# Instalar: pip install -r requirements.txt
 
-firebase-admin>=6.2
+# ===== Adapters =====
+openpyxl>=3.1.0       # ExcelAdapter: lectura de .xlsx
 
-# Para desarrollo y tests:
-# pytest>=7.0
+# ===== Firebase (pipeline/rotar_token.py) =====
+firebase-admin>=6.0.0  # Firestore + Auth para rotación de token
+
+# ===== Testing =====
+pytest>=7.0.0
+pytest-cov>=4.0.0

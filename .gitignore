@@ -1,24 +1,61 @@
-# Credenciales y secretos — nunca a git
-*.ini
-*credenciales*
-*service-account*.json
-tenants/*.json
-!tenants/ejemplo_tenant.json
-
-# Datos generados por el pipeline
-data/
-*.log
-logs/
-
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Entornos virtuales
+venv/
+ENV/
+env/
 .venv/
 
-# Node
-node_modules/
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Tests / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# DATOS SENSIBLES — NUNCA commitear
+tenants/*.json
+!tenants/ejemplo_tenant.json
+data/
+*service-account*.json
+*serviceAccount*.json
+firebase-adminsdk*.json
+*.key
+*.pem
+*.enc
+.env
+.env.local
+
+# Logs
+*.log
+logs/
 
 # Sistema
 .DS_Store
 Thumbs.db
-__pycache__/
