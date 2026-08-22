@@ -54,7 +54,7 @@ ferresystem/
 │   ├── erp_adapter.py           ← clase base abstracta ERPAdapter
 │   ├── pipeline_runner.py       ← orquestador del pipeline
 │   ├── json_writer.py           ← escritor de JSONs estándar
-│   ├── validator.py             ← validador de schemas
+│   ├── validator.py             ← validador de schemas + config de tenant
 │   └── logger.py                ← logger centralizado
 │
 ├── adapters/                    ← un archivo por ERP/sistema
@@ -95,6 +95,52 @@ ferresystem/
 └── landing/                     ← página web del producto
     ├── index.html
     └── style.css
+```
+
+---
+
+## Validación de configuración del tenant
+
+Antes de correr el pipeline, `core/validator.py` expone dos funciones de validación:
+
+### `validar_tenant_config(config: dict) -> bool`
+
+Verifica que la configuración del tenant sea correcta **antes de conectarse al ERP**. No hace ninguna conexión de red — solo revisa estructura y coherencia.
+
+```python
+from core.validator import validar_tenant_config
+import json
+
+with open('tenants/mi-cliente.json') as f:
+    config = json.load(f)
+
+if not validar_tenant_config(config):
+    raise SystemExit("Configuración inválida — revisar errores arriba")
+```
+
+Verifica:
+- Campos raíz obligatorios: `tenant_id`, `nombre_comercial`, `erp`, `bodegas`, `firebase`
+- `erp.tipo` debe ser uno de: `justweb`, `transtecnia`, `rexplus`, `excel`, `bsale`, `defontana`, `sheets`
+
+También disponible como CLI:
+
+```bash
+python core/validator.py --tenant tenants/ejemplo_tenant.json
+```
+
+### `validar_pipeline(output_dir, schema) -> bool`
+
+Valida los JSONs de salida generados por el pipeline **antes de publicar en Firebase**. Si algún archivo quedó vacío, roto o incompleto, bloquea el deploy.
+
+```python
+from core.validator import validar_pipeline
+
+schema = {
+    'stock.json': {'kind': 'raw_list'},
+    'ventas.json': {'kind': 'wrapped', 'keys': ['fecha', 'total'], 'array_field': 'lineas'},
+}
+if not validar_pipeline('output/mi-cliente/', schema):
+    raise SystemExit("JSONs con errores — deploy bloqueado")
 ```
 
 ---
@@ -366,4 +412,21 @@ Para licenciar a terceros, contactar al equipo de desarrollo.
 
 ---
 
-*FerreSystem v0.1 — Motor multi-tenant ERP-agnóstico · Junio 2026*
+*FerreSystem v0.1 — Motor multi-tenant ERP-agnóstico · Agosto 2026*
+
+---
+
+## Historial de sesiones
+
+### Sesión 2026-08-22 (Claude Code)
+
+**Resumen:** Loop sesión completo (Pasos 0–5). Añadida validación de config de tenant en el core. Fix de test flaky en scheduler.
+
+**Cambios:**
+- `core/validator.py`: nueva función `validar_tenant_config(config) -> bool` — valida campos raíz y `erp.tipo` antes de correr el pipeline. Extensión de `__main__` con flag `--tenant`
+- `tenants/ejemplo_tenant.json`: corregido `erp.tipo` (tenía valor de documentación `"justweb|transtecnia|..."`, cambiado a `"bsale"` con campo `_tipo_opciones` separado)
+- `tests/test_scheduler.py`: fix `test_proxima_hoy_si_falta` — el test fallaba después de las 22:00 UTC porque no mockeaba `datetime.now()`. Ahora usa tiempo fijo `10:00` → determinístico en cualquier hora del día
+
+**CI:** PR #25 mergeado · verde en Python 3.10, 3.11 y 3.12
+
+**Pendiente:** ninguno
