@@ -134,11 +134,70 @@ def validar_pipeline(output_dir: str, schema: dict) -> bool:
     return True
 
 
+_ERP_TIPOS_VALIDOS = {
+    'justweb', 'transtecnia', 'rexplus', 'excel',
+    'bsale', 'defontana', 'sheets',
+}
+
+_CAMPOS_RAIZ = ['tenant_id', 'nombre_comercial', 'erp', 'bodegas', 'firebase']
+
+
+def validar_tenant_config(config: dict) -> bool:
+    """Valida la configuración de un tenant antes de correr el pipeline.
+
+    Verifica que los campos obligatorios existan y que erp.tipo sea un
+    adapter conocido. No conecta al ERP ni valida credenciales.
+
+    Devuelve True si la config es válida, False si hay errores.
+    """
+    print('=' * 60)
+    print('VALIDACION DE CONFIGURACION DE TENANT')
+    print('=' * 60)
+
+    errores = []
+
+    for campo in _CAMPOS_RAIZ:
+        if campo not in config:
+            print('[ERROR] campo raíz faltante: ' + campo)
+            errores.append('falta campo raíz: ' + campo)
+        else:
+            print('[OK] ' + campo)
+
+    erp = config.get('erp', {})
+    tipo = erp.get('tipo', '')
+    if not tipo:
+        print('[ERROR] erp.tipo: vacío o ausente')
+        errores.append('erp.tipo vacío o ausente')
+    elif tipo not in _ERP_TIPOS_VALIDOS:
+        print('[ERROR] erp.tipo "' + tipo + '" no reconocido. Válidos: ' + ', '.join(sorted(_ERP_TIPOS_VALIDOS)))
+        errores.append('erp.tipo inválido: ' + tipo)
+    else:
+        print('[OK] erp.tipo = ' + tipo)
+
+    print('')
+    print('=' * 60)
+    if errores:
+        print('RESULTADO: BLOQUEADO -- ' + str(len(errores)) + ' error(es) en la configuración del tenant')
+        print('=' * 60)
+        for e in errores:
+            print('  - ' + e)
+        return False
+
+    print('RESULTADO: OK -- configuración del tenant válida')
+    print('=' * 60)
+    return True
+
+
 if __name__ == '__main__':
     import sys
     if len(sys.argv) < 3:
         print('Uso: python validator.py <output_dir> <schema_json>')
+        print('     python validator.py --tenant <tenant_json>')
         sys.exit(1)
+    if sys.argv[1] == '--tenant':
+        with open(sys.argv[2], 'r', encoding='utf-8') as f:
+            _config = json.load(f)
+        sys.exit(0 if validar_tenant_config(_config) else 1)
     with open(sys.argv[2], 'r', encoding='utf-8') as f:
         _schema = json.load(f)
     sys.exit(0 if validar_pipeline(sys.argv[1], _schema) else 1)
