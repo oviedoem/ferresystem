@@ -3,7 +3,8 @@
   "tenant_id": "nombre-unico-cliente",
   "nombre_comercial": "Ferretería Ejemplo",
   "erp": {
-    "tipo": "justweb|transtecnia|rexplus|excel|bsale|defontana|sheets",
+    "tipo": "bsale",
+    "_tipo_opciones": "justweb | transtecnia | rexplus | excel | bsale | defontana | sheets",
     "host": "IP o URL del ERP (no aplica para bsale)",
     "puerto": 80,
     "usuario": "usuario_erp (no aplica para bsale)",
