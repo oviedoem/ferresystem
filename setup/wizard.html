@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurar nuevo cliente — FerreSystem</title>
+<style>
+/* ── TOKENS ─────────────────────────────────────────────────────────────── */
+:root {
+  --accent:      #e74c3c;
+  --accent-d:    #c0392b;
+  --dark:        #2c3e50;
+  --bg:          #f0f2f7;
+  --surface:     #ffffff;
+  --border:      #dde3ed;
+  --text:        #1a1d27;
+  --text-muted:  #64748b;
+  --ok:          #10b981;
+  --warn:        #f59e0b;
+  --radius:      10px;
+  --font:        'Segoe UI', system-ui, -apple-system, sans-serif;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.07);
+  --shadow-md:   0 4px 16px rgba(0,0,0,0.09);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:         #111827;
+    --surface:    #1f2937;
+    --border:     #374151;
+    --text:       #f1f5f9;
+    --text-muted: #94a3b8;
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md:  0 4px 16px rgba(0,0,0,0.4);
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f0f2f7; --surface: #ffffff; --border: #dde3ed;
+  --text: #1a1d27; --text-muted: #64748b;
+}
+:root[data-theme="dark"] {
+  --bg: #111827; --surface: #1f2937; --border: #374151;
+  --text: #f1f5f9; --text-muted: #94a3b8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: var(--font); background: var(--bg); color: var(--text);
+  min-height: 100vh; display: flex; flex-direction: column;
+}
+
+/* ── TOPBAR ─────────────────────────────────────────────────────────────── */
+.topbar {
+  background: var(--dark); color: #fff;
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 28px; height: 54px;
+  box-shadow: var(--shadow-sm);
+}
+.topbar-logo {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--accent); display: flex; align-items: center;
+  justify-content: center; font-weight: 900; font-size: 1rem; color: #fff; flex-shrink: 0;
+}
+.topbar-name { font-weight: 700; font-size: 1rem; }
+.topbar-sep { opacity: 0.3; }
+.topbar-sub { opacity: 0.65; font-size: 0.85rem; }
+.topbar-spacer { flex: 1; }
+.topbar-badge {
+  background: rgba(255,255,255,0.12); border-radius: 20px;
+  padding: 4px 12px; font-size: 0.75rem; opacity: 0.8;
+}
+
+/* ── MAIN LAYOUT ─────────────────────────────────────────────────────────── */
+.main {
+  flex: 1; display: flex; align-items: flex-start; justify-content: center;
+  padding: 36px 16px 48px;
+}
+.wizard {
+  width: 100%; max-width: 620px;
+  display: flex; flex-direction: column; gap: 0;
+}
+
+/* ── PROGRESS ────────────────────────────────────────────────────────────── */
+.progress-wrap {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 20px 28px; border-bottom: none;
+  box-shadow: var(--shadow-sm);
+}
+.progress-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 14px;
+}
+.progress-title { font-weight: 700; font-size: 1rem; }
+.progress-meta { font-size: 0.78rem; color: var(--text-muted); }
+.progress-track {
+  display: flex; gap: 4px; align-items: center;
+}
+.prog-seg {
+  flex: 1; height: 4px; border-radius: 2px;
+  background: var(--border); transition: background 0.3s;
+}
+.prog-seg.done   { background: var(--ok); }
+.prog-seg.active { background: var(--accent); }
+
+/* ── CARD ───────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.step { display: none; }
+.step.active { display: block; }
+
+.step-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.step-eyebrow {
+  font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--accent); margin-bottom: 6px;
+}
+.step-title { font-size: 1.15rem; font-weight: 700; text-wrap: balance; }
+.step-desc { margin-top: 6px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+.step-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 18px; }
+
+/* ── FORM ELEMENTS ──────────────────────────────────────────────────────── */
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field label {
+  font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
+  letter-spacing: 0.3px; text-transform: uppercase;
+}
+.field-hint { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+.field-required { color: var(--accent); }
+
+input[type="text"], input[type="number"], input[type="email"], input[type="time"],
+select, textarea {
+  width: 100%; padding: 9px 12px; font-size: 0.88rem;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--text); font-family: var(--font);
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(231,76,60,0.12);
+}
+input.invalid, select.invalid { border-color: var(--accent); }
+select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+textarea { resize: vertical; min-height: 72px; }
+input[type="number"] { font-variant-numeric: tabular-nums; }
+
+/* ── ERP CONDITIONAL FIELDS ──────────────────────────────────────────────── */
+.erp-fields { display: none; }
+.erp-fields.visible { display: flex; flex-direction: column; gap: 18px; }
+.erp-group {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.erp-group-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--text-muted); padding-bottom: 2px;
+}
+
+/* ── TOGGLES (módulos) ──────────────────────────────────────────────────── */
+.modulo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.modulo-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 7px; padding: 10px 14px; gap: 10px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.modulo-item:hover { border-color: var(--accent); }
+.modulo-item.on { border-color: var(--ok); }
+.modulo-name { font-size: 0.83rem; font-weight: 500; }
+.toggle {
+  width: 36px; height: 20px; border-radius: 10px;
+  background: var(--border); position: relative;
+  transition: background 0.2s; flex-shrink: 0;
+}
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.on .toggle { background: var(--ok); }
+.on .toggle::after { transform: translateX(16px); }
+
+/* ── BODEGA TAGS ─────────────────────────────────────────────────────────── */
+.tag-input-wrap {
+  display: flex; gap: 7px; align-items: center; flex-wrap: wrap;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 7px; padding: 7px 10px; min-height: 40px;
+  cursor: text; transition: border-color 0.15s;
+}
+.tag-input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(231,76,60,0.12); }
+.tag {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--accent); color: #fff; border-radius: 5px;
+  padding: 2px 8px; font-size: 0.78rem; font-weight: 600;
+}
+.tag button {
+  background: none; border: none; color: rgba(255,255,255,0.7);
+  cursor: pointer; font-size: 0.85rem; line-height: 1; padding: 0;
+}
+.tag button:hover { color: #fff; }
+.tag-input {
+  border: none; background: transparent; outline: none;
+  font-family: var(--font); font-size: 0.85rem; color: var(--text);
+  flex: 1; min-width: 80px; padding: 0;
+}
+.tag-hint { font-size: 0.74rem; color: var(--text-muted); }
+
+/* ── PREVIEW JSON ───────────────────────────────────────────────────────── */
+.json-preview {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 18px;
+  font-family: 'Courier New', Courier, monospace; font-size: 0.78rem;
+  line-height: 1.6; overflow-x: auto; max-height: 320px; overflow-y: auto;
+  white-space: pre; color: var(--text);
+}
+.json-key   { color: #0ea5e9; }
+.json-str   { color: var(--ok); }
+.json-num   { color: #f59e0b; }
+.json-bool  { color: #a78bfa; }
+.json-null  { color: var(--text-muted); }
+
+/* ── FOOTER NAV ──────────────────────────────────────────────────────────── */
+.step-footer {
+  display: flex; gap: 10px; align-items: center;
+  padding: 18px 28px; border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.btn {
+  padding: 9px 20px; border-radius: 7px; font-size: 0.85rem;
+  font-weight: 600; cursor: pointer; border: none; font-family: var(--font);
+  transition: opacity 0.15s, box-shadow 0.15s;
+}
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn-primary {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 2px 6px rgba(231,76,60,0.3);
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--text-muted); }
+.btn-download {
+  background: var(--ok); color: #fff;
+  box-shadow: 0 2px 6px rgba(16,185,129,0.3);
+}
+.btn-download:hover { opacity: 0.9; }
+.btn-spacer { flex: 1; }
+
+/* ── ALERT ──────────────────────────────────────────────────────────────── */
+.alert {
+  background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.25);
+  border-radius: 7px; padding: 10px 14px; font-size: 0.82rem;
+  color: var(--accent); display: none;
+}
+.alert.visible { display: block; }
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media (max-width: 540px) {
+  .topbar { padding: 0 16px; }
+  .main { padding: 16px 10px 40px; }
+  .step-header, .step-body, .step-footer { padding-left: 18px; padding-right: 18px; }
+  .progress-wrap { padding: 16px 18px; }
+  .field-row { grid-template-columns: 1fr; }
+  .modulo-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { transition-duration: 0ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">F</div>
+  <span class="topbar-name">FerreSystem</span>
+  <span class="topbar-sep">|</span>
+  <span class="topbar-sub">Configurar nuevo cliente</span>
+  <span class="topbar-spacer"></span>
+  <span class="topbar-badge">setup/wizard</span>
+</div>
+
+<div class="main">
+<div class="wizard">
+
+  <!-- Progreso -->
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-title" id="prog-title">Paso 1 de 6</span>
+      <span class="progress-meta" id="prog-meta">Identidad del cliente</span>
+    </div>
+    <div class="progress-track" id="prog-track"></div>
+  </div>
+
+  <div class="card">
+
+    <!-- PASO 1: Identidad -->
+    <div class="step active" data-step="1">
+      <div class="step-header">
+        <div class="step-eyebrow">Paso 1 — Identidad</div>
+        <div class="step-title">¿Quién es este cliente?</div>
+        <div class="step-desc">El ID de tenant es la clave interna que identifica a este cliente en todos los archivos del sistema.</div>
+      </div>
+      <div class="step-body">
+        <div class="alert" id="alert-1"></div>
+        <div class="field">
+          <label>ID de tenant <span class="field-required">*</span></label>
+          <input type="text" id="tenant_id" placeholder="ferreteria-gutierrez" autocomplete="off"
+            oninput="slugify(this)">
+          <span class="field-hint">Solo letras minúsculas, números y guiones. Ej: <code>ferreteria-norte</code></span>
+        </div>
+        <div class="field">
+          <label>Nombre comercial <span class="field-required">*</span></label>
+          <input type="text" id="nombre_comercial" placeholder="Ferretería Gutiérrez">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Nombre corto</label>
+            <input type="text" id="nombre_corto" placeholder="Gutiérrez">
+          </div>
+          <div class="field">
+            <label>Color primario</label>
+            <input type="text" id="color_primario" placeholder="#c0392b" value="#c0392b">
+          </div>
+        </div>
+      </div>
+      <div class="step-footer">
+        <span class="btn-spacer"></span>
+        <button class="btn btn-primary" onclick="siguiente(1)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- PASO 2: ERP -->
+    <div class="step" data-step="2">
+      <div class="step-header">
+        <div class="step-eyebrow">Paso 2 — ERP</div>
+        <div class="step-title">¿Con qué sistema trabaja?</div>
+        <div class="step-desc">Selecciona el ERP del cliente. Los campos de conexión aparecerán según el tipo elegido.</div>
+      </div>
+      <div class="step-body">
+        <div class="alert" id="alert-2"></div>
+        <div class="field">
+          <label>Tipo de ERP <span class="field-required">*</span></label>
+          <select id="erp_tipo" onchange="cambiarERP()">
+            <option value="">-- Seleccionar --</option>
+            <option value="justweb">JustWeb (CSV/SSRS)</option>
+            <option value="transtecnia">Transtecnia (SQL)</option>
+            <option value="rexplus">RexPlus (SQL)</option>
+            <option value="bsale">Bsale (API REST)</option>
+            <option value="defontana">Defontana (OAuth2)</option>
+            <option value="sheets">Google Sheets</option>
+            <option value="excel">Excel (archivo local)</option>
+          </select>
+        </div>
+
+        <!-- JustWeb / Transtecnia / RexPlus -->
+        <div class="erp-fields" id="erp-sql">
+          <div class="erp-group">
+            <div class="erp-group-label">Conexión</div>
+            <div class="field-row">
+              <div class="field"><label>Host / IP</label><input type="text" id="erp_host" placeholder="192.168.1.10"></div>
+              <div class="field"><label>Puerto</label><input type="number" id="erp_puerto" placeholder="1433" value="1433"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Usuario</label><input type="text" id="erp_usuario" placeholder="sa"></div>
+              <div class="field"><label>Password (cifrado)</label><input type="text" id="erp_password" placeholder="AQA…DPAPI"></div>
+            </div>
+            <div class="field erp-db-field" style="display:none">
+              <label>Base de datos</label>
+              <input type="text" id="erp_db" placeholder="ferreteria_db">
+            </div>
+          </div>
+        </div>
+
+        <!-- Bsale -->
+        <div class="erp-fields" id="erp-bsale">
+          <div class="erp-group">
+            <div class="erp-group-label">Credenciales Bsale</div>
+            <div class="field"><label>Access token</label><input type="text" id="bsale_token" placeholder="abc123xyz…"></div>
+            <div class="field"><label>Office IDs (separados por coma)</label><input type="text" id="bsale_offices" placeholder="1, 2, 3"></div>
+          </div>
+        </div>
+
+        <!-- Defontana -->
+        <div class="erp-fields" id="erp-defontana">
+          <div class="erp-group">
+            <div class="erp-group-label">OAuth2 Defontana</div>
+            <div class="field-row">
+              <div class="field"><label>Client ID</label><input type="text" id="def_client_id" placeholder="app_client_id"></div>
+              <div class="field"><label>Client Secret</label><input type="text" id="def_client_secret" placeholder="app_secret"></div>
+            </div>
+            <div class="field"><label>Company ID (RUT empresa)</label><input type="text" id="def_company_id" placeholder="76000000-0"></div>
+          </div>
+        </div>
+
+        <!-- Google Sheets -->
+        <div class="erp-fields" id="erp-sheets">
+          <div class="erp-group">
+            <div class="erp-group-label">Google Sheets</div>
+            <div class="field"><label>Spreadsheet ID</label><input type="text" id="sh_spreadsheet_id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"></div>
+            <div class="field-hint">La hoja debe ser pública ("cualquiera con el enlace puede ver") o incluir api_key.</div>
+            <div class="field-row">
+              <div class="field"><label>Pestaña Productos</label><input type="text" id="sh_productos" placeholder="Productos" value="Productos"></div>
+              <div class="field"><label>Pestaña Stock</label><input type="text" id="sh_stock" placeholder="Stock" value="Stock"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Pestaña Ventas</label><input type="text" id="sh_ventas" placeholder="Ventas" value="Ventas"></div>
+              <div class="field"><label>Pestaña Pedidos</label><input type="text" id="sh_pedidos" placeholder="Pedidos" value="Pedidos"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Excel -->
+        <div class="erp-fields" id="erp-excel">
+          <div class="erp-group">
+            <div class="erp-group-label">Archivo Excel</div>
+            <div class="field"><label>Ruta del archivo</label><input type="text" id="excel_path" placeholder="C:\datos\inventario.xlsx"></div>
+          </div>
+        </div>
+      </div>
+      <div class="step-footer">
+        <button class="btn btn-secondary" onclick="anterior(2)">← Atrás</button>
+        <span class="btn-spacer"></span>
+        <button class="btn btn-primary" onclick="siguiente(2)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- PASO 3: Bodegas -->
+    <div class="step" data-step="3">
+      <div class="step-header">
+        <div class="step-eyebrow">Paso 3 — Bodegas</div>
+        <div class="step-title">Estructura de bodegas</div>
+        <div class="step-desc">Ingresa los códigos de bodega tal como aparecen en el ERP. Presiona <kbd>Enter</kbd> o coma para agregar cada uno.</div>
+      </div>
+      <div class="step-body">
+        <div class="field">
+          <label>Bodegas comerciales (puntos de venta)</label>
+          <div class="tag-input-wrap" id="wrap-comerciales" onclick="document.getElementById('inp-comerciales').focus()">
+            <input class="tag-input" id="inp-comerciales" placeholder="Ej: BOD1" onkeydown="tagKeydown(event,'comerciales')">
+          </div>
+        </div>
+        <div class="field">
+          <label>Bodegas logísticas (distribución / bodega central)</label>
+          <div class="tag-input-wrap" id="wrap-logisticas" onclick="document.getElementById('inp-logisticas').focus()">
+            <input class="tag-input" id="inp-logisticas" placeholder="Ej: BOD3" onkeydown="tagKeydown(event,'logisticas')">
+          </div>
+        </div>
+        <div class="field">
+          <label>Bodega principal <span class="field-required">*</span></label>
+          <input type="text" id="bodega_principal" placeholder="BOD1">
+          <span class="field-hint">Código de la bodega que se muestra por defecto en el panel.</span>
+        </div>
+      </div>
+      <div class="step-footer">
+        <button class="btn btn-secondary" onclick="anterior(3)">← Atrás</button>
+        <span class="btn-spacer"></span>
+        <button class="btn btn-primary" onclick="siguiente(3)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- PASO 4: Firebase -->
+    <div class="step" data-step="4">
+      <div class="step-header">
+        <div class="step-eyebrow">Paso 4 — Firebase</div>
+        <div class="step-title">Infraestructura cloud</div>
+        <div class="step-desc">El panel de este cliente se despliega en Firebase Hosting. Completa los datos del proyecto asignado.</div>
+      </div>
+      <div class="step-body">
+        <div class="alert" id="alert-4"></div>
+        <div class="field">
+          <label>Project ID de Firebase <span class="field-required">*</span></label>
+          <input type="text" id="firebase_project" placeholder="ferresystem-gutierrez">
+        </div>
+        <div class="field">
+          <label>URL de Hosting</label>
+          <input type="text" id="firebase_url" placeholder="https://ferresystem-gutierrez.web.app">
+        </div>
+        <div class="field">
+          <label>Email de contacto del admin</label>
+          <input type="email" id="notificar_email" placeholder="admin@ferreteriagutierrez.cl">
+        </div>
+      </div>
+      <div class="step-footer">
+        <button class="btn btn-secondary" onclick="anterior(4)">← Atrás</button>
+        <span class="btn-spacer"></span>
+        <button class="btn btn-primary" onclick="siguiente(4)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- PASO 5: Módulos -->
+    <div class="step" data-step="5">
+      <div class="step-header">
+        <div class="step-eyebrow">Paso 5 — Módulos</div>
+        <div class="step-title">¿Qué módulos activo?</div>
+        <div class="step-desc">Los módulos desactivados quedan ocultos en el panel y no se facturan al cliente.</div>
+      </div>
+      <div class="step-body">
+        <div class="modulo-grid" id="modulo-grid"></div>
+      </div>
+      <div class="step-footer">
+        <button class="btn btn-secondary" onclick="anterior(5)">← Atrás</button>
+        <span class="btn-spacer"></span>
+        <button class="btn btn-primary" onclick="siguiente(5)">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- PASO 6: Pipeline -->
+    <div class="step" data-step="6">
+      <div class="step-header">
+        <div class="step-eyebrow">Paso 6 — Pipeline y descarga</div>
+        <div class="step-title">Sincronización y configuración final</div>
+        <div class="step-desc">Define cuándo se ejecuta la sincronización ERP → Firebase. Luego revisa el JSON generado y descárgalo.</div>
+      </div>
+      <div class="step-body">
+        <div class="field-row">
+          <div class="field">
+            <label>Hora de sync diaria</label>
+            <input type="time" id="hora_sync" value="22:00">
+          </div>
+          <div class="field">
+            <label>Máx. reintentos</label>
+            <input type="number" id="max_reintentos" value="3" min="1" max="10">
+          </div>
+        </div>
+        <div class="field">
+          <label>Vista previa — tenant.json generado</label>
+          <div class="json-preview" id="json-preview"></div>
+        </div>
+      </div>
+      <div class="step-footer">
+        <button class="btn btn-secondary" onclick="anterior(6)">← Atrás</button>
+        <span class="btn-spacer"></span>
+        <button class="btn btn-download" onclick="descargar()">↓ Descargar tenant.json</button>
+      </div>
+    </div>
+
+  </div><!-- /.card -->
+</div><!-- /.wizard -->
+</div><!-- /.main -->
+
+<script>
+// ── ESTADO ────────────────────────────────────────────────────────────────────
+const TOTAL_PASOS = 6;
+let pasoActual = 1;
+
+const PASO_NOMBRES = [
+  '', 'Identidad del cliente', 'ERP', 'Bodegas', 'Firebase', 'Módulos', 'Pipeline'
+];
+
+const MODULOS_CONFIG = [
+  { key: 'stock',        label: 'Stock',          default: true  },
+  { key: 'ventas',       label: 'Ventas',          default: true  },
+  { key: 'cotizador',    label: 'Cotizador',       default: true  },
+  { key: 'alertas',      label: 'Alertas',         default: true  },
+  { key: 'pedidos',      label: 'Pedidos',         default: false },
+  { key: 'despachos',    label: 'Despachos',       default: false },
+  { key: 'merma',        label: 'Merma',           default: false },
+  { key: 'panel_cliente',label: 'Panel cliente',   default: true  },
+  { key: 'panel_admin',  label: 'Panel admin',     default: false },
+];
+const modulosState = {};
+MODULOS_CONFIG.forEach(m => { modulosState[m.key] = m.default; });
+
+const bodegas = { comerciales: [], logisticas: [] };
+
+// ── PROGRESO ──────────────────────────────────────────────────────────────────
+function renderProgreso() {
+  const track = document.getElementById('prog-track');
+  track.innerHTML = '';
+  for (let i = 1; i <= TOTAL_PASOS; i++) {
+    const seg = document.createElement('div');
+    seg.className = 'prog-seg' + (i < pasoActual ? ' done' : i === pasoActual ? ' active' : '');
+    track.appendChild(seg);
+  }
+  document.getElementById('prog-title').textContent = `Paso ${pasoActual} de ${TOTAL_PASOS}`;
+  document.getElementById('prog-meta').textContent  = PASO_NOMBRES[pasoActual] || '';
+}
+
+function mostrarPaso(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector(`.step[data-step="${n}"]`);
+  if (target) target.classList.add('active');
+  pasoActual = n;
+  renderProgreso();
+  if (n === 6) actualizarPreview();
+}
+
+// ── NAVEGACIÓN ────────────────────────────────────────────────────────────────
+function siguiente(paso) {
+  if (!validar(paso)) return;
+  mostrarPaso(paso + 1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function anterior(paso) {
+  mostrarPaso(paso - 1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── VALIDACIÓN ────────────────────────────────────────────────────────────────
+function mostrarAlerta(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.toggle('visible', !!msg);
+}
+
+function validar(paso) {
+  if (paso === 1) {
+    const tid = document.getElementById('tenant_id').value.trim();
+    const nom = document.getElementById('nombre_comercial').value.trim();
+    if (!tid) { mostrarAlerta('alert-1', 'El ID de tenant es obligatorio.'); return false; }
+    if (!/^[a-z0-9-]+$/.test(tid)) { mostrarAlerta('alert-1', 'ID inválido: usa solo letras minúsculas, números y guiones.'); return false; }
+    if (!nom) { mostrarAlerta('alert-1', 'El nombre comercial es obligatorio.'); return false; }
+    mostrarAlerta('alert-1', '');
+    return true;
+  }
+  if (paso === 2) {
+    const tipo = document.getElementById('erp_tipo').value;
+    if (!tipo) { mostrarAlerta('alert-2', 'Selecciona el tipo de ERP.'); return false; }
+    mostrarAlerta('alert-2', '');
+    return true;
+  }
+  if (paso === 4) {
+    const proj = document.getElementById('firebase_project').value.trim();
+    if (!proj) { mostrarAlerta('alert-4', 'El Project ID de Firebase es obligatorio.'); return false; }
+    mostrarAlerta('alert-4', '');
+    return true;
+  }
+  return true;
+}
+
+// ── SLUG ──────────────────────────────────────────────────────────────────────
+function slugify(input) {
+  input.value = input.value
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-{2,}/g, '-');
+}
+
+// ── ERP CONDICIONAL ───────────────────────────────────────────────────────────
+function cambiarERP() {
+  const tipo = document.getElementById('erp_tipo').value;
+  document.querySelectorAll('.erp-fields').forEach(el => el.classList.remove('visible'));
+
+  const sqlERPs = ['justweb', 'transtecnia', 'rexplus'];
+  if (sqlERPs.includes(tipo)) {
+    document.getElementById('erp-sql').classList.add('visible');
+    const dbField = document.querySelector('.erp-db-field');
+    if (dbField) dbField.style.display = (tipo !== 'justweb') ? '' : 'none';
+  } else if (tipo === 'bsale') {
+    document.getElementById('erp-bsale').classList.add('visible');
+  } else if (tipo === 'defontana') {
+    document.getElementById('erp-defontana').classList.add('visible');
+  } else if (tipo === 'sheets') {
+    document.getElementById('erp-sheets').classList.add('visible');
+  } else if (tipo === 'excel') {
+    document.getElementById('erp-excel').classList.add('visible');
+  }
+}
+
+// ── TAG INPUTS (bodegas) ──────────────────────────────────────────────────────
+function tagKeydown(e, tipo) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    const input = e.target;
+    const val = input.value.trim().replace(/,/g, '');
+    if (val && !bodegas[tipo].includes(val)) {
+      bodegas[tipo].push(val);
+      renderTags(tipo);
+    }
+    input.value = '';
+  } else if (e.key === 'Backspace' && e.target.value === '' && bodegas[tipo].length) {
+    bodegas[tipo].pop();
+    renderTags(tipo);
+  }
+}
+
+function quitarTag(tipo, val) {
+  bodegas[tipo] = bodegas[tipo].filter(v => v !== val);
+  renderTags(tipo);
+}
+
+function renderTags(tipo) {
+  const wrap = document.getElementById('wrap-' + tipo);
+  const inp  = document.getElementById('inp-' + tipo);
+  wrap.querySelectorAll('.tag').forEach(t => t.remove());
+  bodegas[tipo].forEach(val => {
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.innerHTML = `${val}<button type="button" onclick="quitarTag('${tipo}','${val}')" aria-label="Quitar ${val}">✕</button>`;
+    wrap.insertBefore(tag, inp);
+  });
+}
+
+// ── MÓDULOS ───────────────────────────────────────────────────────────────────
+function renderModulos() {
+  const grid = document.getElementById('modulo-grid');
+  grid.innerHTML = MODULOS_CONFIG.map(m => `
+    <div class="modulo-item ${modulosState[m.key] ? 'on' : ''}" id="mod-${m.key}"
+         onclick="toggleModulo('${m.key}')" role="switch"
+         aria-checked="${modulosState[m.key]}" tabindex="0"
+         onkeydown="if(event.key==='Enter'||event.key===' ')toggleModulo('${m.key}')">
+      <span class="modulo-name">${m.label}</span>
+      <div class="toggle" aria-hidden="true"></div>
+    </div>
+  `).join('');
+}
+
+function toggleModulo(key) {
+  modulosState[key] = !modulosState[key];
+  const el = document.getElementById('mod-' + key);
+  if (el) {
+    el.classList.toggle('on', modulosState[key]);
+    el.setAttribute('aria-checked', modulosState[key]);
+  }
+}
+
+// ── JSON BUILDER ──────────────────────────────────────────────────────────────
+function buildJSON() {
+  const tipo = document.getElementById('erp_tipo').value;
+
+  const erp = { tipo };
+
+  const sqlERPs = ['justweb', 'transtecnia', 'rexplus'];
+  if (sqlERPs.includes(tipo)) {
+    erp.host         = document.getElementById('erp_host').value.trim();
+    erp.puerto       = parseInt(document.getElementById('erp_puerto').value) || 80;
+    erp.usuario      = document.getElementById('erp_usuario').value.trim();
+    erp.password_enc = document.getElementById('erp_password').value.trim();
+    if (tipo !== 'justweb') erp.db = document.getElementById('erp_db').value.trim();
+  } else if (tipo === 'bsale') {
+    erp.access_token = document.getElementById('bsale_token').value.trim();
+    erp.office_ids   = document.getElementById('bsale_offices').value
+      .split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+  } else if (tipo === 'defontana') {
+    erp.client_id     = document.getElementById('def_client_id').value.trim();
+    erp.client_secret = document.getElementById('def_client_secret').value.trim();
+    erp.company_id    = document.getElementById('def_company_id').value.trim();
+  } else if (tipo === 'sheets') {
+    erp.spreadsheet_id  = document.getElementById('sh_spreadsheet_id').value.trim();
+    erp.sheet_productos = document.getElementById('sh_productos').value.trim() || 'Productos';
+    erp.sheet_stock     = document.getElementById('sh_stock').value.trim()     || 'Stock';
+    erp.sheet_ventas    = document.getElementById('sh_ventas').value.trim()    || 'Ventas';
+    erp.sheet_pedidos   = document.getElementById('sh_pedidos').value.trim()   || 'Pedidos';
+  } else if (tipo === 'excel') {
+    erp.archivo_path = document.getElementById('excel_path').value.trim();
+  }
+
+  const tid = document.getElementById('tenant_id').value.trim();
+  return {
+    tenant_id:        tid,
+    nombre_comercial: document.getElementById('nombre_comercial').value.trim(),
+    erp,
+    bodegas: {
+      comerciales:    [...bodegas.comerciales],
+      logisticas:     [...bodegas.logisticas],
+      bodega_principal: document.getElementById('bodega_principal').value.trim(),
+    },
+    firebase: {
+      project_id:   document.getElementById('firebase_project').value.trim(),
+      hosting_url:  document.getElementById('firebase_url').value.trim(),
+    },
+    branding: {
+      nombre_corto:      document.getElementById('nombre_corto').value.trim()     || tid,
+      color_primario:    document.getElementById('color_primario').value.trim()   || '#c0392b',
+      color_secundario:  '#2c3e50',
+    },
+    modulos_activos: { ...modulosState },
+    pipeline: {
+      activo:               true,
+      hora_sync_sql:        document.getElementById('hora_sync').value || '22:00',
+      max_reintentos:       parseInt(document.getElementById('max_reintentos').value) || 3,
+      backoff_base_segundos: 60,
+      notificar_email:      document.getElementById('notificar_email').value.trim(),
+    },
+  };
+}
+
+// ── PREVIEW COLOREADO ─────────────────────────────────────────────────────────
+function colorearJSON(obj) {
+  return JSON.stringify(obj, null, 2)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?)/g, m => {
+      if (/:$/.test(m)) return `<span class="json-key">${m}</span>`;
+      return `<span class="json-str">${m}</span>`;
+    })
+    .replace(/\b(true|false)\b/g, '<span class="json-bool">$1</span>')
+    .replace(/\bnull\b/g, '<span class="json-null">null</span>')
+    .replace(/\b(-?\d+\.?\d*)\b/g, '<span class="json-num">$1</span>');
+}
+
+function actualizarPreview() {
+  document.getElementById('json-preview').innerHTML = colorearJSON(buildJSON());
+}
+
+// ── DESCARGA ──────────────────────────────────────────────────────────────────
+function descargar() {
+  const data = buildJSON();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `${data.tenant_id || 'nuevo-tenant'}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderProgreso();
+renderModulos();
+</script>
+</body>
+</html>
