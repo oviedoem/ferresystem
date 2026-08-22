@@ -24,8 +24,10 @@ class TestParseHora:
 
 class TestProximaEjecucion:
     def test_proxima_hoy_si_falta(self):
-        ahora = datetime.now()
-        hora_futura = (ahora + timedelta(hours=2)).hour
-        prox = _proxima_ejecucion(hora_futura, 0)
+        fixed_now = datetime(2026, 1, 15, 10, 0, 0)
+        hora_futura = (fixed_now + timedelta(hours=2)).hour  # 12 — siempre "hoy"
+        with patch("pipeline.scheduler.datetime") as mock_dt:
+            mock_dt.now.return_value = fixed_now
+            prox = _proxima_ejecucion(hora_futura, 0)
         assert prox.hour == hora_futura
-        assert prox.date() == ahora.date()
+        assert prox.date() == fixed_now.date()
