@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Ops — FerreSystem</title>
+<style>
+/* ── TOKENS ─────────────────────────────────────────────────────────────── */
+:root {
+  --accent:     #e74c3c;
+  --dark:       #2c3e50;
+  --bg:         #f0f2f7;
+  --surface:    #ffffff;
+  --border:     #dde3ed;
+  --text:       #1a1d27;
+  --muted:      #64748b;
+  --ok:         #10b981;
+  --ok-bg:      #d1fae5;
+  --ok-text:    #065f46;
+  --warn:       #f59e0b;
+  --warn-bg:    #fef3c7;
+  --warn-text:  #92400e;
+  --err:        #ef4444;
+  --err-bg:     #fee2e2;
+  --err-text:   #991b1b;
+  --neutral-bg: #f1f5f9;
+  --neutral-t:  #475569;
+  --radius:     10px;
+  --font:       'Segoe UI', system-ui, -apple-system, sans-serif;
+  --shadow:     0 1px 3px rgba(0,0,0,0.07), 0 4px 14px rgba(0,0,0,0.05);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --border: #334155;
+    --text: #f1f5f9; --muted: #94a3b8;
+    --ok-bg: #064e3b; --ok-text: #6ee7b7;
+    --warn-bg: #451a03; --warn-text: #fcd34d;
+    --err-bg: #450a0a; --err-text: #fca5a5;
+    --neutral-bg: #1e293b; --neutral-t: #94a3b8;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f0f2f7; --surface: #ffffff; --border: #dde3ed;
+  --text: #1a1d27; --muted: #64748b;
+  --ok-bg: #d1fae5; --ok-text: #065f46;
+  --warn-bg: #fef3c7; --warn-text: #92400e;
+  --err-bg: #fee2e2; --err-text: #991b1b;
+  --neutral-bg: #f1f5f9; --neutral-t: #475569;
+}
+:root[data-theme="dark"] {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #f1f5f9; --muted: #94a3b8;
+  --ok-bg: #064e3b; --ok-text: #6ee7b7;
+  --warn-bg: #451a03; --warn-text: #fcd34d;
+  --err-bg: #450a0a; --err-text: #fca5a5;
+  --neutral-bg: #1e293b; --neutral-t: #94a3b8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ── TOPBAR ─────────────────────────────────────────────────────────────── */
+.topbar {
+  background: var(--dark); color: #fff;
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 28px; height: 54px; position: sticky; top: 0; z-index: 100;
+}
+.topbar-logo {
+  width: 30px; height: 30px; border-radius: 7px;
+  background: var(--accent); display: flex; align-items: center;
+  justify-content: center; font-weight: 900; font-size: 0.95rem;
+}
+.topbar-name { font-weight: 700; font-size: 0.95rem; }
+.topbar-sep  { opacity: 0.3; }
+.topbar-sub  { opacity: 0.65; font-size: 0.82rem; }
+.topbar-spacer { flex: 1; }
+.topbar-refresh {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; border-radius: 7px; padding: 5px 14px; font-size: 0.78rem;
+  cursor: pointer; font-family: var(--font); transition: background 0.15s;
+}
+.topbar-refresh:hover { background: rgba(255,255,255,0.18); }
+.topbar-ts { font-size: 0.72rem; opacity: 0.45; }
+
+/* ── SUMMARY BAR ─────────────────────────────────────────────────────────── */
+.summary-bar {
+  display: flex; gap: 0; background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.summary-stat {
+  flex: 1; padding: 16px 24px; min-width: 120px;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.summary-stat:last-child { border-right: none; }
+.summary-val {
+  font-size: 1.7rem; font-weight: 800; font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.summary-val.ok   { color: var(--ok); }
+.summary-val.err  { color: var(--err); }
+.summary-val.warn { color: var(--warn); }
+.summary-val.neutral { color: var(--muted); }
+.summary-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); }
+
+/* ── CONTENT ─────────────────────────────────────────────────────────────── */
+.content { padding: 28px 24px; max-width: 1200px; margin: 0 auto; }
+
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+}
+.section-title { font-weight: 700; font-size: 0.95rem; }
+.filter-row { display: flex; gap: 8px; align-items: center; }
+.filter-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; padding: 5px 14px; font-size: 0.78rem;
+  cursor: pointer; color: var(--muted); transition: all 0.15s;
+  font-family: var(--font);
+}
+.filter-btn:hover, .filter-btn.active {
+  background: var(--dark); border-color: var(--dark); color: #fff;
+}
+
+/* ── TENANT CARDS ────────────────────────────────────────────────────────── */
+.tenant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.tenant-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.15s;
+}
+.tenant-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+
+.card-stripe {
+  height: 4px; background: var(--ok);
+}
+.card-stripe.ok   { background: var(--ok); }
+.card-stripe.err  { background: var(--err); }
+.card-stripe.warn { background: var(--warn); }
+.card-stripe.neutral { background: var(--border); }
+
+.card-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 16px 18px 12px; gap: 12px;
+}
+.card-tenant-id {
+  font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--muted); margin-bottom: 3px;
+}
+.card-nombre { font-weight: 700; font-size: 0.95rem; }
+.status-pill {
+  flex-shrink: 0; border-radius: 20px; padding: 3px 11px;
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+}
+.pill-ok      { background: var(--ok-bg);   color: var(--ok-text); }
+.pill-error   { background: var(--err-bg);  color: var(--err-text); }
+.pill-warning { background: var(--warn-bg); color: var(--warn-text); }
+.pill-neutral { background: var(--neutral-bg); color: var(--neutral-t); }
+
+.card-body { padding: 0 18px 14px; }
+.card-metrics {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px;
+}
+.metric {
+  text-align: center; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 7px; padding: 8px 4px;
+}
+.metric-val {
+  font-size: 1rem; font-weight: 700; font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.metric-label {
+  font-size: 0.65rem; text-transform: uppercase;
+  letter-spacing: 0.4px; color: var(--muted); margin-top: 2px;
+}
+
+.card-meta {
+  display: flex; gap: 14px; font-size: 0.75rem; color: var(--muted);
+  flex-wrap: wrap;
+}
+.card-meta span { display: flex; align-items: center; gap: 4px; }
+.card-meta .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted); flex-shrink: 0;
+}
+.card-meta .dot.ok  { background: var(--ok); }
+.card-meta .dot.err { background: var(--err); }
+
+.card-error-msg {
+  margin-top: 8px; padding: 8px 12px;
+  background: var(--err-bg); color: var(--err-text);
+  border-radius: 6px; font-size: 0.76rem; line-height: 1.4;
+}
+
+/* ── HISTORIAL SPARKLINE ─────────────────────────────────────────────────── */
+.card-sparkline { padding: 0 18px 14px; }
+.sparkline-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 6px; }
+.sparkline-track {
+  display: flex; gap: 3px; align-items: flex-end; height: 28px;
+}
+.spark-bar {
+  flex: 1; border-radius: 2px; min-height: 4px;
+  transition: opacity 0.15s;
+}
+.spark-bar.ok   { background: var(--ok); }
+.spark-bar.err  { background: var(--err); }
+.spark-bar.warn { background: var(--warn); }
+
+/* ── CONFIG PANEL ────────────────────────────────────────────────────────── */
+.config-panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px; margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.config-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 14px; }
+.config-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.config-field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 180px; }
+.config-field label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+.config-field input, .config-field textarea {
+  padding: 8px 10px; font-size: 0.83rem; border: 1px solid var(--border);
+  background: var(--bg); color: var(--text); border-radius: 6px;
+  font-family: var(--font); outline: none;
+}
+.config-field textarea { min-height: 64px; resize: vertical; font-size: 0.75rem; }
+.config-field input:focus, .config-field textarea:focus { border-color: var(--accent); }
+.btn-cargar {
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 7px; padding: 8px 18px; font-size: 0.83rem;
+  font-weight: 600; cursor: pointer; font-family: var(--font);
+  white-space: nowrap; align-self: flex-end;
+}
+.btn-cargar:hover { opacity: 0.9; }
+
+/* ── EMPTY / LOADING ─────────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center; padding: 60px 20px; color: var(--muted); font-size: 0.9rem;
+}
+.empty-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+.empty-title { font-weight: 700; color: var(--text); margin-bottom: 6px; font-size: 0.95rem; }
+
+.skeleton { background: linear-gradient(90deg, var(--border) 25%, var(--bg) 50%, var(--border) 75%); background-size: 200%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+@media (max-width: 600px) {
+  .content { padding: 16px 12px; }
+  .tenant-grid { grid-template-columns: 1fr; }
+  .card-metrics { grid-template-columns: repeat(2, 1fr); }
+  .topbar { padding: 0 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">F</div>
+  <span class="topbar-name">FerreSystem</span>
+  <span class="topbar-sep">|</span>
+  <span class="topbar-sub">Ops — Estado de tenants</span>
+  <span class="topbar-spacer"></span>
+  <span class="topbar-ts" id="ts-actualizado"></span>
+  <button class="topbar-refresh" onclick="cargarTodos()">↻ Actualizar</button>
+</div>
+
+<div class="summary-bar" id="summary-bar">
+  <div class="summary-stat"><div class="summary-val neutral" id="sum-total">–</div><div class="summary-label">Tenants</div></div>
+  <div class="summary-stat"><div class="summary-val ok"      id="sum-ok">–</div><div class="summary-label">OK</div></div>
+  <div class="summary-stat"><div class="summary-val err"     id="sum-err">–</div><div class="summary-label">Error</div></div>
+  <div class="summary-stat"><div class="summary-val neutral" id="sum-sin">–</div><div class="summary-label">Sin datos</div></div>
+</div>
+
+<div class="content">
+
+  <!-- Config: qué tenants cargar -->
+  <div class="config-panel">
+    <div class="config-title">Configuración de tenants a monitorear</div>
+    <div class="config-row">
+      <div class="config-field" style="flex:2">
+        <label>Base URL de datos</label>
+        <input type="text" id="cfg-base-url" value="" placeholder="https://proyecto.web.app/data  (vacío = relativo a /data/)">
+      </div>
+      <div class="config-field" style="flex:3">
+        <label>IDs de tenants (uno por línea)</label>
+        <textarea id="cfg-tenants" placeholder="ferreteria-norte&#10;ferreteria-sur&#10;ferreteria-centro"></textarea>
+      </div>
+      <button class="btn-cargar" onclick="cargarTodos()">Cargar</button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="section-header">
+    <span class="section-title" id="grid-titulo">Tenants</span>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="setFiltro('todos',this)">Todos</button>
+      <button class="filter-btn" onclick="setFiltro('ok',this)">OK</button>
+      <button class="filter-btn" onclick="setFiltro('error',this)">Error</button>
+      <button class="filter-btn" onclick="setFiltro('sin-datos',this)">Sin datos</button>
+    </div>
+  </div>
+
+  <div class="tenant-grid" id="tenant-grid">
+    <div class="empty-state">
+      <div class="empty-icon">📡</div>
+      <div class="empty-title">Panel de operaciones</div>
+      <div>Ingresa los IDs de tenants arriba y haz clic en <strong>Cargar</strong>.</div>
+    </div>
+  </div>
+
+</div><!-- /.content -->
+
+<script>
+// ── ESTADO ────────────────────────────────────────────────────────────────────
+let _tenantData = {};   // { tenant_id: { health: {...}|null, error: bool } }
+let _filtro     = 'todos';
+
+// ── CARGA ─────────────────────────────────────────────────────────────────────
+async function cargarTodos() {
+  const baseRaw = document.getElementById('cfg-base-url').value.trim();
+  const base    = baseRaw ? baseRaw.replace(/\/$/, '') : '/data';
+  const ids     = document.getElementById('cfg-tenants').value
+    .split('\n').map(s => s.trim()).filter(Boolean);
+
+  if (!ids.length) {
+    renderGrid([]);
+    return;
+  }
+
+  // Mostrar skeletons
+  renderSkeletons(ids.length);
+  _tenantData = {};
+
+  await Promise.all(ids.map(async id => {
+    const url = `${base}/${encodeURIComponent(id)}/health.json`;
+    try {
+      const resp = await fetch(url, { cache: 'no-store' });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const json = await resp.json();
+      _tenantData[id] = { health: json, fetchErr: null };
+    } catch (e) {
+      _tenantData[id] = { health: null, fetchErr: e.message };
+    }
+  }));
+
+  document.getElementById('ts-actualizado').textContent =
+    'Actualizado ' + new Date().toLocaleTimeString('es-CL');
+
+  renderGrid(ids);
+}
+
+// ── FILTRO ────────────────────────────────────────────────────────────────────
+function setFiltro(f, btn) {
+  _filtro = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid(Object.keys(_tenantData));
+}
+
+function estadoDe(data) {
+  if (!data.health) return 'sin-datos';
+  const estado = data.health.ultimo_run?.estado;
+  if (estado === 'ok') return 'ok';
+  if (estado === 'error') return 'error';
+  return 'sin-datos';
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderSkeletons(n) {
+  const grid = document.getElementById('tenant-grid');
+  grid.innerHTML = Array.from({ length: n }, () =>
+    `<div class="tenant-card"><div class="card-stripe neutral"></div>
+     <div class="card-header"><div style="flex:1">
+       <div class="skeleton" style="height:12px;width:60%;margin-bottom:8px"></div>
+       <div class="skeleton" style="height:18px;width:80%"></div>
+     </div><div class="skeleton" style="height:22px;width:60px;border-radius:11px"></div></div>
+     <div class="card-body"><div class="skeleton" style="height:52px;border-radius:7px"></div></div>
+     </div>`
+  ).join('');
+}
+
+function renderGrid(ids) {
+  const filtrados = ids.filter(id => {
+    if (_filtro === 'todos') return true;
+    return estadoDe(_tenantData[id] || { health: null }) === _filtro;
+  });
+
+  // Summary
+  const estados = ids.map(id => estadoDe(_tenantData[id] || { health: null }));
+  document.getElementById('sum-total').textContent = ids.length;
+  document.getElementById('sum-ok').textContent    = estados.filter(e => e === 'ok').length;
+  document.getElementById('sum-err').textContent   = estados.filter(e => e === 'error').length;
+  document.getElementById('sum-sin').textContent   = estados.filter(e => e === 'sin-datos').length;
+
+  document.getElementById('grid-titulo').textContent =
+    `${filtrados.length} tenant${filtrados.length !== 1 ? 's' : ''}` +
+    (_filtro !== 'todos' ? ` — ${_filtro}` : '');
+
+  const grid = document.getElementById('tenant-grid');
+  if (!filtrados.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-title">Sin resultados</div>
+      <div>No hay tenants en estado "${_filtro}".</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtrados.map(id => {
+    const entry  = _tenantData[id] || { health: null, fetchErr: 'No cargado' };
+    const health = entry.health;
+    const run    = health?.ultimo_run;
+    const estado = estadoDe(entry);
+
+    const stripeClass = estado === 'ok' ? 'ok' : estado === 'error' ? 'err' : 'neutral';
+    const pillClass   = estado === 'ok' ? 'pill-ok' : estado === 'error' ? 'pill-error' : 'pill-neutral';
+    const pillLabel   = estado === 'ok' ? 'OK' : estado === 'error' ? 'Error' : 'Sin datos';
+
+    const nombre = health?.tenant_id || id;
+
+    // Métricas del último run
+    const regs    = run?.registros || {};
+    const metrics = [
+      { val: regs.productos ?? '–', label: 'Prods' },
+      { val: regs.stock     ?? '–', label: 'Stock' },
+      { val: regs.ventas    ?? '–', label: 'Ventas' },
+      { val: regs.pedidos   ?? '–', label: 'Pedidos' },
+    ];
+
+    const duracion = run?.duracion_seg != null ? `${run.duracion_seg}s` : '–';
+    const inicio   = run?.inicio ? _relativo(run.inicio) : '–';
+    const dotClass = estado === 'ok' ? 'ok' : 'err';
+
+    // Sparkline desde historial
+    const hist     = health?.historial || [];
+    const sparkHtml = hist.length
+      ? renderSparkline(hist)
+      : '';
+
+    const errorHtml = run?.error
+      ? `<div class="card-error-msg">⚠ ${_escape(run.error.slice(0, 120))}</div>`
+      : '';
+
+    const fetchErrHtml = entry.fetchErr && !health
+      ? `<div class="card-error-msg">No se pudo cargar health.json: ${_escape(entry.fetchErr)}</div>`
+      : '';
+
+    return `
+      <div class="tenant-card" data-estado="${estado}">
+        <div class="card-stripe ${stripeClass}"></div>
+        <div class="card-header">
+          <div>
+            <div class="card-tenant-id">${_escape(id)}</div>
+            <div class="card-nombre">${_escape(nombre)}</div>
+          </div>
+          <span class="status-pill ${pillClass}">${pillLabel}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-metrics">
+            ${metrics.map(m => `
+              <div class="metric">
+                <div class="metric-val">${typeof m.val === 'number' ? m.val.toLocaleString('es-CL') : m.val}</div>
+                <div class="metric-label">${m.label}</div>
+              </div>`).join('')}
+          </div>
+          <div class="card-meta">
+            <span><div class="dot ${dotClass}"></div>${inicio}</span>
+            <span>⏱ ${duracion}</span>
+            ${run?.fin ? `<span>Fin: ${_horaCorta(run.fin)}</span>` : ''}
+          </div>
+          ${errorHtml}${fetchErrHtml}
+        </div>
+        ${sparkHtml}
+      </div>`;
+  }).join('');
+}
+
+function renderSparkline(hist) {
+  const MAX_BARS = 10;
+  const reciente = [...hist].slice(0, MAX_BARS).reverse();
+  const maxProd  = Math.max(1, ...reciente.map(r => r.registros?.productos || 0));
+
+  const bars = reciente.map(r => {
+    const estado = r.estado || 'ok';
+    const cls    = estado === 'ok' ? 'ok' : 'err';
+    const pct    = estado === 'ok'
+      ? Math.max(20, Math.round(((r.registros?.productos || 0) / maxProd) * 100))
+      : 20;
+    const title  = `${_horaCorta(r.inicio)} — ${estado}`;
+    return `<div class="spark-bar ${cls}" style="height:${pct}%" title="${_escape(title)}"></div>`;
+  }).join('');
+
+  return `<div class="card-sparkline">
+    <div class="sparkline-label">Últimos ${reciente.length} runs</div>
+    <div class="sparkline-track">${bars}</div>
+  </div>`;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function _escape(str) {
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function _relativo(iso) {
+  if (!iso) return '–';
+  const diff = Date.now() - new Date(iso).getTime();
+  const min  = Math.round(diff / 60000);
+  if (min < 1)   return 'hace un momento';
+  if (min < 60)  return `hace ${min} min`;
+  const h = Math.round(min / 60);
+  if (h  < 24)   return `hace ${h}h`;
+  return `hace ${Math.round(h / 24)}d`;
+}
+
+function _horaCorta(iso) {
+  if (!iso) return '–';
+  try {
+    return new Date(iso).toLocaleString('es-CL', {
+      month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  } catch { return iso; }
+}
+
+// ── DEMO MODE ─────────────────────────────────────────────────────────────────
+// Si la URL tiene ?demo=1, carga datos de ejemplo sin fetch real
+(function() {
+  if (!new URLSearchParams(location.search).has('demo')) return;
+
+  const ahora = new Date().toISOString();
+  const hace1h = new Date(Date.now() - 3600000).toISOString();
+  const hace2h = new Date(Date.now() - 7200000).toISOString();
+
+  const _run = (estado, prods, err) => ({
+    inicio: hace1h, fin: ahora, duracion_seg: 42 + Math.floor(Math.random() * 80),
+    estado, error: err || null,
+    registros: { productos: prods, stock: prods * 3, ventas: Math.floor(prods * 0.4), pedidos: Math.floor(prods * 0.1) }
+  });
+
+  const _hist = (n) => Array.from({ length: n }, (_, i) => ({
+    inicio: new Date(Date.now() - (i + 1) * 86400000).toISOString(),
+    estado: i === 2 ? 'error' : 'ok',
+    registros: { productos: 1200 + i * 50, stock: 3600, ventas: 480, pedidos: 120 }
+  }));
+
+  const demos = [
+    { id: 'ferreteria-norte',  nombre: 'Ferretería El Norte',  estado: 'ok',    prods: 1842, err: null },
+    { id: 'ferreteria-sur',    nombre: 'Ferretería del Sur',   estado: 'ok',    prods: 967,  err: null },
+    { id: 'ferreteria-centro', nombre: 'Centro Ferretero',     estado: 'error', prods: 0,    err: 'Fallo el test de conexion con el ERP' },
+    { id: 'ferreteria-oeste',  nombre: 'Ferretería Oeste',     estado: 'ok',    prods: 2341, err: null },
+  ];
+
+  const ids = demos.map(d => d.id);
+  document.getElementById('cfg-tenants').value = ids.join('\n');
+
+  _tenantData = {};
+  demos.forEach(d => {
+    const run = _run(d.estado, d.prods, d.err);
+    _tenantData[d.id] = {
+      health: { tenant_id: d.nombre, ultimo_run: run, historial: [run, ..._hist(7)] },
+      fetchErr: null
+    };
+  });
+
+  document.getElementById('ts-actualizado').textContent =
+    'Actualizado ' + new Date().toLocaleTimeString('es-CL');
+
+  renderGrid(ids);
+})();
+</script>
+</body>
+</html>

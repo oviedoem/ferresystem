@@ -38,3 +38,5 @@ paso 3, y completar los campos requeridos por el adapter.
 | `transtecnia` | `TranstecniaAdapter` | SQL directo | `host`, `puerto`, `usuario`, `password_enc`, `db` |
 | `rexplus` | `RexPlusAdapter` | SQL directo | `host`, `puerto`, `usuario`, `password_enc`, `db` |
 | `bsale` | `BsaleAdapter` | API REST v1 | `access_token`, `office_ids` |
+| `defontana` | `DefontanaAdapter` | API REST + OAuth2 | `client_id`, `client_secret`, `company_id` |
+| `sheets` | `SheetsAdapter` | Google Sheets API | `spreadsheet_id`, `credentials_json` |
