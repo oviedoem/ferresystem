@@ -56,6 +56,14 @@ firebase-adminsdk*.json
 *.log
 logs/
 
+# Claude Code artifacts
+.claude/settings.local.json
+.claude/skills/
+
+# Sistema
+*.log
+logs/
+
 # Sistema
 .DS_Store
 Thumbs.db

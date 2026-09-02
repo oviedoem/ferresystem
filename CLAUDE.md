@@ -5,7 +5,11 @@
 
 1. Leer `AGENTS.md` (reglas de separación motor/cliente, Safe Change Protocol)
 2. Leer `docs/arquitectura.md` para entender el diseño actual
-3. Recién después ejecutar cualquier tarea
+3. **REGLA FLUJO ACTUAL:** Revisar fechas de modificación en la raíz — los archivos más recientes marcan el flujo actual.
+   ```powershell
+   Get-ChildItem "E:\ferresystem" -File | Sort-Object LastWriteTime -Descending | Select-Object Name, LastWriteTime | Select-Object -First 15
+   ```
+4. Recién después ejecutar cualquier tarea
 
 ---
 
