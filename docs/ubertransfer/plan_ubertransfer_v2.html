@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plan v2 UberTransfer — SEO, Ads y Automatización</title>
+<style>
+:root{--bg:#eef2f7;--paper:#fff;--ink:#172033;--muted:#5b6678;--line:#e4e7ec;--soft:#f6f8fc;--brand:#1d4ed8;--ok:#087443;--okbg:#ecfdf3;--warn:#b54708;--warnbg:#fffaeb;--bad:#b42318;--badbg:#fef3f2;--code:#f2f4f7}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1220;--paper:#111a2e;--ink:#e6ecf7;--muted:#98a4b8;--line:#243049;--soft:#16213a;--brand:#7aa2ff;--ok:#5fd39a;--okbg:#0f2a20;--warn:#f5b45a;--warnbg:#2b2110;--bad:#ff8a7e;--badbg:#2e1513;--code:#1b2743}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:1080px;margin:auto;background:var(--paper);min-height:100vh}
+.hero{padding:52px 40px 34px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff}
+.hero small{letter-spacing:.12em;text-transform:uppercase;font-weight:700;opacity:.75}
+.hero h1{font-size:clamp(28px,5vw,40px);line-height:1.1;margin:10px 0 12px}
+.hero p{max-width:800px;color:#dbeafe;margin:0;font-size:17px}
+nav{position:sticky;top:0;z-index:5;display:flex;gap:8px;overflow:auto;padding:10px 40px;background:var(--paper);border-bottom:1px solid var(--line)}
+nav a{white-space:nowrap;text-decoration:none;color:var(--brand);border:1px solid var(--line);background:var(--soft);padding:6px 11px;border-radius:99px;font-size:13px}
+main{padding:10px 40px 50px}
+h2{font-size:25px;margin:40px 0 12px;padding-top:26px;border-top:1px solid var(--line);scroll-margin-top:60px}
+h3{font-size:18px;margin:20px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.card{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--paper)}
+.kpi{background:var(--soft);border-radius:12px;padding:14px}.kpi b{display:block;font-size:22px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.tw{overflow-x:auto}
+code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.92em}
+.box{border-left:4px solid;padding:12px 15px;border-radius:8px;margin:14px 0}
+.ok{background:var(--okbg);border-color:var(--ok)}.warn{background:var(--warnbg);border-color:var(--warn)}.bad{background:var(--badbg);border-color:var(--bad)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.t-alta{background:var(--badbg);color:var(--bad)}.t-media{background:var(--warnbg);color:var(--warn)}.t-ok{background:var(--okbg);color:var(--ok)}.t-usar{background:var(--okbg);color:var(--ok)}.t-no{background:var(--soft);color:var(--muted)}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:14px 0}
+.node{flex:1 1 150px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--soft);font-size:14px}
+.node b{display:block;color:var(--brand)}.arrow{align-self:center;color:var(--muted);font-weight:800}
+.step{display:grid;grid-template-columns:38px 1fr;gap:12px;margin:14px 0}
+.num{width:36px;height:36px;border-radius:10px;background:var(--soft);color:var(--brand);display:grid;place-items:center;font-weight:800;border:1px solid var(--line)}
+ul.c{list-style:none;padding:0}ul.c li{padding-left:24px;position:relative;margin:7px 0}ul.c li:before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
+.foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+@media(max-width:640px){.hero,main,nav{padding-left:16px;padding-right:16px}}
+@media print{nav{display:none}body{background:#fff}}
+</style>
+</head>
+<body><div class="wrap">
+<header class="hero">
+<small>Plan v2 · 29 septiembre 2026 · reemplaza a v1</small>
+<h1>UberTransfer.cl<br>Posicionamiento y captación al menor costo, automatizado</h1>
+<p>Este plan parte de una auditoría real del sitio (v1 no pudo abrirlo). Conserva el WordPress actual, agrega una capa de automatización de costo cercano a cero y deja al usuario solo las acciones que nadie más puede hacer: autorizar accesos y aprobar gasto.</p>
+</header>
+<nav>
+<a href="#resumen">Resumen</a><a href="#auditoria">Auditoría</a><a href="#arquitectura">Arquitectura y costo</a><a href="#herramientas">Herramientas</a><a href="#manual">Tu parte</a><a href="#seo">SEO</a><a href="#ads">Ads</a><a href="#auto">Automatizaciones</a><a href="#cronograma">Cronograma</a><a href="#kpi">KPIs</a><a href="#fuentes">Fuentes</a>
+</nav>
+<main>
+
+<section id="resumen">
+<h2>1. Resumen ejecutivo</h2>
+<div class="grid">
+<div class="kpi"><b>No migrar</b>El sitio ya funciona en WordPress + Rank Math + LiteSpeed. Migrar arriesga el posicionamiento actual sin dar retorno.</div>
+<div class="kpi"><b>~US$0/mes</b>Infraestructura propuesta: Cloudflare gratis, GitHub Actions, Firebase Spark, UptimeRobot, APIs de Google. El gasto real es solo la inversión en Ads.</div>
+<div class="kpi"><b>3 palancas</b>(1) Más páginas indexables por intención, (2) ficha de Google Business + reseñas, (3) medición confiable de reservas.</div>
+</div>
+<div class="box warn"><b>Sobre "salir primero":</b> nadie puede garantizarlo, ni siquiera pagando. En orgánico el orden lo decide Google; en Ads, la subasta. El objetivo profesional es <b>más reservas por peso invertido</b>, y ese es el KPI que este plan optimiza.</div>
+</section>
+
+<section id="auditoria">
+<h2>2. Auditoría verificada del sitio (29-09-2026)</h2>
+<p>Datos obtenidos directamente de <code>ubertransfer.cl</code>. Lo que no pude verificar está marcado.</p>
+<div class="tw"><table>
+<thead><tr><th>Hallazgo</th><th>Evidencia</th><th>Impacto</th><th>Acción</th></tr></thead><tbody>
+<tr><td><b>Solo 4 páginas indexables</b></td><td><code>page-sitemap.xml</code>: inicio, nosotros, servicio, contacto</td><td><span class="tag t-alta">Alto</span></td><td>Crear páginas por ruta/intención (sección 6). Hoy una sola página compite por todo.</td></tr>
+<tr><td><b>"Tarifas" no es una página</b></td><td>El menú apunta a <code>/#tarifas</code>; <code>/tarifas/</code> da 404</td><td><span class="tag t-alta">Alto</span></td><td>Página de tarifas por destino: es lo que más busca quien va a reservar y sirve de landing para Ads.</td></tr>
+<tr><td><b>Horario contradictorio</b></td><td>Schema JSON-LD: 09:00–17:00; el texto dice "24 horas, 7 días"</td><td><span class="tag t-alta">Alto</span></td><td>Unificar. Un dato incoherente entre web, schema y Google Business erosiona confianza y ranking local.</td></tr>
+<tr><td><b>Schema incompleto</b></td><td>Tipo <code>TravelAgency</code> sin teléfono, dirección/área de servicio ni reseñas</td><td><span class="tag t-media">Medio</span></td><td>Agregar telephone, areaServed, sameAs, Service por ruta y FAQPage.</td></tr>
+<tr><td><b>Sin versión en inglés</b></td><td>Sin <code>hreflang</code>; contenido solo en español</td><td><span class="tag t-alta">Alto</span></td><td>El turista que aterriza en SCL busca en inglés ("Santiago airport transfer"). Versión EN con hreflang.</td></tr>
+<tr><td><b>Velocidad</b></td><td>HTML de 266 KB, 39 imágenes sin <code>loading="lazy"</code>; primer byte ~2,7 s en mi medición (una sola muestra, desde un entorno en la nube)</td><td><span class="tag t-media">Medio</span></td><td>Cloudflare + lazy-load + WebP. Medir con PageSpeed API antes/después; no asumir.</td></tr>
+<tr><td><b>Etiquetas duplicables</b></td><td>Aparecen GTM-WLPJJD4J y gtag G-26K0MDTFY1 a la vez</td><td><span class="tag t-media">Medio</span></td><td>Verificar que no cuenten doble las conversiones. Dejar un solo mecanismo.</td></tr>
+<tr><td><b>xmlrpc.php expuesto</b></td><td>Enlazado en el HTML</td><td><span class="tag t-media">Medio</span></td><td>Bloquear con Cloudflare/regla del servidor (vector clásico de fuerza bruta).</td></tr>
+<tr><td><b>Bases correctas</b></td><td>HTTPS, canonical, robots.txt con sitemap, título/description únicos, WhatsApp y teléfono visibles, imágenes con alt, 1 solo H1</td><td><span class="tag t-ok">OK</span></td><td>No tocar.</td></tr>
+<tr><td>No verificado</td><td>Google Business Profile, Search Console, posición actual, precios reales, Core Web Vitals reales</td><td>—</td><td>Se obtienen al conectar accesos (sección 5).</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="arquitectura">
+<h2>3. Arquitectura y costo</h2>
+<div class="flow">
+<div class="node"><b>ubertransfer.cl</b>WordPress actual (Divi, Rank Math). Se mantiene.</div><span class="arrow">→</span>
+<div class="node"><b>Cloudflare (gratis)</b>DNS, caché, CDN, bloqueo de bots y xmlrpc.</div><span class="arrow">→</span>
+<div class="node"><b>Google</b>Search Console, GA4, Google Ads, Business Profile.</div>
+</div>
+<div class="flow">
+<div class="node"><b>GitHub Actions</b>Cron diario/semanal: extrae datos vía APIs, genera reportes y alertas.</div><span class="arrow">→</span>
+<div class="node"><b>Firebase (Spark)</b>Firestore = histórico de métricas · Hosting = tablero estático.</div><span class="arrow">→</span>
+<div class="node"><b>Alertas</b>Correo (y Telegram opcional) solo cuando algo se sale de umbral.</div>
+</div>
+<div class="node" style="margin:10px 0"><b>UptimeRobot</b>Vigila la web y el formulario cada 5 min; avisa si el sitio cae (un sitio caído con Ads activos quema dinero).</div>
+<div class="tw"><table>
+<thead><tr><th>Componente</th><th>Costo mensual</th><th>Nota</th></tr></thead><tbody>
+<tr><td>Cloudflare Free</td><td>US$0</td><td>Opcional después: APO (cache de HTML WordPress) ~US$5, solo si las mediciones lo justifican.</td></tr>
+<tr><td>GitHub Actions</td><td>US$0</td><td>Dentro de la cuota gratuita del plan; jobs de segundos. Preferido sobre Render porque no "duerme".</td></tr>
+<tr><td>Firebase Spark</td><td>US$0</td><td>Firestore + Hosting dentro de cuota gratuita para este volumen.</td></tr>
+<tr><td>UptimeRobot Free</td><td>US$0</td><td>Confirmar límites vigentes del plan al crear la cuenta.</td></tr>
+<tr><td>Search Console, GA4 Data API, Keyword Planner, Ads Scripts</td><td>US$0</td><td>Todo dentro de las cuentas Google existentes.</td></tr>
+<tr><td>Google Ads (inversión)</td><td>Variable</td><td>Tope diario definido por ti. Sugerencia de partida: CLP 5.000–8.000/día, <i>hipótesis</i> a validar con el CPC real del Keyword Planner antes de lanzar.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="herramientas">
+<h2>4. Herramientas: qué se usa y qué se descarta</h2>
+<p>Criterio: solo entra lo que ahorra trabajo manual medible en este plan.</p>
+<div class="tw"><table>
+<thead><tr><th>Herramienta</th><th>Decisión</th><th>Rol / motivo</th></tr></thead><tbody>
+<tr><td>Claude Code + GitHub</td><td><span class="tag t-usar">Usar</span></td><td>Ejecutor: escribe los scripts, páginas, schema y workflows; todo versionado en un repositorio propio.</td></tr>
+<tr><td>Google Ads MCP (oficial, solo lectura)</td><td><span class="tag t-usar">Usar</span></td><td>Consultar campañas y términos de búsqueda en lenguaje natural. No puede editar: es una ventaja de seguridad.</td></tr>
+<tr><td>Google Ads Scripts</td><td><span class="tag t-usar">Usar</span></td><td>Guardas dentro de la cuenta (pausar por gasto sin conversiones, alertas). No requiere developer token.</td></tr>
+<tr><td>Search Console API + GA4 Data API</td><td><span class="tag t-usar">Usar</span></td><td>Gratis. Fuente de verdad SEO y de conversiones. No hay MCP oficial de Search Console: se usa la API directa con cuenta de servicio.</td></tr>
+<tr><td>Firebase</td><td><span class="tag t-usar">Usar</span></td><td>Histórico y tablero. No se pasa el sitio a Firebase.</td></tr>
+<tr><td>UptimeRobot</td><td><span class="tag t-usar">Usar</span></td><td>Monitoreo de disponibilidad.</td></tr>
+<tr><td>Render</td><td><span class="tag t-no">Reserva</span></td><td>El plan gratuito se duerme tras inactividad. Solo si más adelante hace falta un webhook permanente (p. ej. subir conversiones offline desde WhatsApp).</td></tr>
+<tr><td>Suscripciones ChatGPT / Gemini Plus / Meta AI</td><td><span class="tag t-no">Apoyo</span></td><td>Son de uso en chat; <b>no incluyen acceso por API</b> a los automatismos. Gemini: Looker Studio, Business Profile, imágenes. ChatGPT: segunda opinión y borradores de texto. Meta AI: no aporta al plan (sin Meta Ads).</td></tr>
+<tr><td>Supermetrics · Adspirer · OpenRush</td><td><span class="tag t-no">Descartado ahora</span></td><td>De pago; duplican lo que las APIs gratuitas ya entregan. Reevaluar solo si hay presupuesto y una carencia concreta.</td></tr>
+<tr><td>Canva · Adobe · Descript · Netlify · BigQuery</td><td><span class="tag t-no">No encajan</span></td><td>Sin función en este plan. Canva solo si se necesitan piezas gráficas.</td></tr>
+</tbody></table></div>
+<div class="box ok"><b>Conectores de tu cuenta Claude:</b> hoy están conectados Google Drive, Canva, Adobe, Descript y Mermaid. Ninguno cubre Ads/Search Console. Supermetrics figura sin terminar de conectar y es de pago. Por eso la vía elegida es API directa + MCP oficial de Ads.</div>
+</section>
+
+<section id="manual">
+<h2>5. Tu parte manual (única vez, ~60–90 min)</h2>
+<p>Son pasos que exigen tu identidad o tu tarjeta; ninguna automatización legítima puede hacerlos por ti.</p>
+<div class="step"><div class="num">1</div><div><h3>Crear proyecto en Google Cloud + cuenta de servicio</h3>Activar las APIs de Search Console y GA4 Data. Descargar la clave JSON y guardarla <b>solo</b> como secreto de GitHub (nunca en el código ni en chats).</div></div>
+<div class="step"><div class="num">2</div><div><h3>Dar acceso a esa cuenta de servicio</h3>Agregar su correo como usuario de lectura en Search Console (propiedad de dominio) y en GA4.</div></div>
+<div class="step"><div class="num">3</div><div><h3>Ads: acceso de lectura</h3>Habilitar el MCP oficial con tus credenciales de Ads. Solicitar el <i>developer token</i> solo si más adelante se quiere que el sistema edite campañas (requiere revisión de Google; no es necesario para arrancar).</div></div>
+<div class="step"><div class="num">4</div><div><h3>Cloudflare</h3>Crear cuenta gratuita y cambiar los nameservers del dominio. Yo entrego la lista de reglas exacta.</div></div>
+<div class="step"><div class="num">5</div><div><h3>Google Business Profile</h3>Verificar la ficha (Google exige verificación humana) y confirmar horario real, teléfono y área de servicio.</div></div>
+<div class="step"><div class="num">6</div><div><h3>Aprobar el tope diario de Ads y el método de pago</h3>Nada se activa con dinero sin tu aprobación explícita.</div></div>
+</section>
+
+<section id="seo">
+<h2>6. SEO: arquitectura de contenido</h2>
+<p>Las consultas siguientes son <b>hipótesis</b> derivadas del negocio (aeropuerto, ejecutivo, turismo, compartidos); se confirman con Keyword Planner y Search Console antes de invertir en cada página.</p>
+<div class="tw"><table>
+<thead><tr><th>Página nueva</th><th>Intención</th><th>Contenido mínimo</th></tr></thead><tbody>
+<tr><td>Tarifas (dedicada)</td><td>"tarifa transfer aeropuerto santiago"</td><td>Tabla por comuna/destino, qué incluye, pago, cambio de vuelo.</td></tr>
+<tr><td>Aeropuerto → comuna clave (Providencia, Las Condes, Vitacura, Santiago Centro)</td><td>"transfer aeropuerto a providencia"</td><td>Precio, duración, vehículos, FAQ, CTA a WhatsApp/reserva. Solo comunas que realmente atienden.</td></tr>
+<tr><td>Viña del Mar / Valparaíso / regiones</td><td>Interurbano</td><td>Solo rutas que ya operan (el sitio menciona regiones).</td></tr>
+<tr><td>Corporativo</td><td>"transporte ejecutivo empresas santiago"</td><td>Convenios, factura, flota, casos.</td></tr>
+<tr><td>Versión EN de inicio, tarifas y aeropuerto</td><td>"Santiago airport transfer"</td><td>Traducción revisada (no automática cruda) + hreflang.</td></tr>
+</tbody></table></div>
+<h3>Reglas técnicas</h3>
+<ul class="c">
+<li>Cada página con título y description únicos, un H1, enlaces internos entre rutas y desde el inicio.</li>
+<li>Schema por página: <code>Service</code> + <code>FAQPage</code>; en el sitio, <code>LocalBusiness</code> con teléfono y <code>areaServed</code>. Reseñas solo si son reales y visibles.</li>
+<li>Google Business Profile: fuente principal para búsquedas con "cerca de mí" y mapas; pedir reseñas de forma sistemática tras cada servicio (enlace corto por WhatsApp).</li>
+<li>Evitar cientos de páginas casi idénticas por comuna: Google lo trata como contenido de baja calidad.</li>
+<li>Rank Math ya soporta sitemap y schema: se reutiliza en lugar de instalar plugins nuevos.</li>
+</ul>
+</section>
+
+<section id="ads">
+<h2>7. Google Ads: Search controlado</h2>
+<ul class="c">
+<li><b>Tipo:</b> campaña de Búsqueda (no Performance Max) mientras no haya datos de conversión suficientes.</li>
+<li><b>Estructura:</b> un grupo por intención (aeropuerto, ejecutivo, tarifas, inglés) con keywords exacta/frase y negativas iniciales.</li>
+<li><b>Landing:</b> la página específica de cada intención, no siempre el inicio.</li>
+<li><b>Conversiones:</b> clic en WhatsApp, clic en teléfono y envío de formulario, importadas desde GA4; una única fuente para evitar doble conteo.</li>
+<li><b>Puja:</b> manual/maximizar clics con tope de CPC al inicio; pasar a conversiones cuando haya volumen fiable.</li>
+<li><b>Guardas (Ads Scripts):</b> aviso si el gasto del día supera lo definido sin conversiones, si cae el CTR o si una landing devuelve error.</li>
+<li><b>Semanal:</b> revisión de términos de búsqueda, con negativas propuestas por el sistema y aprobadas por ti.</li>
+</ul>
+<div class="box bad"><b>No lanzar</b> si falla cualquiera de estos puntos: medición probada en móvil, horario real unificado, landing sin errores, tope diario aprobado.</div>
+</section>
+
+<section id="auto">
+<h2>8. Automatizaciones (con mínima intervención)</h2>
+<div class="tw"><table>
+<thead><tr><th>Job</th><th>Frecuencia</th><th>Qué hace</th><th>Alerta</th></tr></thead><tbody>
+<tr><td>Salud del sitio</td><td>5 min (UptimeRobot)</td><td>Disponibilidad de inicio, tarifas y contacto</td><td>Caída &gt; 5 min</td></tr>
+<tr><td>Extracción SEO</td><td>Diaria</td><td>Search Console → Firestore (consultas, páginas, posición)</td><td>Caída fuerte de clics/impresiones</td></tr>
+<tr><td>Extracción conversiones</td><td>Diaria</td><td>GA4 → Firestore (WhatsApp, teléfono, formulario)</td><td>Cero conversiones con tráfico</td></tr>
+<tr><td>Auditoría técnica</td><td>Semanal</td><td>Recorre el sitemap: códigos HTTP, títulos duplicados, imágenes sin alt, schema válido, PageSpeed API</td><td>Página rota o empeora la velocidad</td></tr>
+<tr><td>Oportunidades SEO</td><td>Semanal</td><td>Consultas con muchas impresiones y posición 8–20: sugiere mejorar título/contenido</td><td>Informe con prioridades</td></tr>
+<tr><td>Ads</td><td>Diaria (Scripts) + semanal (MCP)</td><td>Gasto, CPA, términos irrelevantes</td><td>CPA sobre umbral; gasto sin conversiones</td></tr>
+<tr><td>Informe ejecutivo</td><td>Semanal, por correo</td><td>Una página: reservas, costo por reserva, top consultas, 3 acciones recomendadas</td><td>—</td></tr>
+</tbody></table></div>
+<div class="box ok"><b>Regla de seguridad:</b> el sistema <b>detecta y propone</b>; presupuesto, pujas, anuncios y cambios de contenido publicados los aprueba una persona.</div>
+</section>
+
+<section id="cronograma">
+<h2>9. Cronograma 30-60-90</h2>
+<div class="tw"><table>
+<thead><tr><th>Plazo</th><th>Entrega</th><th>Depende de</th></tr></thead><tbody>
+<tr><td>Días 1–3</td><td>Repositorio propio, accesos (sección 5), Cloudflare, unificar horario, deduplicar etiquetas, medición probada</td><td>Tus 6 pasos</td></tr>
+<tr><td>Días 4–10</td><td>Página de tarifas + 3 páginas de ruta + schema; jobs de extracción y tablero en Firebase</td><td>Precios y rutas reales confirmados</td></tr>
+<tr><td>Días 10–15</td><td>Campaña Search en borrador → QA → lanzamiento con tope bajo</td><td>Tu aprobación de gasto</td></tr>
+<tr><td>Días 15–45</td><td>Versión EN, reseñas, negativas, ajustes según términos reales</td><td>Datos acumulados</td></tr>
+<tr><td>Días 45–90</td><td>Ampliar rutas que convierten; evaluar APO, Ads con conversiones, Render si aporta</td><td>Resultados medidos</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="kpi">
+<h2>10. KPIs y criterio de éxito</h2>
+<div class="grid">
+<div class="card"><b>Negocio</b><br>Reservas/cotizaciones por mes y costo por reserva. Es la métrica que manda.</div>
+<div class="card"><b>SEO</b><br>Clics e impresiones orgánicas, páginas indexadas (hoy 4), posición de consultas objetivo.</div>
+<div class="card"><b>Técnica</b><br>Disponibilidad, LCP/INP reales en Search Console, errores de rastreo.</div>
+</div>
+<p>Expectativa realista: Ads puede generar contactos en días; el SEO orgánico suele tardar semanas o meses en consolidarse y depende de la competencia y de las reseñas. No se prometen posiciones.</p>
+</section>
+
+<section id="fuentes">
+<h2>11. Fuentes</h2>
+<ul>
+<li>Auditoría directa de <code>https://ubertransfer.cl/</code>, <code>robots.txt</code>, <code>sitemap_index.xml</code> y sus sitemaps (29-09-2026).</li>
+<li><a href="https://support.google.com/google-ads/answer/1722122" rel="noopener">Google Ads — Ad Rank y posición</a></li>
+<li><a href="https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=es" rel="noopener">Google Search Central — Guía SEO</a></li>
+<li><a href="https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap?hl=es" rel="noopener">Google Search Central — Sitemaps</a></li>
+<li><a href="https://adkit.so/resources/google-ads-mcp" rel="noopener">Google Ads MCP oficial: alcance de solo lectura</a> (fuente secundaria; confirmar en el repositorio oficial de Google al instalar)</li>
+<li><a href="https://www.blacklane.com/es/countries/chile/santiago/airport-transfer/" rel="noopener">Referencia de competencia: Blacklane SCL</a></li>
+</ul>
+</section>
+
+<div class="foot">Plan v2 · UberTransfer.cl · Los precios, rutas y comunas atendidas deben confirmarse con el negocio antes de publicarse. Cifras de costo de terceros sujetas a cambio: verificar planes vigentes al contratar.</div>
+</main></div></body></html>

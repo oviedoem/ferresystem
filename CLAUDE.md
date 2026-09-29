@@ -67,6 +67,17 @@ Solo leer para inspiración — nunca copiar credenciales, IPs ni tokens.
 
 ## HISTORIAL DE SESIONES
 
+### Sesión 2026-09-29 (Claude Code) — Plan v2 UberTransfer.cl (proyecto aparte del motor)
+
+**Resumen:** Auditoría real de ubertransfer.cl y plan v2 SEO/Ads/automatización de costo mínimo. Es un proyecto distinto de FerreSystem: no toca `core/`, `adapters/`, `pipeline/` ni `paneles/`.
+
+**Hecho:**
+- `docs/ubertransfer/plan_ubertransfer_v2.html` (plan) y `docs/ubertransfer/conocimiento_negocio.md` (datos verificados y decisiones)
+
+**Pendiente:** usuario completa accesos (Google Cloud, Search Console/GA4, Cloudflare, Business Profile); recomendado repositorio propio `ubertransfer-ops` para el código de automatización, separado de este repo.
+
+**Nota:** las skills "prevención" y "safe change" no existen como skills instaladas; se aplicó el Safe Change Protocol de `AGENTS.md` (solo archivos nuevos + una entrada de historial aquí).
+
 ### Sesión 2026-08-22 (Claude Code) — validar_tenant_config + fix test flaky scheduler
 
 **Resumen:** Loop sesión Pasos 0–5. Añadida validación de configuración de tenant antes del pipeline. Fix del test `test_proxima_hoy_si_falta` que fallaba en CI por depender de la hora real.
